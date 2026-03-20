@@ -1,0 +1,13 @@
+.git
+.github
+node_modules
+apps/web/node_modules
+apps/web/.next
+ref
+artifacts
+tmp
+temp
+coverage
+*.log
+.env
+.env.*
