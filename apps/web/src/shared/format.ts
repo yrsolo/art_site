@@ -1,7 +1,7 @@
 import type { Artwork } from "@/features/artworks/types";
 
 export function artworkMeta(artwork: Artwork) {
-  return `${artwork.year} · ${artwork.medium} · ${artwork.size}`;
+  return `${artwork.year} / ${artwork.medium} / ${artwork.size}`;
 }
 
 export function statusLabel(status: Artwork["status"]) {

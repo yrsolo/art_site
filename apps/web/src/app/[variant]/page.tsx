@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { ColdMistHome } from "@/components/public/cold-mist";
 import { VariantArtworkCard } from "@/components/public/variant-artwork-card";
 import { VariantShell } from "@/components/public/variant-shell";
 import { getVariantOrThrow } from "@/features/variants";
@@ -16,6 +17,10 @@ export default async function VariantHomePage({ params }: VariantPageProps) {
   const { manifest, content } = getVariantOrThrow(variant);
   const artworks = await getArtworkRepository().listPublic();
   const featured = artworks.slice(0, 3);
+
+  if (manifest.id === "cold-mist") {
+    return <ColdMistHome manifest={manifest} content={content} artworks={artworks} />;
+  }
 
   return (
     <VariantShell

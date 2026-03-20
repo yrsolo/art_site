@@ -5,16 +5,16 @@ export const variantContent: Record<string, VariantContent> = {
     nav: { home: "Home", gallery: "Gallery", about: "About", contacts: "Contact" },
     home: {
       eyebrow: "Dark atmosphere / cold mist",
-      title: "A dawn-gallery void for silent, high-focus viewing.",
+      title: "Форма. Цвет. Пустота.",
       description:
-        "This variant must feel clinical, sharp, and atmospheric. The interface is only a fog-bound container for the artwork, never a decorative competitor.",
-      primaryCta: "Enter Gallery",
+        "Exploring the boundaries of ethereal perception through generative abstraction.",
+      primaryCta: "View Collection",
       secondaryCta: "Read the Artist Notes",
     },
     gallery: {
-      eyebrow: "Exhibition",
-      title: "Borderless tonal sequencing with no visible containment lines.",
-      description: "Cards remain severe, rectangular, and desaturated so the artwork becomes the only hue event on the page.",
+      eyebrow: "Exhibition archive",
+      title: "ARCHIVE.",
+      description: "A curated collection of ethereal voids and architectural silence. Exploring the intersection of cold slate and misty morning light.",
     },
     about: {
       eyebrow: "Artist / Editorial",

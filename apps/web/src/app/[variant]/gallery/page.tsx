@@ -1,3 +1,4 @@
+import { ColdMistGallery } from "@/components/public/cold-mist";
 import { VariantArtworkCard } from "@/components/public/variant-artwork-card";
 import { VariantShell } from "@/components/public/variant-shell";
 import { assertVariantSupportsRoute, getVariantOrThrow } from "@/features/variants";
@@ -14,6 +15,10 @@ export default async function VariantGalleryPage({ params }: VariantGalleryPageP
   const { manifest, content } = getVariantOrThrow(variant);
   assertVariantSupportsRoute("gallery", manifest.supportedRoutes);
   const artworks = await getArtworkRepository().listPublic();
+
+  if (manifest.id === "cold-mist") {
+    return <ColdMistGallery manifest={manifest} content={content} artworks={artworks} />;
+  }
 
   return (
     <VariantShell manifest={manifest} content={content} currentRoute="gallery">

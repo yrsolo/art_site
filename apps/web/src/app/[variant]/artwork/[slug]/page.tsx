@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
+import { ColdMistDetail } from "@/components/public/cold-mist";
 import { VariantShell } from "@/components/public/variant-shell";
 import { assertVariantSupportsRoute, getVariantOrThrow } from "@/features/variants";
 import { getArtworkRepository } from "@/server/repository";
@@ -20,6 +21,10 @@ export default async function VariantArtworkPage({ params }: VariantArtworkPageP
 
   if (!artwork || artwork.status === "hidden") {
     notFound();
+  }
+
+  if (manifest.id === "cold-mist") {
+    return <ColdMistDetail manifest={manifest} content={content} artwork={artwork} />;
   }
 
   return (
