@@ -24,6 +24,23 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 300,
+    "GRAD" 0,
+    "opsz" 24;
+  line-height: 1;
+}
+
+.tight-tracking {
+  letter-spacing: -0.05em;
+}
+
+.mist-gradient {
+  background: radial-gradient(circle at 50% 50%, rgba(191, 199, 207, 0.08) 0%, transparent 70%);
+}
+
 a,
 button,
 input,

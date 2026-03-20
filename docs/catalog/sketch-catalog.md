@@ -156,6 +156,15 @@ The project does **not** treat these references as interchangeable color themes.
 5. Text capture
 6. Fidelity checklist
 
+## Literal Transfer Method
+
+- Start from the original `code.html`, not from the current React implementation.
+- Transfer page structure block-by-block in the same order as the source.
+- Keep the original typography pair, icon set, spacing rhythm, and surface hierarchy unless a technical constraint makes that impossible.
+- Preserve the original copy for the source screen; only substitute dynamic artwork fields where the source clearly expects content slots.
+- If a React abstraction makes the page less exact, prefer a more literal component over a more elegant abstraction.
+- Treat screenshots as fidelity checks, not mood references.
+
 ## Do Not Dilute Rule
 
 When implementing a variant:
