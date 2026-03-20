@@ -40,16 +40,16 @@ export const variantContent: Record<string, VariantContent> = {
     nav: { home: "Home", gallery: "Gallery", about: "Artist", contacts: "Inquire" },
     home: {
       eyebrow: "Dark atmosphere / copper glow",
-      title: "Cinematic darkness shaped by warm spotlights and editorial asymmetry.",
+      title: "Form. Color. Void.",
       description:
-        "This version is not generic dark mode. It relies on abyssal surfaces, copper light, and fashion-editorial sharpness to frame the work.",
-      primaryCta: "View Collection",
-      secondaryCta: "Meet the Artist",
+        "Cinematic darkness, oxidized copper light, and architectural tension tuned into a collector-facing editorial gallery.",
+      primaryCta: "Explore Archive",
+      secondaryCta: "The Manifesto",
     },
     gallery: {
       eyebrow: "Collection",
-      title: "An illuminated exhibition wall with sharp edges and warm glows.",
-      description: "Use light to reveal structure. Avoid flattening this version into a neutral grid.",
+      title: "Curated Visions",
+      description: "Explore the intersection of structural rigidity and atmospheric warmth. A collection curated for the Cinematic Alchemist.",
     },
     about: {
       eyebrow: "Artist / Persona",

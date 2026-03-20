@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { ColdMistHome } from "@/components/public/cold-mist";
+import { CopperGlowHome } from "@/components/public/copper-glow";
 import { VariantArtworkCard } from "@/components/public/variant-artwork-card";
 import { VariantShell } from "@/components/public/variant-shell";
 import { getVariantOrThrow } from "@/features/variants";
@@ -20,6 +21,10 @@ export default async function VariantHomePage({ params }: VariantPageProps) {
 
   if (manifest.id === "cold-mist") {
     return <ColdMistHome manifest={manifest} content={content} artworks={artworks} />;
+  }
+
+  if (manifest.id === "copper-glow") {
+    return <CopperGlowHome manifest={manifest} content={content} artworks={artworks} />;
   }
 
   return (
