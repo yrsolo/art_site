@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { VariantSwitcher } from "@/components/public/variant-switcher";
 import type { Artwork } from "@/features/artworks/types";
+import { templateMedia } from "@/features/variants/template-media";
 import type { VariantContent, VariantManifest } from "@/features/variants/types";
 
 type ColdMistLiteralHomeProps = {
@@ -49,9 +50,7 @@ export function ColdMistLiteralHome({ manifest, content, artworks }: ColdMistLit
           ))}
         </div>
         <div className="flex items-center gap-4">
-          <div className="hidden xl:block">
-            <VariantSwitcher currentVariantId={manifest.id} currentRoute="home" />
-          </div>
+          <VariantSwitcher currentVariantId={manifest.id} currentRoute="home" />
           <button className="p-2 text-slate-200 transition-all duration-400 hover:bg-slate-800/50 active:scale-95" type="button">
             <span className="material-symbols-outlined">settings</span>
           </button>
@@ -66,7 +65,13 @@ export function ColdMistLiteralHome({ manifest, content, artworks }: ColdMistLit
 
         <section className="relative z-10 mx-auto flex max-w-7xl flex-col items-start px-6 pb-24 pt-16 md:px-12 md:pt-32">
           <div className="mb-24 flex w-full flex-col items-start gap-12 md:flex-row md:items-end">
-            <h1 className="tight-tracking max-w-3xl text-6xl font-black uppercase leading-[0.85] md:text-9xl">Форма.<br />Цвет.<br />Пустота.</h1>
+            <h1 className="tight-tracking max-w-3xl text-6xl font-black uppercase leading-[0.85] md:text-9xl">
+              Форма.
+              <br />
+              Цвет.
+              <br />
+              Пустота.
+            </h1>
             <div className="max-w-xs md:pb-4">
               <p className="border-l border-[#3c495b] pl-4 text-xs font-medium uppercase leading-relaxed tracking-tight text-[#9facc1]">
                 {content.home.description}
@@ -79,7 +84,7 @@ export function ColdMistLiteralHome({ manifest, content, artworks }: ColdMistLit
               <div className="absolute inset-0 -z-10 bg-[#bfc7cf]/5 blur-3xl transition-all duration-700 group-hover:bg-[#bfc7cf]/10" />
               <div className="relative aspect-[21/9] w-full overflow-hidden bg-[#121a25]">
                 <Image
-                  src={featured.imageOriginal}
+                  src={templateMedia.coldMist.hero}
                   alt={featured.title}
                   fill
                   priority
@@ -128,7 +133,7 @@ export function ColdMistLiteralHome({ manifest, content, artworks }: ColdMistLit
             <div className="relative h-[300px] overflow-hidden md:col-span-2">
               {secondary ? (
                 <Image
-                  src={secondary.imageOriginal}
+                  src={templateMedia.coldMist.secondary}
                   alt={secondary.title}
                   fill
                   sizes="(max-width: 768px) 100vw, 66vw"

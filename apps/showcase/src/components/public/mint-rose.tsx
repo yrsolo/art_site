@@ -5,6 +5,7 @@ import Link from "next/link";
 import { VariantSwitcher } from "@/components/public/variant-switcher";
 import type { Artwork } from "@/features/artworks/types";
 import type { VariantContent, VariantManifest, VariantRouteKey } from "@/features/variants/types";
+import { templateMedia } from "@/features/variants/template-media";
 
 type MintRoseLayoutProps = {
   manifest: VariantManifest;
@@ -80,9 +81,7 @@ function MintRoseLayout({ manifest, content, currentRoute, children, slug }: Min
           </nav>
 
           <div className="flex items-center gap-3">
-            <div className="hidden xl:block">
-              <VariantSwitcher currentVariantId={manifest.id} currentRoute={currentRoute} slug={slug} />
-            </div>
+            <VariantSwitcher currentVariantId={manifest.id} currentRoute={currentRoute} slug={slug} />
             <span className="md:hidden">MENU</span>
           </div>
         </div>
@@ -124,7 +123,7 @@ export function MintRoseHome({ manifest, content, artworks }: MintRoseGalleryPro
               <div className="relative z-10 h-full w-full overflow-hidden rounded-[40%_60%_70%_30%/40%_50%_60%_50%] border-4 border-white/40 bg-[rgba(255,245,245,0.6)] shadow-[0_20px_40px_rgba(74,64,58,0.15)] backdrop-blur-xl">
                 {heroArtwork ? (
                   <Image
-                    src={heroArtwork.imageOriginal}
+                    src={templateMedia.mintRose.hero}
                     alt={heroArtwork.title}
                     fill
                     priority

@@ -81,9 +81,7 @@ function ColdMistLayout({ manifest, content, currentRoute, children, slug }: Col
           </nav>
 
           <div className="flex items-center gap-3">
-            <div className="hidden xl:block">
-              <VariantSwitcher currentVariantId={manifest.id} currentRoute={currentRoute} slug={slug} />
-            </div>
+            <VariantSwitcher currentVariantId={manifest.id} currentRoute={currentRoute} slug={slug} />
             <div className="hidden items-center gap-2 md:flex">
               <span className="grid h-10 w-10 place-items-center text-xs uppercase tracking-[0.24em] text-slate-200 transition-colors hover:bg-slate-800/50">
                 Set
@@ -93,10 +91,6 @@ function ColdMistLayout({ manifest, content, currentRoute, children, slug }: Col
               </span>
             </div>
           </div>
-        </div>
-
-        <div className="border-t border-white/5 px-6 py-3 md:hidden">
-          <VariantSwitcher currentVariantId={manifest.id} currentRoute={currentRoute} slug={slug} />
         </div>
       </header>
 

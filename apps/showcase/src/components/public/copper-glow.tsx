@@ -5,6 +5,7 @@ import Link from "next/link";
 import { VariantSwitcher } from "@/components/public/variant-switcher";
 import type { Artwork } from "@/features/artworks/types";
 import type { VariantContent, VariantManifest, VariantRouteKey } from "@/features/variants/types";
+import { templateMedia } from "@/features/variants/template-media";
 import { statusLabel } from "@/shared/format";
 
 type CopperGlowLayoutProps = {
@@ -69,9 +70,7 @@ function CopperGlowLayout({ manifest, content, currentRoute, children, slug }: C
           </nav>
 
           <div className="flex items-center gap-4">
-            <div className="hidden xl:block">
-              <VariantSwitcher currentVariantId={manifest.id} currentRoute={currentRoute} slug={slug} />
-            </div>
+            <VariantSwitcher currentVariantId={manifest.id} currentRoute={currentRoute} slug={slug} />
             <span className="grid h-10 w-10 place-items-center text-[#e8be9f] transition-all duration-300 hover:bg-[#8c6a4f]/20">MENU</span>
           </div>
         </div>
@@ -125,7 +124,7 @@ export function CopperGlowHome({ manifest, content, artworks }: CopperGlowGaller
           {heroArtwork ? (
             <div className="absolute right-0 h-full w-[120%] translate-x-20 md:translate-x-32">
               <Image
-                src={heroArtwork.imageOriginal}
+                src={templateMedia.copperGlow.hero}
                 alt={heroArtwork.title}
                 fill
                 priority
@@ -149,7 +148,7 @@ export function CopperGlowHome({ manifest, content, artworks }: CopperGlowGaller
             <div className="group relative overflow-hidden bg-[#1d1f26] md:col-span-2">
               {featureArtwork ? (
                 <Image
-                  src={featureArtwork.imageOriginal}
+                  src={templateMedia.copperGlow.feature}
                   alt={featureArtwork.title}
                   fill
                   sizes="(max-width: 768px) 100vw, 66vw"
@@ -187,7 +186,7 @@ export function CopperGlowHome({ manifest, content, artworks }: CopperGlowGaller
             <div className="absolute -inset-10 rounded-full bg-[#8c6a4f]/20 blur-3xl" />
             {sculpturalArtwork ? (
               <Image
-                src={sculpturalArtwork.imageOriginal}
+                src={templateMedia.copperGlow.sculptural}
                 alt={sculpturalArtwork.title}
                 width={1200}
                 height={1400}

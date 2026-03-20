@@ -1,0 +1,20 @@
+export const templateMedia = {
+  coldMist: {
+    hero:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuCSyz9jfdllvfwDIoqz3PnDGMdkFtRsogqzRDQdx_CQGRS-jnJtvx1VzLsEej2524x-WH1iJ5IRPW_YK2ac7qMscJeKcuXpXxt3BT6MopacseS7ov-dRSGfHwZwSDZ5xRpigqOQsbqKZGD1wBOGNQIaseU_-QiBa0DJnqIvLiFW1wQdpUV_O6iNVbrJuA8wvgqsE9jCLIXEBa_J0bfcz22_yvBr36Xf2jC4OgYXxNDOd53qsGrX6k359L6PGchdPfe5Ul1Lfy0fOUVd",
+    secondary:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuB1jZGrBLi3Ot_mz7MNpAYfDurS1_TrHf61z6TzzZmojhSRgxaWFkVzHsVKvno5ZNKHgnFMMqS2LfPaESboQnamht2dZD2g-P040TTrqxM1KcjI9Zh6EqmGHeqy98x97S_QVpwNoaSILoDfAtX3vi6NpC5y8i4c3U6--tSTWDQT8zHxa1sC6buHKkPAmbfIetP2BcHGiyA8OPYlOUDRucIFs4R577-2hAr-NZHzM08nf0wwMxQcI4v1qySt3GIlQQRRYXma5XyFaW1V",
+  },
+  copperGlow: {
+    hero:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAQ_JBEHRMADYcqsX5GG0gsQx9_u2_C2N-iycemCn3KCuDfYRPqMP0-wws9TnK0NjUTXtHh-ILofW0HcW57dGPrkRjBK09oyWUk6q0LRoSmYEf_d2s8Oi9uXtG2dGMljbtzqmsxKxPOsCnl9KDKJvs-xmdlA3duNrXXkYcfYoZbWzuf6_C5uZSGPHg_ZTkBf_U2V71rqBR0dGSYdLJ761XdbpGowmEsGhLoJJRheW-zrMTDcVu8hUlAGS4sTAnwdE2lAEVV0qvEBM5D",
+    feature:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAJJ5y3keelHH5ndg1gBk-0kAeyy5IV-cdv_61LFhkR5Fu6imaXut1Mx9eX16cTJGmFXJWR6RhpdkaeMN0B30ZRXUqSR4uG4n90wBfU3SjaNO3r9uECR1UvuD-cGxdqSxnRITDguqMOq3Amn94lcdEknqOnyC6MiklrkXpnRhQ-dzYG36HKdaNOZPzuPoJu0jWscmkkAxifXiEebNuw6Ez01s6W6ZipUYabrddsZqZKjaWOxfQdq1ghOhcJ_Q28WWKD2Gk5fz9jOH_t",
+    sculptural:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAw-0CvxgUFJiCZc8Niz7FexFs5QI5-ILaOkZga817AFZCo7m6ar4X1UIH4iUyAFKFOumxYX0GnwHzCybYk8QxnVfHVLYANYk9szgks9WtBFmVBizSHlZ-tc_wHMVjQ7eMxviVU2ZBsNTVjeJcpjd-O9X877BIuvZ39WjY2mKn1g_3OdKh6Vrv30ArwK-uMjcL23OtKJCztFOrrybMGTc1QjwAkccFBa316BoAH1qU_NBDYNblezik_DULwGlBgOQVjnQ3_c6iT_DS5",
+  },
+  mintRose: {
+    hero:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDvsqeyLZlqmReBwU8jfwBzb5BxCKNNfbVPyNR0nshDPxAkaHLIpX4A4aQZpFQaC2DOHu6RZryqHGg8YL2d_nHuuC_drwWUfxJmCE6KU0bp33fMN7gJLn752W2KaSgGz0p5Fl9Eq6p04I3pVDgMnKMh_1FAf_vqcYAxrjZ3mGWajtJ5toK5w1D_55PHVvrY36a0PTPrTXtJFRayzL2uAuN9kwv1oiwUypcvPVYV4-jdZDroRcvN2haKprlkIhQ2CTqB7fTcFusE1pzU",
+  },
+} as const;
