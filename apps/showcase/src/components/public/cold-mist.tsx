@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { VariantSwitcher } from "@/components/public/variant-switcher";
 import type { Artwork } from "@/features/artworks/types";
 import { templateMedia } from "@/features/variants/template-media";
 import type { VariantContent, VariantManifest, VariantRouteKey } from "@/features/variants/types";
@@ -13,7 +12,6 @@ type ColdMistLayoutProps = {
   content: VariantContent;
   currentRoute: VariantRouteKey;
   children: ReactNode;
-  slug?: string;
 };
 
 type ColdMistPageProps = {
@@ -59,7 +57,7 @@ function coldMistHeroTitle() {
   return ["&#1060;&#1086;&#1088;&#1084;&#1072;.", "&#1062;&#1074;&#1077;&#1090;.", "&#1055;&#1091;&#1089;&#1090;&#1086;&#1090;&#1072;."];
 }
 
-function ColdMistLayout({ manifest, content, currentRoute, children, slug }: ColdMistLayoutProps) {
+function ColdMistLayout({ manifest, content, currentRoute, children }: ColdMistLayoutProps) {
   const navItems = buildNavItems(manifest, content);
 
   return (
@@ -89,7 +87,6 @@ function ColdMistLayout({ manifest, content, currentRoute, children, slug }: Col
           ))}
         </nav>
         <div className="flex items-center gap-4">
-          <VariantSwitcher currentVariantId={manifest.id} currentRoute={currentRoute} slug={slug} />
           <button className="p-2 text-slate-200 transition-all duration-400 hover:bg-slate-800/50 active:scale-95" type="button">
             <span className="material-symbols-outlined">settings</span>
           </button>
@@ -306,7 +303,7 @@ export function ColdMistGallery({ manifest, content, artworks }: ColdMistGallery
 
 export function ColdMistDetail({ manifest, content, artwork }: ColdMistDetailProps) {
   return (
-    <ColdMistLayout manifest={manifest} content={content} currentRoute="detail" slug={artwork.slug}>
+    <ColdMistLayout manifest={manifest} content={content} currentRoute="detail">
       <div className="min-h-screen pt-0 pb-20 md:pb-0 flex flex-col md:flex-row relative">
         <div className="fixed inset-0 mist-gradient pointer-events-none" />
 
@@ -381,6 +378,64 @@ export function ColdMistDetail({ manifest, content, artwork }: ColdMistDetailPro
           </div>
         </section>
       </div>
+    </ColdMistLayout>
+  );
+}
+
+export function ColdMistAbout({ manifest, content }: ColdMistPageProps) {
+  return (
+    <ColdMistLayout manifest={manifest} content={content} currentRoute="about">
+      <section className="mx-auto max-w-5xl px-6 py-16 md:px-12">
+        <div className="mb-12 space-y-4">
+          <p className="text-xs uppercase tracking-[0.35em] text-[#6a768a]">{content.about.eyebrow}</p>
+          <h1 className="tight-tracking text-5xl font-black uppercase text-[#d9e6fd] md:text-7xl">Cold Editorial Practice</h1>
+        </div>
+        <div className="grid gap-8 md:grid-cols-[1.25fr_0.75fr]">
+          <article className="space-y-6 bg-[#121a25] p-10">
+            {content.about.paragraphs.map((paragraph) => (
+              <p key={paragraph} className="text-lg leading-relaxed text-[#9facc1]">{paragraph}</p>
+            ))}
+          </article>
+          <aside className="space-y-4 bg-[#0e141c] p-10">
+            <p className="text-xs uppercase tracking-[0.24em] text-[#6a768a]">Design invariants</p>
+            <ul className="space-y-3 text-sm text-[#9facc1]">
+              {manifest.designInvariants.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </aside>
+        </div>
+      </section>
+    </ColdMistLayout>
+  );
+}
+
+export function ColdMistContacts({ manifest, content }: ColdMistPageProps) {
+  return (
+    <ColdMistLayout manifest={manifest} content={content} currentRoute="contacts">
+      <main className="mx-auto flex min-h-[calc(100vh-8rem)] max-w-[480px] items-center px-6 py-16">
+        <div className="w-full">
+          <div className="mb-16">
+            <h1 className="mb-2 text-[48px] font-black uppercase tracking-[-0.04em] text-[#d9e6fd]">Связь</h1>
+            <p className="text-base leading-relaxed text-[#6a768a]">{content.contacts.description}</p>
+          </div>
+          <form className="space-y-8">
+            {["Имя", "Email", "Тема"].map((label) => (
+              <label key={label} className="block">
+                <span className="mb-3 block text-[10px] uppercase tracking-[0.22em] text-[#9facc1]">{label}</span>
+                <input className="w-full border-0 border-b border-[#3c495b] bg-transparent px-0 py-3 text-[#d9e6fd] focus:border-[#bfc7cf] focus:shadow-none" placeholder=" " />
+              </label>
+            ))}
+            <label className="block">
+              <span className="mb-3 block text-[10px] uppercase tracking-[0.22em] text-[#9facc1]">Сообщение</span>
+              <textarea rows={4} className="w-full resize-none border-0 border-b border-[#3c495b] bg-transparent px-0 py-3 text-[#d9e6fd] focus:border-[#bfc7cf] focus:shadow-none" />
+            </label>
+            <button type="button" className="w-full bg-[#bfc7cf] py-4 text-xs font-bold uppercase tracking-[0.2em] text-[#394148] transition hover:bg-[#cdd5dd]">
+              {content.contacts.inquiryLabel}
+            </button>
+          </form>
+        </div>
+      </main>
     </ColdMistLayout>
   );
 }

@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { VariantSwitcher } from "@/components/public/variant-switcher";
 import type { Artwork } from "@/features/artworks/types";
 import type { VariantContent, VariantManifest, VariantRouteKey } from "@/features/variants/types";
 import { templateMedia } from "@/features/variants/template-media";
@@ -12,7 +11,6 @@ type MintRoseLayoutProps = {
   content: VariantContent;
   currentRoute: VariantRouteKey;
   children: ReactNode;
-  slug?: string;
 };
 
 type MintRosePageProps = {
@@ -39,7 +37,7 @@ function buildNavItems(manifest: VariantManifest, content: VariantContent) {
   ].filter((item) => manifest.supportedRoutes.includes(item.key));
 }
 
-function MintRoseLayout({ manifest, content, currentRoute, children, slug }: MintRoseLayoutProps) {
+function MintRoseLayout({ manifest, content, currentRoute, children }: MintRoseLayoutProps) {
   const navItems = buildNavItems(manifest, content);
 
   return (
@@ -78,7 +76,6 @@ function MintRoseLayout({ manifest, content, currentRoute, children, slug }: Min
           </nav>
 
           <div className="flex items-center gap-3">
-            <VariantSwitcher currentVariantId={manifest.id} currentRoute={currentRoute} slug={slug} />
             <span className="md:hidden">MENU</span>
           </div>
         </div>
@@ -177,7 +174,7 @@ export function MintRoseDetail({ manifest, content, artwork, artworks }: MintRos
   const detailShots = artworks.filter((item) => item.id !== artwork.id).slice(0, 2);
 
   return (
-    <MintRoseLayout manifest={manifest} content={content} currentRoute="detail" slug={artwork.slug}>
+    <MintRoseLayout manifest={manifest} content={content} currentRoute="detail">
       <section className="mx-auto grid max-w-[1600px] grid-cols-1 gap-12 px-6 py-12 lg:grid-cols-12 lg:gap-24 lg:px-12 lg:py-20">
         <div className="relative lg:col-span-7">
           <div className="group sticky top-12">
@@ -247,6 +244,43 @@ export function MintRoseDetail({ manifest, content, artwork, artworks }: MintRos
           </div>
         </div>
       </section>
+    </MintRoseLayout>
+  );
+}
+
+export function MintRoseContacts({ manifest, content }: MintRosePageProps) {
+  return (
+    <MintRoseLayout manifest={manifest} content={content} currentRoute="contacts">
+      <main className="relative mx-auto flex min-h-[calc(100vh-8rem)] w-full max-w-[600px] items-center justify-center px-4 pb-12">
+        <div className="absolute left-1/2 top-1/2 -z-10 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-[40%_60%_70%_30%/40%_50%_60%_50%] bg-[radial-gradient(circle_at_center,_rgba(19,236,182,0.3)_0%,_rgba(19,236,182,0)_70%)]" />
+        <div className="w-full rounded-[3rem] bg-[rgba(255,245,245,0.6)] p-10 shadow-[0_20px_40px_rgba(74,64,58,0.05)] backdrop-blur-[20px] md:p-14">
+          <div className="mb-10 text-center">
+            <h1 className="mb-4 text-4xl font-light tracking-tight text-[#4A403A] md:text-5xl">Let&apos;s Connect</h1>
+            <p className="text-lg font-light text-[#BCAAA4]">{content.contacts.description}</p>
+          </div>
+          <form className="space-y-8">
+            {["Your Name", "Email Address", "Subject"].map((label, index) => (
+              <label key={label} className="relative block">
+                <span className="absolute left-0 top-3 text-lg text-[#BCAAA4]">{label}</span>
+                <input
+                  className="peer w-full border-0 border-b border-[#BCAAA4] bg-transparent px-0 py-3 text-lg text-[#4A403A] placeholder-transparent focus:border-b-2 focus:border-[#13ecb6] focus:ring-0"
+                  placeholder=" "
+                  defaultValue={index === 2 ? "Inquiry: Serenity in Chaos" : ""}
+                />
+              </label>
+            ))}
+            <label className="relative mt-12 block">
+              <span className="absolute left-0 top-3 text-lg text-[#BCAAA4]">Your Message</span>
+              <textarea className="peer w-full resize-none border-0 border-b border-[#BCAAA4] bg-transparent px-0 py-3 text-lg text-[#4A403A] placeholder-transparent focus:border-b-2 focus:border-[#13ecb6] focus:ring-0" rows={4} placeholder=" " />
+            </label>
+            <div className="pt-6 text-center">
+              <button type="button" className="min-w-[200px] rounded-full bg-[#13ecb6] px-10 py-4 text-base font-medium uppercase tracking-[2px] text-[#10221d] transition hover:bg-[#13ecb6]/80 hover:shadow-[0_0_20px_rgba(19,236,182,0.4)]">
+                Send Message
+              </button>
+            </div>
+          </form>
+        </div>
+      </main>
     </MintRoseLayout>
   );
 }

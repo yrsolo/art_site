@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { VariantSwitcher } from "@/components/public/variant-switcher";
 import type { Artwork } from "@/features/artworks/types";
 import type { VariantContent, VariantManifest, VariantRouteKey } from "@/features/variants/types";
 import { templateMedia } from "@/features/variants/template-media";
@@ -13,7 +12,6 @@ type CopperGlowLayoutProps = {
   content: VariantContent;
   currentRoute: VariantRouteKey;
   children: ReactNode;
-  slug?: string;
 };
 
 type CopperGlowPageProps = {
@@ -44,7 +42,7 @@ function buildNavItems(manifest: VariantManifest, content: VariantContent) {
   ].filter((item) => manifest.supportedRoutes.includes(item.key));
 }
 
-function CopperGlowLayout({ manifest, content, currentRoute, children, slug }: CopperGlowLayoutProps) {
+function CopperGlowLayout({ manifest, content, currentRoute, children }: CopperGlowLayoutProps) {
   const navItems = buildNavItems(manifest, content);
 
   return (
@@ -78,7 +76,6 @@ function CopperGlowLayout({ manifest, content, currentRoute, children, slug }: C
           </nav>
 
           <div className="flex items-center gap-4">
-            <VariantSwitcher currentVariantId={manifest.id} currentRoute={currentRoute} slug={slug} />
             <span className="grid h-10 w-10 place-items-center text-[#e8be9f] transition-all duration-300 hover:bg-[#8c6a4f]/20">MENU</span>
           </div>
         </div>
@@ -293,7 +290,7 @@ export function CopperGlowDetail({ manifest, content, artwork, artworks }: Coppe
   const thumbnails = artworks.filter((item) => item.id !== artwork.id).slice(0, 3);
 
   return (
-    <CopperGlowLayout manifest={manifest} content={content} currentRoute="detail" slug={artwork.slug}>
+    <CopperGlowLayout manifest={manifest} content={content} currentRoute="detail">
       <main className="mx-auto min-h-screen max-w-[96rem] overflow-x-hidden px-6 pb-20 pt-6 lg:px-12">
         <div className="flex flex-col gap-12 lg:flex-row lg:gap-20">
           <div className="relative w-full lg:w-2/3">
@@ -424,6 +421,68 @@ export function CopperGlowDetail({ manifest, content, artwork, artworks }: Coppe
             </div>
           </div>
         </section>
+      </main>
+    </CopperGlowLayout>
+  );
+}
+
+export function CopperGlowAbout({ manifest, content }: CopperGlowPageProps) {
+  return (
+    <CopperGlowLayout manifest={manifest} content={content} currentRoute="about">
+      <main className="mx-auto max-w-[96rem] px-8 py-20 md:px-24">
+        <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr]">
+          <section className="space-y-8 bg-[#191b22] p-12">
+            <p className="text-xs uppercase tracking-[0.22em] text-[#e8be9f]">{content.about.eyebrow}</p>
+            <h1 className="font-[Space_Grotesk] text-5xl font-bold uppercase tracking-[-0.06em] md:text-7xl">
+              Cinematic
+              <br />
+              Portrait
+            </h1>
+            {content.about.paragraphs.map((paragraph) => (
+              <p key={paragraph} className="max-w-2xl text-lg leading-relaxed text-[#d3c4b9]">{paragraph}</p>
+            ))}
+          </section>
+          <aside className="space-y-4 bg-[#282a31] p-12">
+            <p className="text-xs uppercase tracking-[0.22em] text-[#e8be9f]">Do not dilute</p>
+            <ul className="space-y-3 text-sm text-[#d3c4b9]">
+              {manifest.doNotDilute.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </aside>
+        </div>
+      </main>
+    </CopperGlowLayout>
+  );
+}
+
+export function CopperGlowContacts({ manifest, content }: CopperGlowPageProps) {
+  return (
+    <CopperGlowLayout manifest={manifest} content={content} currentRoute="contacts">
+      <main className="relative flex min-h-[calc(100vh-8rem)] items-center justify-center px-6 py-16">
+        <div className="absolute left-1/2 top-1/2 -z-10 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(circle,_rgba(140,106,79,0.08)_0%,_rgba(7,9,15,0)_70%)] blur-[120px]" />
+        <div className="w-full max-w-[480px]">
+          <div className="mb-16">
+            <h1 className="mb-2 font-[Space_Grotesk] text-[48px] font-bold tracking-[-0.02em] text-[#F1F4F9]">Связь</h1>
+            <p className="text-base leading-relaxed text-[#5A657A]">Для серьёзных запросов, приобретения работ и обсуждения выставок.</p>
+          </div>
+          <form className="space-y-8">
+            {["Имя", "Email", "Тема"].map((label) => (
+              <label key={label} className="block">
+                <span className="mb-3 block text-[13px] uppercase tracking-[0.05em] text-[#5A657A]">{label}</span>
+                <input className="w-full border-0 border-b border-[#5A657A] bg-transparent px-0 py-3 text-[#F1F4F9] focus:border-[#1378ec] focus:shadow-none" placeholder=" " />
+              </label>
+            ))}
+            <label className="block">
+              <span className="mb-3 block text-[13px] uppercase tracking-[0.05em] text-[#5A657A]">Сообщение</span>
+              <textarea rows={4} className="w-full resize-none border-0 border-b border-[#5A657A] bg-transparent px-0 py-3 text-[#F1F4F9] focus:border-[#1378ec] focus:shadow-none" />
+            </label>
+            <button type="button" className="flex h-[48px] w-full items-center justify-center gap-3 border border-[#5A657A]/30 bg-[#12151E] font-[Cabinet_Grotesk] text-[14px] uppercase tracking-[0.1em] text-[#F1F4F9] transition hover:bg-[#1378ec] hover:text-white">
+              <span>Отправить</span>
+              <span className="material-symbols-outlined text-sm">arrow_forward</span>
+            </button>
+          </form>
+        </div>
       </main>
     </CopperGlowLayout>
   );

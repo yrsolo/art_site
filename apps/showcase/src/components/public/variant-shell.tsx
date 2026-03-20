@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 
-import { VariantSwitcher } from "@/components/public/variant-switcher";
 import type { VariantContent, VariantRouteKey } from "@/features/variants/types";
 import type { VariantManifest } from "@/features/variants/types";
 
@@ -11,7 +10,6 @@ type VariantShellProps = {
   currentRoute: VariantRouteKey;
   children: ReactNode;
   hero?: ReactNode;
-  slug?: string;
 };
 
 export function VariantShell({
@@ -20,7 +18,6 @@ export function VariantShell({
   currentRoute,
   children,
   hero,
-  slug,
 }: VariantShellProps) {
   const basePath = `/${manifest.id}`;
   const navItems = [
@@ -44,7 +41,6 @@ export function VariantShell({
             </div>
           </div>
           <div className="flex flex-col gap-3 lg:items-end">
-            <VariantSwitcher currentVariantId={manifest.id} currentRoute={currentRoute} slug={slug} />
             <nav className="flex flex-wrap gap-4 text-sm">
               {navItems
                 .filter((item) => manifest.supportedRoutes.includes(item.key))

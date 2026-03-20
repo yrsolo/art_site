@@ -17,3 +17,10 @@ Literal transfer of public variant screens from source templates.
 
 В этот этап не входит админская инфраструктура, Docker и production backend-публикация.
 Публичная витрина продолжает жить как статический showcase.
+
+## Update 2026-03-20
+
+- Right-side variant rail is now rendered consistently outside internal variant headers.
+- Root catalog `/` is now treated as a minimalist chooser instead of a themed landing page.
+- Public coverage now includes dedicated implementations for `etheric-pulse`, `olive-cream`, and `sage-sand`.
+- Dark variants also received dedicated `about` / `contacts` surfaces where generic fallback was still visible.

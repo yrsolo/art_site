@@ -40,3 +40,15 @@
 - production admin/deploy контур для закрытой части.
 
 Эти пункты остаются следующими этапами после стабилизации variant architecture и последовательного faithful transfer каждого эскиза.
+
+## Update 2026-03-20
+
+- Added dedicated showcase components for `etheric-pulse`, `olive-cream`, and `sage-sand`.
+- Added dedicated `about` / `contacts` treatments for `cold-mist` and `copper-glow`, and dedicated `contacts` for organic variants where needed.
+- Moved the variant rail outside internal variant headers so it stays visually stable at the right center.
+- Reworked `/` into a simpler square-preview catalog.
+- `npm run lint` passed.
+- `npm run build:showcase` passed.
+- `bash scripts/docs-check.sh` passed.
+- `scripts/publish-showcase.ps1` completed successfully.
+- Live checks returned `200` for `/`, `/etheric-pulse/`, `/olive-cream/gallery/`, `/sage-sand/about/`, and `/cold-mist/contacts/`.
