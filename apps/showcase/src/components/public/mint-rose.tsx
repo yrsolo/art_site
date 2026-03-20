@@ -154,15 +154,14 @@ export function MintRoseGallery({ manifest, content, artworks }: MintRoseGallery
             const href = artwork ? `/${manifest.id}/artwork/${artwork.slug}` : `/${manifest.id}/gallery`;
 
             return (
-              <Link key={card.title} href={href} className={`group relative isolate mb-8 block break-inside-avoid overflow-hidden bg-white/50 shadow-[0_20px_40px_rgba(74,64,58,0.05)] ${card.shape} ${card.height}`}>
+              <Link key={card.title} href={href} className={`group relative isolate mb-8 block break-inside-avoid overflow-hidden bg-transparent shadow-[0_20px_40px_rgba(74,64,58,0.05)] ${card.shape} ${card.height}`}>
                 <Image src={card.image} alt={card.title} fill sizes="(max-width: 1024px) 100vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
-                <div
-                  className="pointer-events-none absolute inset-0 flex items-center justify-center bg-[#13ecb6]/40 p-8 text-center opacity-0 backdrop-blur-xl transition-opacity duration-500 group-hover:opacity-100"
-                  style={{ borderRadius: "inherit" }}
-                >
-                  <h3 className="text-3xl italic text-white drop-shadow-md" style={{ fontFamily: "Cormorant Garamond, serif" }}>
-                    {card.title}
-                  </h3>
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-8 text-center opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+                  <div className="grid min-h-[11rem] w-[72%] max-w-[18rem] place-items-center rounded-[48%_52%_58%_42%/42%_58%_46%_54%] bg-[rgba(19,236,182,0.78)] px-8 py-6 shadow-[0_24px_50px_rgba(19,236,182,0.22)] backdrop-blur-md">
+                    <h3 className="text-3xl italic text-white drop-shadow-md" style={{ fontFamily: "Cormorant Garamond, serif" }}>
+                      {card.title}
+                    </h3>
+                  </div>
                 </div>
               </Link>
             );
