@@ -1,0 +1,41 @@
+[
+  {
+    "id": "seed-dawn",
+    "slug": "dawn-over-silent-water",
+    "title": "Dawn Over Silent Water",
+    "description": "A quiet lake surface opening into pale morning light and long reflections.",
+    "year": "2025",
+    "size": "80 x 100 cm",
+    "medium": "Oil on canvas",
+    "status": "available",
+    "imageOriginal": "/uploads/placeholder-dawn.svg",
+    "imagePreview": "/uploads/placeholder-dawn.svg",
+    "order": 1
+  },
+  {
+    "id": "seed-earth",
+    "slug": "earth-memory-study",
+    "title": "Earth Memory Study",
+    "description": "Layered textures and warm mineral tones with a tactile, meditative rhythm.",
+    "year": "2024",
+    "size": "60 x 80 cm",
+    "medium": "Mixed media",
+    "status": "sold",
+    "imageOriginal": "/uploads/placeholder-earth.svg",
+    "imagePreview": "/uploads/placeholder-earth.svg",
+    "order": 2
+  },
+  {
+    "id": "seed-hidden",
+    "slug": "hidden-garden-echo",
+    "title": "Hidden Garden Echo",
+    "description": "A private study kept out of the public gallery while the collection is being assembled.",
+    "year": "2026",
+    "size": "70 x 90 cm",
+    "medium": "Acrylic on canvas",
+    "status": "hidden",
+    "imageOriginal": "/uploads/placeholder-hidden.svg",
+    "imagePreview": "/uploads/placeholder-hidden.svg",
+    "order": 3
+  }
+]
