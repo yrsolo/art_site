@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { DeepImmersionHome } from "@/components/public/deep-immersion";
 import { ColdMistHome } from "@/components/public/cold-mist";
 import { CopperGlowHome } from "@/components/public/copper-glow";
 import { EthericPulseHome } from "@/components/public/etheric-pulse";
@@ -22,6 +23,7 @@ export default async function VariantHomePage({ params }: { params: Promise<{ va
   const artworks = listPublicArtworks();
   const featured = artworks.slice(0, 3);
 
+  if (manifest.id === "deep-immersion") return <><DeepImmersionHome manifest={manifest} content={content} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="home" /></>;
   if (manifest.id === "cold-mist") return <><ColdMistHome manifest={manifest} content={content} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="home" /></>;
   if (manifest.id === "copper-glow") return <><CopperGlowHome manifest={manifest} content={content} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="home" /></>;
   if (manifest.id === "etheric-pulse") return <><EthericPulseHome manifest={manifest} content={content} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="home" /></>;

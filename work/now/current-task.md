@@ -24,3 +24,9 @@ Literal transfer of public variant screens from source templates.
 - Root catalog `/` is now treated as a minimalist chooser instead of a themed landing page.
 - Public coverage now includes dedicated implementations for `etheric-pulse`, `olive-cream`, and `sage-sand`.
 - Dark variants also received dedicated `about` / `contacts` surfaces where generic fallback was still visible.
+
+## Update 2026-03-20 Deep Immersion
+
+- Added missing base dark-atmosphere variant from `stitch_dark_atmosphere_portfolio_prd/home` and `gallery` as separate public face: `deep-immersion`.
+- Variant is now wired through manifest, content, route branches, template media, root catalog, and right-side variant rail.
+- Public preview is published and reachable on `art.solofarm.ru/deep-immersion/...`.

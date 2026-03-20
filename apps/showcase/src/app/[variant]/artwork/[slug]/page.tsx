@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { DeepImmersionDetail } from "@/components/public/deep-immersion";
 import { ColdMistDetail } from "@/components/public/cold-mist";
 import { CopperGlowDetail } from "@/components/public/copper-glow";
 import { EthericPulseDetail } from "@/components/public/etheric-pulse";
@@ -29,6 +30,7 @@ export default async function VariantArtworkPage({ params }: { params: Promise<{
 
   if (!artwork) notFound();
 
+  if (manifest.id === "deep-immersion") return <><DeepImmersionDetail manifest={manifest} content={content} artwork={artwork} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="detail" slug={artwork.slug} /></>;
   if (manifest.id === "cold-mist") return <><ColdMistDetail manifest={manifest} content={content} artwork={artwork} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="detail" slug={artwork.slug} /></>;
   if (manifest.id === "copper-glow") return <><CopperGlowDetail manifest={manifest} content={content} artwork={artwork} artworks={listPublicArtworks()} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="detail" slug={artwork.slug} /></>;
   if (manifest.id === "etheric-pulse") return <><EthericPulseDetail manifest={manifest} content={content} artwork={artwork} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="detail" slug={artwork.slug} /></>;

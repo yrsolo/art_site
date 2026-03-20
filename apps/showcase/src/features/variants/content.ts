@@ -1,6 +1,42 @@
 import type { VariantContent } from "@/features/variants/types";
 
 export const variantContent: Record<string, VariantContent> = {
+  "deep-immersion": {
+    nav: { home: "Главная", gallery: "Галерея", about: "О художнике", contacts: "Контакты" },
+    home: {
+      eyebrow: "Dark atmosphere / deep immersion",
+      title: "Форма. Цвет. Пустота.",
+      description:
+        "Первичная abyss-витрина с русским интерфейсом, синим акцентом и жёсткой split-композицией без туманных смягчений.",
+      primaryCta: "Смотреть работы",
+      secondaryCta: "О художнике",
+    },
+    gallery: {
+      eyebrow: "Архив",
+      title: "Галерея",
+      description: "Масонри-архив с синим свечением и резкими пропорциями, без смешения с другими dark-вариантами.",
+    },
+    about: {
+      eyebrow: "Философия",
+      title: "Форма. Цвет. Пустота.",
+      paragraphs: [
+        "Мое искусство - это исследование тишины. Я стремлюсь убрать все лишнее, чтобы оставить только самую суть эмоции. В абсолютной темноте даже самый слабый свет обретает форму и вес.",
+        "Родившись на стыке культур, я всегда чувствовал напряжение между строгой геометрией городской среды и хаотичной, непреодолимой силой природы. Мои полотна - это попытка примирить эти две крайности.",
+        "Использование глубоких, поглощающих свет пигментов и неожиданных вспышек цвета - это метафора человеческого сознания. Мы все состоим из теней и редких моментов абсолютной ясности.",
+      ],
+    },
+    contacts: {
+      eyebrow: "Связь",
+      title: "Связь",
+      description: "Для серьезных запросов, приобретения работ и обсуждения выставок.",
+      channels: ["Studio: studio@example.com", "Curatorial inquiries: curator@example.com", "Acquisitions: on request"],
+      inquiryLabel: "Отправить",
+    },
+    detail: {
+      inquiryLabel: "Запросить цену",
+      note: "Сохранять глубокую abyss-подачу, синюю акцентную линию и sharp collector rhythm.",
+    },
+  },
   "cold-mist": {
     nav: { home: "Home", gallery: "Gallery", about: "About", contacts: "Contact" },
     home: {

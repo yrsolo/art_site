@@ -36,6 +36,10 @@ export default function RootLayout({
         />
         <link
           rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@700&family=Satoshi:wght@400;500;700&display=swap"
+        />
+        <link
+          rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@300;400;500&family=Manrope:wght@300;400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap"
         />
         <link

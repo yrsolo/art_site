@@ -1,4 +1,58 @@
 export const templateMedia = {
+  deepImmersion: {
+    hero:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAcndwAFyvYvwdLO9WOyAfc1tmVgnG751rTu6KtlFpMkTgw4q3Dl6RIlY4Lpdw4CcjpMINcXowkGtn83gAupcRER6ZF0l5WsS7cLtvaBICausUn11TuExZtRKMTD4j8QPCgLwLImsx8Ok8clHGIggqxeIT6DGNWjBG4XE9c9nBMZKHNwoltHdiLkJpP-O_lsJ6cs5SZi0hqgqUAc7Av0HOW994hxQu3glfScwm2z-DcZa9Qvaq2IAWqRpO7YXFbovEQyduzUi7MHnnq",
+    detail:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDuW1gtJwo11guosgGEQlJhYU-IcMYMHQz35TkXrNlJNUZq0JNGCxcJKOw-651OFuZjPdf6rgUgT7MRxAnj7e-JlBlPyJuzHpErfOhyuyhJUiRSmGo_CqU6A9oA0q55BYaA3ZCBZo_IcZ8G_O-UKmiJ62gfAO0dWJ-IpvieAubwKRd9KtgU4ooBgElneWDIYgFek3voTjEuqxEboGqeBSc1n6D4SFSa2V-NgENXBzwd3wd2TFJW6Qz698J8pmdsRIYOmLvsD_uDpFhj",
+    aboutPortrait:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBvulEKrnK7nMZWsDCLzOl1ICSwr_ecqNv4Q9SunSZT5JDAqXccaE8ALbQErCIIUF8Y_-OjMZo2iMCiTwnBiE9j670jl3_SIrBXC1o4rpZiKqZLgy_vDG2Y_YbkqtRavmgAEv7zrpjMvja5Dp1i_AdYo6roRP2q3lMNQX8WNxjkNwc8_7R7POAXZFKxJXpcf6ZvfYCB12BKkv-CEYqS8s_W1xB7q4C4-6D4TYWlvSKKfiobToB5tgCJ__lWorFq4c5glFF45-lQjwBk",
+    aboutStudio:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuCAfIxZ9847vynVrj4SAqmyl45Lg7vslQsGFPW-jL2Y0lpTNi2mR_zezE6YbGTzzzpAvxjALKwHImLlRIv6sGTaYwrb93b8tUSCgtJ1Y5q9HvE_qutShdWnbJSI_qwJWSj9VvxulaSCRzgOmxGeWv2OjG6OeRm2P4Xq8P1XoluwNYzI69uVr-t9qS4J9Q9KiKkuySoFsldLxPx-9ZNXRv_03jW9JhWSvCNl8Eoyk946iW7Oug8kinSdp6XQb44BOs5Xbs_HvX_un4Ht",
+    gallery: [
+      {
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuDRU1kaK9ztZZ9ym9MN3RlTIauZn8Nopv2oPeN5Q3p-6xgiZ0wvOpBec206KGqUtpHSaSVFRaZxs6ml86cdXFcr525Nfy3ELYI5Zj7ah-QSVwnNZ9VXwCnkcXN4yRwlqFQoziOkk-s2vr3oIJqAWRKHHDwj-6wEbdZ6ua7eHKCF0FbzsJzOOGtNuwHf21PJJO-vKjm5PRSmj1m8vJM9SL_9jSAHf39VIBGHrnLBtmtNYA-wxTDeY7594Ixq1_40FIPFoJdPv3o97oHj",
+        title: "Эхо Безмолвия",
+        year: "2023",
+        aspect: "aspect-[3/4]",
+      },
+      {
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuCOH481domMaMJkO6XXgLZM8xHLA35DeH8M73lk4N7a1MzQE984oWJF6li0gf0U-iFbkZ16lOWVFnWXa348tY5GC-K0Wt9-OBj-Ljxi7F9iFA4Is7PdqJc9tbRDz2HTYJs_COvAFHKN6zp1QhLXvOkISb0BtQ9Lib3vdDFxNoJXh1a-f-pAx6ME85qP7y-aZEg_KAkjsIxP6Wgz4hTq8kkplnhklVI1vGsE5y109CtP3JzHLQGOIFdxzG148SGF6J0Y63jqeTW0swB_",
+        title: "Тень",
+        year: "2022",
+        aspect: "aspect-square",
+      },
+      {
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuCyFdmKba6vSArUkpAXZ9EWbI9cPNySn-GrrVntJXbBzJO6pyw_sptyUSKOhEqjH8Hk4GGzc_DURGaqqlsyF4piYNY1XnGYzMuzXh7m2zOwiGyGG3s1emQc-WWthFwWLDRN34qUkHgQfcyUzhOZP25aXD2rAlT9MqBaooxlpMMla4KshFg2e2kbrjWaaSMVCkHbNgdd81Vq_HpxkvG4KhNCP6Zo2D253hKUrJKgkRoAVUOnPNNZxBJkap9w-KFngmWTGT1Z3-UIvEiP",
+        title: "Свет",
+        year: "2023",
+        aspect: "aspect-[4/3]",
+      },
+      {
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuCAXUUNrKXWFs5y7U9v8UE8sbu2HJMJfqm9F6LWjn9cqydZr3YgtfBTPfruqa9YnoIk7eEPdEsLZj34hYpr3rfHuZCLJvKiZgTMdWwhYNYax23Cb4nLYEniNuDOpdVYBjuRKAMLtNeTvhLLHbsstjPOjQux1hHERFgMeSvxJSV2NNGuN8utURDfyxp-y2i2fZHhB5MqqdH5RfW-qNyn3BQTeM1NrLJWlyRBaEIY72WuI2bJWVOJTCLkXYEAfBVbOlw0XCCE5HxVgDRw",
+        title: "Пустота",
+        year: "2021",
+        aspect: "aspect-[2/3]",
+      },
+      {
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuAbBE9B9HC5KUXE0oPTC1AvKky6uNyrKYD6DBrGvcSez4yJjsjiqSwLvLquAjjrNxbLL_nnXxjEXaI2FaDLp3XA6uUMx-oZ4GGWriiaCbfOc_TntCDK0y59hCpCuB5jyb0wMKQsT64AiYYgt2rbnGQ1ORhk5g6nhhqzY78_FzTbFULqkHWQLfIMv-_ZJqj5kFGF-PDX7ES-b-h-PtGzuXsadtvNEQZimaWqVa4cuvMoSF7QA4Iu2QGWU1AjYCyttJVgSVejpfUAnCan",
+        title: "Форма",
+        year: "2023",
+        aspect: "aspect-square",
+      },
+      {
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuDSHECARvfLQBS8p4UtO68jC9a9Q0K_vpWyghNAuxfDDzMDmKBKkkdtLXhN7VA8exdps49Fy2-sMUuv-RCDTcFmKHxzO_6N0MBBlvZCth6zuQJCf4YyopdJvIUVie7-RCqxGL9DhjIWuMseeafGV3CbOAHAc-aIIzLn494vwGOt9t93rmG1D4HHayCU3P8vOX7zzbuOaOlqwAKkoc5U69N7fdRXtpzoT8ZYP057i42zd-EAIOgN5ZXEJfzk8apQVMPPmLd1R4HDeRFR",
+        title: "Цвет",
+        year: "2023",
+        aspect: "aspect-[3/5]",
+      },
+    ],
+  },
   coldMist: {
     hero:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuCSyz9jfdllvfwDIoqz3PnDGMdkFtRsogqzRDQdx_CQGRS-jnJtvx1VzLsEej2524x-WH1iJ5IRPW_YK2ac7qMscJeKcuXpXxt3BT6MopacseS7ov-dRSGfHwZwSDZ5xRpigqOQsbqKZGD1wBOGNQIaseU_-QiBa0DJnqIvLiFW1wQdpUV_O6iNVbrJuA8wvgqsE9jCLIXEBa_J0bfcz22_yvBr36Xf2jC4OgYXxNDOd53qsGrX6k359L6PGchdPfe5Ul1Lfy0fOUVd",
@@ -200,6 +254,7 @@ export const templateMedia = {
     ],
   },
   catalog: {
+    "deep-immersion": "https://lh3.googleusercontent.com/aida-public/AB6AXuAcndwAFyvYvwdLO9WOyAfc1tmVgnG751rTu6KtlFpMkTgw4q3Dl6RIlY4Lpdw4CcjpMINcXowkGtn83gAupcRER6ZF0l5WsS7cLtvaBICausUn11TuExZtRKMTD4j8QPCgLwLImsx8Ok8clHGIggqxeIT6DGNWjBG4XE9c9nBMZKHNwoltHdiLkJpP-O_lsJ6cs5SZi0hqgqUAc7Av0HOW994hxQu3glfScwm2z-DcZa9Qvaq2IAWqRpO7YXFbovEQyduzUi7MHnnq",
     "cold-mist": "https://lh3.googleusercontent.com/aida-public/AB6AXuDuW1gtJwo11guosgGEQlJhYU-IcMYMHQz35TkXrNlJNUZq0JNGCxcJKOw-651OFuZjPdf6rgUgT7MRxAnj7e-JlBlPyJuzHpErfOhyuyhJUiRSmGo_CqU6A9oA0q55BYaA3ZCBZo_IcZ8G_O-UKmiJ62gfAO0dWJ-IpvieAubwKRd9KtgU4ooBgElneWDIYgFek3voTjEuqxEboGqeBSc1n6D4SFSa2V-NgENXBzwd3wd2TFJW6Qz698J8pmdsRIYOmLvsD_uDpFhj",
     "copper-glow": "https://lh3.googleusercontent.com/aida-public/AB6AXuAQ_JBEHRMADYcqsX5GG0gsQx9_u2_C2N-iycemCn3KCuDfYRPqMP0-wws9TnK0NjUTXtHh-ILofW0HcW57dGPrkRjBK09oyWUk6q0LRoSmYEf_d2s8Oi9uXtG2dGMljbtzqmsxKxPOsCnl9KDKJvs-xmdlA3duNrXXkYcfYoZbWzuf6_C5uZSGPHg_ZTkBf_U2V71rqBR0dGSYdLJ761XdbpGowmEsGhLoJJRheW-zrMTDcVu8hUlAGS4sTAnwdE2lAEVV0qvEBM5D",
     "etheric-pulse": "https://lh3.googleusercontent.com/aida-public/AB6AXuCUZ3uFU0I8oirvVaPo0_xP84214KJig8I3jCSQODmtBJhCR1ME9FJoRAjEFcEfCOVIckhOgmIxqyXysYDr8lcF57o-R_oW7v7x0vKE5e9u-vSCQtwFmEc1Fq0-ydKZIIPHCO7BSa723MXovKeH91PgpBF2QVE5p5Cki_MccAAfSVCyZZFFPTYxq9KsW-72Zxt6DMPTdwlHq47m5jbONrvEGK0V0CVeskOBFLJzy-kQe--oJHaYE6yQyOC90H4fVP6amzvYgJvzVwKZ",

@@ -52,3 +52,15 @@
 - `bash scripts/docs-check.sh` passed.
 - `scripts/publish-showcase.ps1` completed successfully.
 - Live checks returned `200` for `/`, `/etheric-pulse/`, `/olive-cream/gallery/`, `/sage-sand/about/`, and `/cold-mist/contacts/`.
+
+## 2026-03-20 - Deep Immersion added
+
+- Implemented new variant `deep-immersion` as the missing seventh dark-atmosphere face.
+- Sources used: `home`, `gallery`, `artwork_detail`, `about`, `contact` from `ref/template/stitch_dark_atmosphere_portfolio_prd/`.
+- Validation: `npm run build:showcase`, `npm run lint`, `bash scripts/docs-check.sh`.
+- Published to bucket and verified with `curl.exe -I`:
+  - `http://art.solofarm.ru/deep-immersion/` -> 200
+  - `http://art.solofarm.ru/deep-immersion/gallery/` -> 200
+  - `http://art.solofarm.ru/deep-immersion/about/` -> 200
+  - `http://art.solofarm.ru/deep-immersion/contacts/` -> 200
+  - `http://art.solofarm.ru/deep-immersion/artwork/silent-void-study/` -> 200

@@ -1,3 +1,4 @@
+import { DeepImmersionContacts } from "@/components/public/deep-immersion";
 import { ColdMistContacts } from "@/components/public/cold-mist";
 import { CopperGlowContacts } from "@/components/public/copper-glow";
 import { EthericPulseContacts } from "@/components/public/etheric-pulse";
@@ -17,6 +18,7 @@ export default async function VariantContactsPage({ params }: { params: Promise<
   const { manifest, content } = getVariantOrThrow(variant);
   assertVariantSupportsRoute("contacts", manifest.supportedRoutes);
 
+  if (manifest.id === "deep-immersion") return <><DeepImmersionContacts manifest={manifest} content={content} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="contacts" /></>;
   if (manifest.id === "cold-mist") return <><ColdMistContacts manifest={manifest} content={content} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="contacts" /></>;
   if (manifest.id === "copper-glow") return <><CopperGlowContacts manifest={manifest} content={content} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="contacts" /></>;
   if (manifest.id === "etheric-pulse") return <><EthericPulseContacts manifest={manifest} content={content} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="contacts" /></>;

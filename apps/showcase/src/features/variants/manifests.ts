@@ -2,6 +2,50 @@ import type { VariantManifest } from "@/features/variants/types";
 
 export const variantManifests: VariantManifest[] = [
   {
+    id: "deep-immersion",
+    family: "dark_atmosphere",
+    label: "Deep Immersion",
+    northStar: "The Abyss Reader",
+    summary: "Primary deep-abyss portfolio with blue accent, sharp masonry, and Russian collector-facing copy.",
+    supportedRoutes: ["home", "gallery", "detail", "about", "contacts"],
+    pageTemplates: {
+      home: "home",
+      gallery: "gallery",
+      detail: "artwork_detail",
+      about: "about",
+      contacts: "contact",
+    },
+    textSource: [
+      "ref/template/stitch_dark_atmosphere_portfolio_prd/home/code.html",
+      "ref/template/stitch_dark_atmosphere_portfolio_prd/gallery/code.html",
+      "ref/template/stitch_dark_atmosphere_portfolio_prd/artwork_detail/code.html",
+      "ref/template/stitch_dark_atmosphere_portfolio_prd/about/code.html",
+      "ref/template/stitch_dark_atmosphere_portfolio_prd/contact/code.html",
+    ],
+    designInvariants: [
+      "Inter hero and navigation with Cabinet Grotesk accents on utility pages",
+      "Deep abyss background with crisp blue primary accent",
+      "Sharp 0px geometry and simple structural lines",
+      "Masonry archive with soft hover glows instead of card chrome",
+      "Russian copy and collector-facing editorial restraint",
+    ],
+    doNotDilute: [
+      "Do not merge this into cold-mist fog or etheric glow logic",
+      "Do not replace the blue accent with neutral gray or copper warmth",
+      "Do not soften the masonry and split hero into generic cards",
+    ],
+    classes: {
+      body: "bg-[#07090F] text-[#F1F4F9]",
+      surface: "bg-[#12151E] text-[#F1F4F9]",
+      card: "bg-[#12151E] text-[#F1F4F9]",
+      accent: "bg-[#1378ec] text-white",
+      subtle: "text-[#5A657A]",
+      hero: "bg-[radial-gradient(circle_at_70%_50%,_rgba(19,120,236,0.18),_transparent_45%),linear-gradient(180deg,_#07090F,_#07090F)]",
+      pill: "rounded-none",
+      artworkFrame: "rounded-none",
+    },
+  },
+  {
     id: "cold-mist",
     family: "dark_atmosphere",
     label: "Cold Mist",

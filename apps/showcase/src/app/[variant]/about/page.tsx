@@ -1,3 +1,4 @@
+import { DeepImmersionAbout } from "@/components/public/deep-immersion";
 import { ColdMistAbout } from "@/components/public/cold-mist";
 import { CopperGlowAbout } from "@/components/public/copper-glow";
 import { EthericPulseAbout } from "@/components/public/etheric-pulse";
@@ -15,6 +16,7 @@ export default async function VariantAboutPage({ params }: { params: Promise<{ v
   const { manifest, content } = getVariantOrThrow(variant);
   assertVariantSupportsRoute("about", manifest.supportedRoutes);
 
+  if (manifest.id === "deep-immersion") return <><DeepImmersionAbout manifest={manifest} content={content} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="about" /></>;
   if (manifest.id === "cold-mist") return <><ColdMistAbout manifest={manifest} content={content} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="about" /></>;
   if (manifest.id === "copper-glow") return <><CopperGlowAbout manifest={manifest} content={content} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="about" /></>;
   if (manifest.id === "etheric-pulse") return <><EthericPulseAbout manifest={manifest} content={content} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="about" /></>;

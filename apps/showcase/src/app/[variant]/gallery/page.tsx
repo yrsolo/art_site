@@ -1,3 +1,4 @@
+import { DeepImmersionGallery } from "@/components/public/deep-immersion";
 import { ColdMistGallery } from "@/components/public/cold-mist";
 import { CopperGlowGallery } from "@/components/public/copper-glow";
 import { EthericPulseGallery } from "@/components/public/etheric-pulse";
@@ -20,6 +21,7 @@ export default async function VariantGalleryPage({ params }: { params: Promise<{
   assertVariantSupportsRoute("gallery", manifest.supportedRoutes);
   const artworks = listPublicArtworks();
 
+  if (manifest.id === "deep-immersion") return <><DeepImmersionGallery manifest={manifest} content={content} artworks={artworks} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="gallery" /></>;
   if (manifest.id === "cold-mist") return <><ColdMistGallery manifest={manifest} content={content} artworks={artworks} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="gallery" /></>;
   if (manifest.id === "copper-glow") return <><CopperGlowGallery manifest={manifest} content={content} artworks={artworks} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="gallery" /></>;
   if (manifest.id === "etheric-pulse") return <><EthericPulseGallery manifest={manifest} content={content} artworks={artworks} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="gallery" /></>;

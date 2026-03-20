@@ -8,7 +8,28 @@ The project does **not** treat these references as interchangeable color themes.
 
 ## Current Variant Inventory
 
-### 1. `cold-mist`
+### 1. `deep-immersion`
+
+- Family: `dark_atmosphere`
+- North star: `The Abyss Reader`
+- Source pages:
+  - `home`
+  - `gallery`
+  - `artwork_detail`
+  - `about`
+  - `contact`
+- Core characteristics:
+  - deep abyss background with blue accent
+  - sharp 40/60 hero split
+  - simple masonry archive with hover glow
+  - Russian collector-facing copy
+  - no-radius structure and clean editorial restraint
+- Mandatory fidelity points:
+  - keep the blue accent and do not neutralize it
+  - keep the split hero instead of converting it into cards
+  - keep this distinct from `cold-mist` fog language and `etheric-pulse` glow language
+
+### 2. `cold-mist`
 
 - Family: `dark_atmosphere`
 - North star: `The Ethereal Monolith`
@@ -29,7 +50,7 @@ The project does **not** treat these references as interchangeable color themes.
   - no visible section borders
   - no warm copper lighting drift
 
-### 2. `copper-glow`
+### 3. `copper-glow`
 
 - Family: `dark_atmosphere`
 - North star: `The Cinematic Alchemist`
@@ -49,7 +70,7 @@ The project does **not** treat these references as interchangeable color themes.
   - keep 0px corner system
   - do not flatten into generic dark gallery UI
 
-### 3. `etheric-pulse`
+### 4. `etheric-pulse`
 
 - Family: `dark_atmosphere`
 - North star: `The Ethereal Curator`
@@ -69,7 +90,7 @@ The project does **not** treat these references as interchangeable color themes.
   - keep rounded interactive feeling
   - do not harden into brutalist dark mode
 
-### 4. `mint-rose`
+### 5. `mint-rose`
 
 - Family: `organic_flow`
 - North star: `Cozy fluid immersion`
@@ -88,7 +109,7 @@ The project does **not** treat these references as interchangeable color themes.
   - keep tender copy tone
   - do not inject hard rectangles or severe hierarchy
 
-### 5. `olive-cream`
+### 6. `olive-cream`
 
 - Family: `organic_flow`
 - North star: `Earthy tactile catalog`
@@ -107,7 +128,7 @@ The project does **not** treat these references as interchangeable color themes.
   - preserve literary pacing
   - do not brighten into airy pastel softness
 
-### 6. `sage-sand`
+### 7. `sage-sand`
 
 - Family: `organic_flow`
 - North star: `Calm intimate discovery`
@@ -131,6 +152,7 @@ The project does **not** treat these references as interchangeable color themes.
 
 | Variant | Home | Gallery | Detail | About | Contact |
 | --- | --- | --- | --- | --- | --- |
+| `deep-immersion` | yes | yes | yes | yes | yes |
 | `cold-mist` | yes | yes | yes | yes | yes |
 | `copper-glow` | yes | yes | yes | yes | yes |
 | `etheric-pulse` | yes | yes | yes | yes | yes |
