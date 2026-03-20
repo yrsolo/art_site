@@ -1,5 +1,6 @@
 import { ColdMistGallery } from "@/components/public/cold-mist";
 import { CopperGlowGallery } from "@/components/public/copper-glow";
+import { MintRoseGallery } from "@/components/public/mint-rose";
 import { VariantArtworkCard } from "@/components/public/variant-artwork-card";
 import { VariantShell } from "@/components/public/variant-shell";
 import { assertVariantSupportsRoute, getVariantOrThrow } from "@/features/variants";
@@ -23,6 +24,10 @@ export default async function VariantGalleryPage({ params }: VariantGalleryPageP
 
   if (manifest.id === "copper-glow") {
     return <CopperGlowGallery manifest={manifest} content={content} artworks={artworks} />;
+  }
+
+  if (manifest.id === "mint-rose") {
+    return <MintRoseGallery manifest={manifest} content={content} artworks={artworks} />;
   }
 
   return (

@@ -110,16 +110,16 @@ export const variantContent: Record<string, VariantContent> = {
     nav: { home: "Home", gallery: "Gallery", about: "Story", contacts: "Inquire" },
     home: {
       eyebrow: "Organic flow / mint rose",
-      title: "A tender, liquid gallery where art feels suspended inside warm watercolor air.",
+      title: "Emotions in Pigment",
       description:
-        "This variant depends on soft asymmetry, mint highlights, glass surfaces, and emotionally gentle copy. It should never feel harsh or architectural.",
+        "Step into a fluid world where abstract art meets digital serenity. Explore pieces that breathe, float, and invite quiet reflection.",
       primaryCta: "View Collection",
       secondaryCta: "Make an Inquiry",
     },
     gallery: {
       eyebrow: "Collection",
-      title: "Fluid masks, floating cards, and a collector journey softened by glass and blur.",
-      description: "The gallery should feel unstructured and soothing rather than precise or institutional.",
+      title: "Exhibition Space",
+      description: "A collection of organic, fluid abstractions.",
     },
     about: {
       eyebrow: "Story",
