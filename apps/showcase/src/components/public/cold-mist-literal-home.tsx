@@ -66,11 +66,11 @@ export function ColdMistLiteralHome({ manifest, content, artworks }: ColdMistLit
         <section className="relative z-10 mx-auto flex max-w-7xl flex-col items-start px-6 pb-24 pt-16 md:px-12 md:pt-32">
           <div className="mb-24 flex w-full flex-col items-start gap-12 md:flex-row md:items-end">
             <h1 className="tight-tracking max-w-3xl text-6xl font-black uppercase leading-[0.85] md:text-9xl">
-              Форма.
+              {"\u0424\u043e\u0440\u043c\u0430."}
               <br />
-              Цвет.
+              {"\u0426\u0432\u0435\u0442."}
               <br />
-              Пустота.
+              {"\u041f\u0443\u0441\u0442\u043e\u0442\u0430."}
             </h1>
             <div className="max-w-xs md:pb-4">
               <p className="border-l border-[#3c495b] pl-4 text-xs font-medium uppercase leading-relaxed tracking-tight text-[#9facc1]">
