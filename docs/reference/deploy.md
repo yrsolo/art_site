@@ -2,47 +2,43 @@
 
 ## Current Direction
 
-The current application is best published as a single Docker image and run in Yandex Cloud Serverless Containers.
+Public preview now has a simpler first stage:
 
-This keeps:
-- public variants
-- admin
-- API routes
+- `apps/showcase` is exported as a static site
+- the static export is published to Yandex Object Storage website hosting
+- `art.solofarm.ru` points to the website endpoint
 
-inside one runtime while the project is still in the MVP stage.
+This is intentionally separate from the future admin runtime.
+
+Admin, authentication, uploads, and mutable API routes stay in `apps/web` and can move to Docker later without blocking publication of the public fronts.
 
 ## Current Cloud Findings
 
 - Public DNS zone `solofarm.ru.` already exists in Yandex Cloud.
-- `art.solofarm.ru` is not configured yet.
-- Object Storage bucket `art-site` exists and can be used later for uploaded assets.
-- A Yandex Container Registry already exists: `crp5tssh5qkdk7mgcilj`.
+- `art.solofarm.ru` can be served through Object Storage website hosting.
+- The preview bucket should match the host name: `art.solofarm.ru`.
+- Existing bucket `art-site` can stay reserved for future application assets.
 
-## Files Added For Deploy
+## Static Preview Flow
 
-- `Dockerfile`
-- `.dockerignore`
-- `scripts/deploy-yc-web.ps1`
+1. Build the static showcase:
+   - `npm run build:showcase`
+2. Configure the bucket website entry point:
+   - `index.html`
+   - `404.html`
+3. Sync `apps/showcase/out` to bucket `art.solofarm.ru`
+4. Point DNS record `art.solofarm.ru` to `art.solofarm.ru.website.yandexcloud.net.`
 
-## Deploy Flow
+## Notes
 
-1. Build the production image from repo root.
-2. Push the image to Yandex Container Registry.
-3. Create or update a Serverless Container.
-4. Allow unauthenticated invoke for preview-stage public access.
-5. Bind `art.solofarm.ru` after the container endpoint is known.
+- For Object Storage website hosting, nested routes should be exported with trailing slashes so each route resolves through its own `index.html`.
+- The public showcase should remain read-only. Admin and uploads are intentionally deferred to the later containerized runtime.
 
-## Known Blocker
+## Later Step
 
-At the moment, local Docker access is unstable on this workstation: Docker API calls return `500 Internal Server Error`.
+When we are ready to ship admin and authenticated uploads:
 
-Because of that, image build and push could not be completed from this session, even though the repo is now prepared for it.
-
-## Next Infra Step
-
-As soon as Docker responds normally again:
-
-1. Run `scripts/deploy-yc-web.ps1`
-2. Inspect the created Serverless Container URL
-3. Create DNS record for `art.solofarm.ru`
-4. After preview publication, move asset storage and upload flow to Object Storage
+1. Build and run `apps/web` in Docker
+2. Publish the runtime to Serverless Containers or another compute target
+3. Keep `art.solofarm.ru` either on the static showcase or switch it to the full app after approval
+4. Move uploaded assets to Object Storage-backed APIs
