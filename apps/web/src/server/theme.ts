@@ -1,8 +1,7 @@
 import { cookies } from "next/headers";
 
+import { themeCookieName } from "@/features/themes/constants";
 import { defaultThemeId, getTheme, isThemeId } from "@/features/themes/themes";
-
-export const themeCookieName = "art-site-theme";
 
 export async function getCurrentTheme() {
   const cookieStore = await cookies();

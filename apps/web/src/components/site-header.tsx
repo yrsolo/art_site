@@ -30,7 +30,7 @@ export function SiteHeader({ theme, currentPath, currentThemeId }: SiteHeaderPro
           </p>
         </div>
         <div className="flex flex-col gap-3 lg:items-end">
-          <ThemeSwitcher currentThemeId={currentThemeId} redirectTo={currentPath} />
+          <ThemeSwitcher currentThemeId={currentThemeId} />
           <nav className="flex flex-wrap gap-4 text-sm">
             {navItems.map((item) => {
               const active = currentPath === item.href;

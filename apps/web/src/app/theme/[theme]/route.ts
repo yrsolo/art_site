@@ -1,7 +1,8 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-import { normalizeThemeId, themeCookieName } from "@/server/theme";
+import { themeCookieName } from "@/features/themes/constants";
+import { normalizeThemeId } from "@/server/theme";
 import { appConfig } from "@/server/config";
 
 type ThemeRouteProps = {
