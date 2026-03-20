@@ -64,3 +64,21 @@
   - `http://art.solofarm.ru/deep-immersion/about/` -> 200
   - `http://art.solofarm.ru/deep-immersion/contacts/` -> 200
   - `http://art.solofarm.ru/deep-immersion/artwork/silent-void-study/` -> 200
+
+## 2026-03-20 - Russian copy and dark-variant cleanup
+
+- Updated `etheric-pulse` home/gallery/about endings so the variant no longer stops on unfinished lower-page sections.
+- Constrained `copper-glow` to a centered content column instead of a fully elastic full-width composition.
+- Increased `cold-mist` hero line-height for the oversized Russian headline block.
+- Moved shared showcase copy for `mint-rose`, `olive-cream`, and `sage-sand` to Russian in `apps/showcase/src/features/variants/content.ts`.
+- Validation:
+  - `npm run build:showcase`
+  - `npm run lint`
+  - `bash scripts/docs-check.sh`
+  - `powershell -ExecutionPolicy Bypass -File scripts/publish-showcase.ps1`
+- Live GET checks after publish:
+  - `http://art.solofarm.ru/etheric-pulse/` -> 200
+  - `http://art.solofarm.ru/etheric-pulse/gallery/` -> 200
+  - `http://art.solofarm.ru/etheric-pulse/about/` -> 200
+  - `http://art.solofarm.ru/copper-glow/` -> 200
+  - `http://art.solofarm.ru/cold-mist/` -> 200

@@ -10,12 +10,12 @@ export default function HomePage() {
     <main className="min-h-screen bg-[#f2eee7] text-[#1e1c18]">
       <section className="mx-auto max-w-7xl px-6 py-16 md:py-20">
         <div className="mb-12 space-y-4">
-          <p className="text-[11px] uppercase tracking-[0.32em] text-black/45">Variant Catalog</p>
+          <p className="text-[11px] uppercase tracking-[0.32em] text-black/45">Каталог вариантов</p>
           <h1 className="max-w-3xl text-4xl font-semibold tracking-[-0.04em] md:text-6xl">
-            Choose the face, not a blended compromise.
+            Выберите лицо сайта, а не усреднённый компромисс.
           </h1>
           <p className="max-w-2xl text-base text-black/55 md:text-lg">
-            Each square opens a fully separate frontend mood. The backend is shared; the artistic reading is not.
+            Каждый квадрат открывает отдельную фронт-морду. Бэкенд общий, художественное прочтение нет.
           </p>
         </div>
 
@@ -43,13 +43,13 @@ export default function HomePage() {
                   href={`/${variant.id}`}
                   className="inline-flex min-w-[8.5rem] items-center justify-center border border-black/15 px-4 py-3 text-sm uppercase tracking-[0.14em] hover:border-black/35"
                 >
-                  Open
+                  Открыть
                 </Link>
                 <Link
                   href={`/${variant.id}/gallery`}
                   className="inline-flex min-w-[8.5rem] items-center justify-center border border-black/15 px-4 py-3 text-sm uppercase tracking-[0.14em] hover:border-black/35"
                 >
-                  Gallery
+                  Галерея
                 </Link>
               </div>
             </article>

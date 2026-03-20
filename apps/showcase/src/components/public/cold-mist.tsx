@@ -125,7 +125,7 @@ export function ColdMistHome({ manifest, content }: ColdMistPageProps) {
 
       <section className="relative z-10 mx-auto flex max-w-7xl flex-col items-start px-6 pb-24 pt-16 md:px-12 md:pt-32">
         <div className="mb-24 flex w-full flex-col items-start gap-12 md:flex-row md:items-end">
-          <h1 className="tight-tracking max-w-3xl text-6xl font-black uppercase leading-[0.85] md:text-9xl">
+          <h1 className="tight-tracking max-w-3xl text-6xl font-black uppercase leading-[0.97] md:text-9xl">
             <span dangerouslySetInnerHTML={{ __html: titleLines[0] }} />
             <br />
             <span dangerouslySetInnerHTML={{ __html: titleLines[1] }} />
@@ -151,7 +151,7 @@ export function ColdMistHome({ manifest, content }: ColdMistPageProps) {
               className="h-full w-full object-cover grayscale opacity-60 transition-transform duration-[2000ms] group-hover:scale-105"
             />
             <div className="absolute bottom-12 left-12 flex flex-col gap-2">
-              <span className="text-sm font-bold uppercase tracking-widest text-[#d9e6fd]">MIST_ENTITY_01</span>
+              <span className="text-sm font-bold uppercase tracking-widest text-[#d9e6fd]">СУЩНОСТЬ_ТУМАНА_01</span>
               <div className="h-px w-24 bg-[#bfc7cf]" />
             </div>
           </div>
@@ -163,12 +163,12 @@ export function ColdMistHome({ manifest, content }: ColdMistPageProps) {
           <div className="group flex min-h-[400px] flex-col justify-between bg-[#0e141c] p-12 transition-colors duration-500 hover:bg-[#121a25] md:col-span-2">
             <div className="flex items-start justify-between">
               <span className="material-symbols-outlined text-4xl text-[#b2bac1]">filter_vintage</span>
-              <span className="text-xs font-mono uppercase tracking-widest text-[#6a768a]">Core Functionality</span>
+              <span className="text-xs font-mono uppercase tracking-widest text-[#6a768a]">Основная функция</span>
             </div>
             <div>
-              <h2 className="tight-tracking mb-6 text-4xl font-black uppercase">Curated Diffusion</h2>
+              <h2 className="tight-tracking mb-6 text-4xl font-black uppercase">Кураторская диффузия</h2>
               <p className="mb-8 max-w-md text-[#9facc1]">
-                Our proprietary algorithm generates visual silence, capturing the weight of the void in every pixel.
+                Наш собственный алгоритм генерирует визуальную тишину, удерживая вес пустоты в каждом пикселе.
               </p>
               <Link href={`/${manifest.id}/gallery`} className="inline-flex bg-[#bfc7cf] px-8 py-4 text-xs font-bold uppercase tracking-widest text-[#394148] transition-all active:scale-95">
                 {content.home.primaryCta}
@@ -178,14 +178,14 @@ export function ColdMistHome({ manifest, content }: ColdMistPageProps) {
 
           <div className="group flex flex-col justify-end gap-6 bg-[#16202e] p-8 transition-colors duration-500 hover:bg-[#1e2d41]">
             <span className="material-symbols-outlined text-3xl text-[#989ea7]">auto_awesome_motion</span>
-            <h3 className="tight-tracking text-xl font-bold uppercase">Archive State</h3>
-            <p className="text-sm text-[#9facc1]">Temporal snapshots of evolving digital consciousness.</p>
+            <h3 className="tight-tracking text-xl font-bold uppercase">Состояние архива</h3>
+            <p className="text-sm text-[#9facc1]">Временные снимки развивающегося цифрового сознания.</p>
           </div>
 
           <div className="group flex flex-col justify-end gap-6 bg-[#16202e] p-8 transition-colors duration-500 hover:bg-[#1e2d41]">
             <span className="material-symbols-outlined text-3xl text-[#989ea7]">grid_view</span>
-            <h3 className="tight-tracking text-xl font-bold uppercase">Grid Logic</h3>
-            <p className="text-sm text-[#9facc1]">Architectural frameworks for ethereal manifestations.</p>
+            <h3 className="tight-tracking text-xl font-bold uppercase">Логика сетки</h3>
+            <p className="text-sm text-[#9facc1]">Архитектурные каркасы для эфемерных проявлений.</p>
           </div>
 
           <div className="relative h-[300px] overflow-hidden md:col-span-2">
@@ -198,7 +198,7 @@ export function ColdMistHome({ manifest, content }: ColdMistPageProps) {
             />
             <div className="absolute inset-0 p-12">
               <div className="flex h-full flex-col justify-center">
-                <span className="text-4xl font-black uppercase tracking-tighter text-[#bfc7cf]">Void Analytics</span>
+                <span className="text-4xl font-black uppercase tracking-tighter text-[#bfc7cf]">Аналитика пустоты</span>
               </div>
             </div>
           </div>
@@ -207,16 +207,16 @@ export function ColdMistHome({ manifest, content }: ColdMistPageProps) {
 
       <section className="mx-auto mt-48 flex max-w-7xl flex-col justify-between gap-12 px-6 pb-24 md:flex-row md:items-end md:px-12">
         <div className="max-w-md">
-          <h4 className="tight-tracking mb-4 text-2xl font-bold uppercase">Stay within the mist.</h4>
+          <h4 className="tight-tracking mb-4 text-2xl font-bold uppercase">Оставайтесь внутри тумана.</h4>
           <div className="relative w-full">
-            <div className="border-b border-[#3c495b] py-4 text-sm uppercase tracking-widest text-[#9facc1]">ENTER YOUR IDENTITY</div>
+            <div className="border-b border-[#3c495b] py-4 text-sm uppercase tracking-widest text-[#9facc1]">ВВЕДИТЕ СВОЙ СИГНАЛ</div>
             <span className="material-symbols-outlined absolute right-0 top-1/2 -translate-y-1/2 text-[#bfc7cf]">arrow_forward</span>
           </div>
         </div>
         <div className="flex flex-col items-start text-left md:items-end md:text-right">
-          <div className="mb-2 text-xs font-bold uppercase tracking-widest text-[#6a768a]">Version 4.0.2</div>
+          <div className="mb-2 text-xs font-bold uppercase tracking-widest text-[#6a768a]">Версия 4.0.2</div>
           <div className="max-w-[180px] text-[10px] uppercase tracking-widest text-[#9facc1]">
-            Designed for the silent observer. All rights reserved by Cold Mist Studio.
+            Создано для молчаливого наблюдателя. Все права сохранены за Cold Mist Studio.
           </div>
         </div>
       </section>
@@ -234,15 +234,15 @@ export function ColdMistGallery({ manifest, content, artworks }: ColdMistGallery
           <div className="max-w-2xl">
             <h1 className="text-5xl md:text-7xl font-bold tracking-[-0.05em] text-[#d9e6fd] mb-4">ARCHIVE.</h1>
             <p className="text-[#9facc1] text-lg tracking-tight font-light leading-relaxed">
-              A curated collection of ethereal voids and architectural silence. Exploring the intersection of cold slate and
-              misty morning light.
+              Кураторская коллекция эфемерных пустот и архитектурной тишины. Исследование пересечения холодного сланца и
+              туманного утреннего света.
             </p>
           </div>
           <div className="flex items-center space-x-8 border-b border-[#3c495b]/30 pb-2">
-            <button className="text-[#bfc7cf] font-medium tracking-tighter text-sm uppercase" type="button">All</button>
+            <button className="text-[#bfc7cf] font-medium tracking-tighter text-sm uppercase" type="button">Все</button>
             <button className="text-[#9facc1] font-medium tracking-tighter text-sm uppercase" type="button">2024</button>
             <button className="text-[#9facc1] font-medium tracking-tighter text-sm uppercase" type="button">2023</button>
-            <button className="text-[#9facc1] font-medium tracking-tighter text-sm uppercase" type="button">Experimental</button>
+            <button className="text-[#9facc1] font-medium tracking-tighter text-sm uppercase" type="button">Эксперимент</button>
           </div>
         </div>
       </section>
@@ -282,8 +282,8 @@ export function ColdMistGallery({ manifest, content, artworks }: ColdMistGallery
       <section className="mt-48 mb-32 max-w-7xl mx-auto flex flex-col md:flex-row gap-12 px-6 md:px-12">
         <div className="md:w-1/2">
           <div className="w-full h-px bg-[#3c495b]/30 mb-8" />
-          <h2 className="text-3xl font-bold tracking-tighter text-[#d9e6fd] uppercase mb-6">Curate Your View.</h2>
-          <p className="text-[#9facc1] max-w-sm">Every piece in this gallery is part of a larger ecosystem of silence. Use the curation tool to build your own misty archive.</p>
+          <h2 className="text-3xl font-bold tracking-tighter text-[#d9e6fd] uppercase mb-6">Соберите свой взгляд.</h2>
+          <p className="text-[#9facc1] max-w-sm">Каждая работа в этой галерее является частью более крупной экосистемы тишины. Используйте кураторский инструмент, чтобы собрать собственный туманный архив.</p>
           <Link href={`/${manifest.id}/contacts`} className="mt-8 inline-flex px-8 py-4 bg-[#bfc7cf] text-[#394148] font-bold tracking-tighter uppercase text-xs hover:bg-[#cdd5dd] transition-colors">
             {content.detail.inquiryLabel}
           </Link>
@@ -321,7 +321,7 @@ export function ColdMistDetail({ manifest, content, artwork }: ColdMistDetailPro
             <div className="absolute inset-0 bg-gradient-to-tr from-black/40 to-transparent z-20 pointer-events-none" />
             <div className="absolute bottom-8 left-8 z-30 flex items-center gap-4 text-[#9facc1]/60">
               <span className="material-symbols-outlined text-sm">zoom_in</span>
-              <span className="text-[10px] uppercase tracking-[0.2em] font-medium">Expand View</span>
+              <span className="text-[10px] uppercase tracking-[0.2em] font-medium">Увеличить</span>
             </div>
           </div>
         </section>
@@ -329,7 +329,7 @@ export function ColdMistDetail({ manifest, content, artwork }: ColdMistDetailPro
         <section className="w-full md:w-2/5 lg:w-1/3 bg-[#0e141c] min-h-screen z-10 px-8 py-16 md:px-16 md:py-32 flex flex-col justify-between">
           <div>
             <div className="mb-12">
-              <span className="text-[10px] uppercase tracking-[0.4em] text-[#9facc1] block mb-4">Volume IV / Series 02</span>
+              <span className="text-[10px] uppercase tracking-[0.4em] text-[#9facc1] block mb-4">Том IV / Серия 02</span>
               <h1 className="text-5xl md:text-7xl font-bold tracking-[-0.05em] text-[#d9e6fd] leading-none mb-6 uppercase">
                 {artwork.title}
               </h1>
@@ -343,20 +343,20 @@ export function ColdMistDetail({ manifest, content, artwork }: ColdMistDetailPro
               <p className="text-lg text-[#d9e6fd] leading-relaxed font-light">{artwork.description}</p>
               <div className="grid grid-cols-2 gap-8 pt-8 border-t border-[#3c495b]/20">
                 <div>
-                  <p className="text-[10px] uppercase tracking-widest text-[#9facc1] mb-1">Dimensions</p>
+                  <p className="text-[10px] uppercase tracking-widest text-[#9facc1] mb-1">Размер</p>
                   <p className="text-sm font-medium">{artwork.size}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase tracking-widest text-[#9facc1] mb-1">Medium</p>
+                  <p className="text-[10px] uppercase tracking-widest text-[#9facc1] mb-1">Материал</p>
                   <p className="text-sm font-medium">{artwork.medium}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase tracking-widest text-[#9facc1] mb-1">Year</p>
+                  <p className="text-[10px] uppercase tracking-widest text-[#9facc1] mb-1">Год</p>
                   <p className="text-sm font-medium">{artwork.year}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase tracking-widest text-[#9facc1] mb-1">Edition</p>
-                  <p className="text-sm font-medium">Original Abstract</p>
+                  <p className="text-[10px] uppercase tracking-widest text-[#9facc1] mb-1">Формат</p>
+                  <p className="text-sm font-medium">Оригинал</p>
                 </div>
               </div>
             </div>
@@ -366,14 +366,14 @@ export function ColdMistDetail({ manifest, content, artwork }: ColdMistDetailPro
                 {content.detail.inquiryLabel}
               </Link>
               <button className="bg-[#16202e] text-[#d9e6fd] py-6 px-8 text-sm uppercase tracking-[0.2em] font-medium hover:bg-[#1e2d41] transition-colors duration-400" type="button">
-                Download Technical Specs
+                Скачать спецификацию
               </button>
             </div>
           </div>
 
           <div className="mt-24">
             <p className="text-[10px] text-[#9facc1]/40 leading-relaxed uppercase tracking-tighter">
-              All artworks are authenticated with encrypted digital certificates. COLD MIST operates as a sovereign entity in the curation of atmospheric digital artifacts.
+              Все работы сопровождаются зашифрованными цифровыми сертификатами. Cold Mist действует как суверенная сущность в кураторстве атмосферных цифровых артефактов.
             </p>
           </div>
         </section>
@@ -388,7 +388,7 @@ export function ColdMistAbout({ manifest, content }: ColdMistPageProps) {
       <section className="mx-auto max-w-5xl px-6 py-16 md:px-12">
         <div className="mb-12 space-y-4">
           <p className="text-xs uppercase tracking-[0.35em] text-[#6a768a]">{content.about.eyebrow}</p>
-          <h1 className="tight-tracking text-5xl font-black uppercase text-[#d9e6fd] md:text-7xl">Cold Editorial Practice</h1>
+          <h1 className="tight-tracking text-5xl font-black uppercase text-[#d9e6fd] md:text-7xl">Холодная редакционная практика</h1>
         </div>
         <div className="grid gap-8 md:grid-cols-[1.25fr_0.75fr]">
           <article className="space-y-6 bg-[#121a25] p-10">
@@ -397,7 +397,7 @@ export function ColdMistAbout({ manifest, content }: ColdMistPageProps) {
             ))}
           </article>
           <aside className="space-y-4 bg-[#0e141c] p-10">
-            <p className="text-xs uppercase tracking-[0.24em] text-[#6a768a]">Design invariants</p>
+            <p className="text-xs uppercase tracking-[0.24em] text-[#6a768a]">Инварианты дизайна</p>
             <ul className="space-y-3 text-sm text-[#9facc1]">
               {manifest.designInvariants.map((item) => (
                 <li key={item}>{item}</li>

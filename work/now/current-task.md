@@ -30,3 +30,10 @@ Literal transfer of public variant screens from source templates.
 - Added missing base dark-atmosphere variant from `stitch_dark_atmosphere_portfolio_prd/home` and `gallery` as separate public face: `deep-immersion`.
 - Variant is now wired through manifest, content, route branches, template media, root catalog, and right-side variant rail.
 - Public preview is published and reachable on `art.solofarm.ru/deep-immersion/...`.
+
+## Update 2026-03-20 Localization pass
+
+- `etheric-pulse` received a finished lower page structure instead of abruptly truncated endings.
+- `copper-glow` public layout is now centered and constrained instead of stretching elastically across the whole viewport.
+- `cold-mist` hero heading spacing was relaxed so the large Russian lines no longer collapse into each other.
+- Public copy is being moved to Russian not only inside literal screens, but also in shared variant content used by the showcase catalog and organic variants.
