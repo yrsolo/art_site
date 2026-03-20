@@ -29,14 +29,6 @@ type MintRoseDetailProps = MintRosePageProps & {
   artworks: Artwork[];
 };
 
-const organicShapes = [
-  "rounded-[40%_60%_70%_30%/40%_50%_60%_50%]",
-  "rounded-[60%_40%_30%_70%/50%_60%_50%_40%]",
-  "rounded-[50%_50%_60%_40%/40%_60%_50%_50%]",
-  "rounded-[30%_70%_50%_50%/60%_40%_60%_40%]",
-  "rounded-[70%_30%_40%_60%/50%_50%_40%_60%]",
-];
-
 function buildNavItems(manifest: VariantManifest, content: VariantContent) {
   const basePath = `/${manifest.id}`;
 
@@ -58,8 +50,12 @@ function MintRoseLayout({ manifest, content, currentRoute, children, slug }: Min
       <header className="relative z-20 mx-auto max-w-[1200px] px-4 pb-8 pt-5 md:px-10 lg:px-16">
         <div className="mb-10 flex items-center justify-between rounded-full bg-[rgba(255,245,245,0.6)] px-4 py-6 shadow-[0_20px_40px_rgba(74,64,58,0.05)] backdrop-blur-xl md:px-10 md:mb-20">
           <div className="flex items-center gap-4">
-            <div className="grid h-6 w-6 place-items-center text-[#13ecb6]">✦</div>
-            <Link href={`/${manifest.id}`} className="font-serif text-xl font-bold tracking-[-0.02em] text-[#4a403a]">
+            <div className="grid h-6 w-6 place-items-center text-[#13ecb6]">
+              <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current" aria-hidden="true">
+                <path d="M12 2.5l1.8 5.7L19.5 10l-5.7 1.8L12 17.5l-1.8-5.7L4.5 10l5.7-1.8L12 2.5z" />
+              </svg>
+            </div>
+            <Link href={`/${manifest.id}`} className="text-xl font-bold tracking-[-0.02em] text-[#4a403a]" style={{ fontFamily: "Cormorant Garamond, serif" }}>
               Mint &amp; Rose
             </Link>
           </div>
@@ -74,6 +70,7 @@ function MintRoseLayout({ manifest, content, currentRoute, children, slug }: Min
                     ? "text-[#4a403a] after:block after:h-0.5 after:w-full after:bg-[#13ecb6] after:content-['']"
                     : "text-[#bcaaa4] hover:text-[#4a403a]"
                 }`}
+                style={{ fontFamily: "Outfit, sans-serif" }}
               >
                 {item.label}
               </Link>
@@ -92,27 +89,28 @@ function MintRoseLayout({ manifest, content, currentRoute, children, slug }: Min
   );
 }
 
-export function MintRoseHome({ manifest, content, artworks }: MintRoseGalleryProps) {
-  const heroArtwork = artworks[0];
-
+export function MintRoseHome({ manifest, content }: MintRosePageProps) {
   return (
     <MintRoseLayout manifest={manifest} content={content} currentRoute="home">
       <section className="mx-auto max-w-[1200px] px-4 pb-20 md:px-10 lg:px-16">
         <div className="flex flex-col-reverse items-center gap-12 lg:flex-row lg:gap-20">
           <div className="z-10 flex flex-col gap-8 text-center lg:w-1/2 lg:text-left">
             <div className="flex flex-col gap-6">
-              <h1 className="font-serif text-5xl italic leading-tight tracking-[-0.04em] md:text-6xl lg:text-[64px]">
+              <h1 className="text-5xl italic leading-tight tracking-[-0.033em] md:text-6xl lg:text-[64px]" style={{ fontFamily: "Cormorant Garamond, serif" }}>
                 Emotions in Pigment
               </h1>
-              <p className="mx-auto max-w-lg text-lg font-light leading-relaxed text-[#4a403a]/80 lg:mx-0">{content.home.description}</p>
+              <p className="mx-auto max-w-lg text-lg font-light leading-relaxed text-[#4a403a]/80 lg:mx-0" style={{ fontFamily: "Outfit, sans-serif" }}>
+                {content.home.description}
+              </p>
             </div>
             <div className="flex justify-center pt-4 lg:justify-start">
               <Link
                 href={`/${manifest.id}/gallery`}
                 className="group inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-[#13ecb6] px-8 py-4 text-base uppercase tracking-[0.125em] text-[#10221d] transition-all duration-300 hover:bg-[#e2f2ef] hover:text-[#13ecb6] hover:shadow-[0_0_30px_rgba(19,236,182,0.4)]"
+                style={{ fontFamily: "Outfit, sans-serif" }}
               >
                 View Collection
-                <span className="text-sm transition-transform duration-300 group-hover:translate-x-1">--&gt;</span>
+                <span className="material-symbols-outlined text-sm transition-transform duration-300 group-hover:translate-x-1">arrow_forward</span>
               </Link>
             </div>
           </div>
@@ -121,16 +119,14 @@ export function MintRoseHome({ manifest, content, artworks }: MintRoseGalleryPro
             <div className="relative aspect-[4/5] w-full max-h-[700px] md:aspect-square lg:aspect-[4/5]">
               <div className="absolute inset-0 translate-x-4 translate-y-4 animate-pulse rounded-[40%_60%_70%_30%/40%_50%_60%_50%] bg-[#13ecb6]/30 blur-2xl opacity-60" />
               <div className="relative z-10 h-full w-full overflow-hidden rounded-[40%_60%_70%_30%/40%_50%_60%_50%] border-4 border-white/40 bg-[rgba(255,245,245,0.6)] shadow-[0_20px_40px_rgba(74,64,58,0.15)] backdrop-blur-xl">
-                {heroArtwork ? (
-                  <Image
-                    src={templateMedia.mintRose.hero}
-                    alt={heroArtwork.title}
-                    fill
-                    priority
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    className="object-cover opacity-90 transition-transform duration-700 hover:scale-105"
-                  />
-                ) : null}
+                <Image
+                  src={templateMedia.mintRose.hero}
+                  alt="Abstract fluid art painting in mint and rose colors"
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover opacity-90 transition-transform duration-700 hover:scale-105"
+                />
               </div>
               <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full border border-[#13ecb6]/30" />
               <div className="absolute -bottom-10 -left-10 h-32 w-32 rounded-full border border-[#4a403a]/10" />
@@ -147,21 +143,26 @@ export function MintRoseGallery({ manifest, content, artworks }: MintRoseGallery
     <MintRoseLayout manifest={manifest} content={content} currentRoute="gallery">
       <section className="mx-auto max-w-[1200px] px-6 py-12 md:px-12">
         <div className="mb-12">
-          <p className="font-serif text-[32px] italic text-[#4a403a] md:text-[48px]">Exhibition Space</p>
-          <p className="text-lg text-[#bcaaa4]">A collection of organic, fluid abstractions.</p>
+          <p className="text-[32px] italic text-[#4a403a] md:text-[48px]" style={{ fontFamily: "Cormorant Garamond, serif" }}>
+            Exhibition Space
+          </p>
+          <p className="text-lg text-[#bcaaa4]" style={{ fontFamily: "Outfit, sans-serif" }}>
+            A collection of organic, fluid abstractions.
+          </p>
         </div>
 
         <div className="columns-1 gap-8 sm:columns-2 lg:columns-3">
-          {artworks.map((artwork, index) => {
-            const shape = organicShapes[index % organicShapes.length];
-            const height =
-              index % 6 === 0 ? "h-[400px]" : index % 6 === 1 ? "h-[500px]" : index % 6 === 2 ? "h-[350px]" : index % 6 === 3 ? "h-[450px]" : index % 6 === 4 ? "h-[300px]" : "h-[480px]";
+          {templateMedia.mintRose.gallery.map((card, index) => {
+            const artwork = artworks[index] ?? artworks[index % Math.max(artworks.length, 1)];
+            const href = artwork ? `/${manifest.id}/artwork/${artwork.slug}` : `/${manifest.id}/gallery`;
 
             return (
-              <Link key={artwork.id} href={`/${manifest.id}/artwork/${artwork.slug}`} className={`group relative mb-8 block break-inside-avoid overflow-hidden bg-white/50 shadow-[0_20px_40px_rgba(74,64,58,0.05)] ${shape} ${height}`}>
-                <Image src={artwork.imagePreview} alt={artwork.title} fill sizes="(max-width: 1024px) 100vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
+              <Link key={card.title} href={href} className={`group relative mb-8 block break-inside-avoid overflow-hidden bg-white/50 shadow-[0_20px_40px_rgba(74,64,58,0.05)] ${card.shape} ${card.height}`}>
+                <Image src={card.image} alt={card.title} fill sizes="(max-width: 1024px) 100vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
                 <div className="absolute inset-0 flex items-center justify-center bg-[#13ecb6]/40 p-8 text-center opacity-0 backdrop-blur-xl transition-opacity duration-500 group-hover:opacity-100">
-                  <h3 className="font-serif text-3xl italic text-white drop-shadow-md">{artwork.title}</h3>
+                  <h3 className="text-3xl italic text-white drop-shadow-md" style={{ fontFamily: "Cormorant Garamond, serif" }}>
+                    {card.title}
+                  </h3>
                 </div>
               </Link>
             );
@@ -182,7 +183,7 @@ export function MintRoseDetail({ manifest, content, artwork, artworks }: MintRos
           <div className="group sticky top-12">
             <div className="rounded-xl border border-slate-100 bg-white/50 p-3 shadow-sm">
               <Image
-                src={artwork.imageOriginal}
+                src={templateMedia.mintRose.detail}
                 alt={artwork.title}
                 width={1400}
                 height={1800}
@@ -194,29 +195,34 @@ export function MintRoseDetail({ manifest, content, artwork, artworks }: MintRos
         </div>
 
         <div className="flex flex-col pt-4 lg:col-span-5 lg:pt-10">
-          <h1 className="mb-6 text-4xl font-light tracking-tight text-slate-900 md:text-5xl lg:text-6xl">{artwork.title}</h1>
-          <div className="mb-10 flex flex-col gap-2 font-medium tracking-wide text-slate-500">
+          <h1 className="mb-6 text-4xl font-light tracking-tight text-slate-900 md:text-5xl lg:text-6xl" style={{ fontFamily: "Cormorant Garamond, serif" }}>
+            {artwork.title}
+          </h1>
+          <div className="mb-10 flex flex-col gap-2 font-medium tracking-wide text-slate-500" style={{ fontFamily: "Outfit, sans-serif" }}>
             <p>{artwork.medium}</p>
             <p>{artwork.size}</p>
             <p>{artwork.year}</p>
           </div>
-          <div className="prose prose-lg mb-12 max-w-none font-light leading-relaxed text-slate-700">
+          <div className="prose prose-lg mb-12 max-w-none font-light leading-relaxed text-slate-700" style={{ fontFamily: "Outfit, sans-serif" }}>
             <p>{artwork.description}</p>
           </div>
           <Link
             href={`/${manifest.id}/contacts`}
             className="mb-20 block w-full rounded-full bg-[#13ecb6] py-5 text-center text-lg font-bold text-[#10221d] shadow-lg transition-colors hover:bg-[#13ecb6]/90"
+            style={{ fontFamily: "Outfit, sans-serif" }}
           >
             {content.detail.inquiryLabel}
           </Link>
 
           <div className="space-y-8">
-            <h3 className="border-b border-slate-200 pb-3 text-xs font-bold uppercase tracking-[0.22em] text-slate-400">Texture &amp; Detail</h3>
+            <h3 className="border-b border-slate-200 pb-3 text-xs font-bold uppercase tracking-[0.22em] text-slate-400" style={{ fontFamily: "Manrope, sans-serif" }}>
+              Texture &amp; Detail
+            </h3>
             <div className="grid grid-cols-2 items-start gap-6">
               {detailShots[0] ? (
                 <div className="mt-12">
                   <Image
-                    src={detailShots[0].imagePreview}
+                    src={templateMedia.mintRose.gallery[1].image}
                     alt={detailShots[0].title}
                     width={600}
                     height={800}
@@ -228,7 +234,7 @@ export function MintRoseDetail({ manifest, content, artwork, artworks }: MintRos
               {detailShots[1] ? (
                 <div>
                   <Image
-                    src={detailShots[1].imagePreview}
+                    src={templateMedia.mintRose.gallery[2].image}
                     alt={detailShots[1].title}
                     width={600}
                     height={600}

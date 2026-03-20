@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { ColdMistLiteralHome } from "@/components/public/cold-mist-literal-home";
+import { ColdMistHome } from "@/components/public/cold-mist";
 import { CopperGlowHome } from "@/components/public/copper-glow";
 import { MintRoseHome } from "@/components/public/mint-rose";
 import { VariantArtworkCard } from "@/components/public/variant-artwork-card";
@@ -18,9 +18,9 @@ export default async function VariantHomePage({ params }: { params: Promise<{ va
   const artworks = listPublicArtworks();
   const featured = artworks.slice(0, 3);
 
-  if (manifest.id === "cold-mist") return <ColdMistLiteralHome manifest={manifest} content={content} artworks={artworks} />;
-  if (manifest.id === "copper-glow") return <CopperGlowHome manifest={manifest} content={content} artworks={artworks} />;
-  if (manifest.id === "mint-rose") return <MintRoseHome manifest={manifest} content={content} artworks={artworks} />;
+  if (manifest.id === "cold-mist") return <ColdMistHome manifest={manifest} content={content} />;
+  if (manifest.id === "copper-glow") return <CopperGlowHome manifest={manifest} content={content} />;
+  if (manifest.id === "mint-rose") return <MintRoseHome manifest={manifest} content={content} />;
 
   return (
     <VariantShell

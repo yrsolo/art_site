@@ -2,17 +2,18 @@
 
 ## Этап
 
-Variant catalog and independent frontend-faces architecture.
+Literal transfer of public variant screens from source templates.
 
 ## Цель
 
-Перевести проект от theme-like public UI к architecture of independent frontend variants:
-- зафиксировать каталог эскизов в docs;
-- описать 6 самостоятельных витрин;
-- вынести public routes под variant namespace;
-- сохранить общий backend/admin/data layer;
-- убрать смешение разных дизайн-языков в одном публичном интерфейсе.
+Сохранить уже выделенную variant-архитектуру, но перестать делать "похожие" витрины.
+Текущий фокус:
+- переносить `cold-mist`, `copper-glow`, `mint-rose` от исходных `code.html`, а не от усреднённых React-компонентов;
+- использовать оригинальные template media, тексты, типографику и композицию там, где это возможно;
+- держать общими только backend/data/admin слои;
+- не смешивать визуальные решения разных витрин.
 
 ## Граница Этапа
 
-В этот этап не входит облачная инфраструктура, Object Storage, Docker и deploy в Яндекс Облако.
+В этот этап не входит админская инфраструктура, Docker и production backend-публикация.
+Публичная витрина продолжает жить как статический showcase.

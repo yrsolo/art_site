@@ -30,6 +30,10 @@ type CopperGlowDetailProps = CopperGlowPageProps & {
   artworks: Artwork[];
 };
 
+function copperHeroTitle() {
+  return ["&#1060;&#1086;&#1088;&#1084;&#1072;.", "&#1062;&#1074;&#1077;&#1090;.", "&#1055;&#1091;&#1089;&#1090;&#1086;&#1090;&#1072;."];
+}
+
 function buildNavItems(manifest: VariantManifest, content: VariantContent) {
   const basePath = `/${manifest.id}`;
 
@@ -44,12 +48,15 @@ function CopperGlowLayout({ manifest, content, currentRoute, children, slug }: C
   const navItems = buildNavItems(manifest, content);
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#11131a] text-[#e1e2eb] selection:bg-[#e8be9f] selection:text-[#442b14]">
+    <div
+      className="min-h-screen overflow-x-hidden bg-[#11131a] text-[#e1e2eb] selection:bg-[#e8be9f] selection:text-[#442b14]"
+      style={{ fontFamily: "Inter, sans-serif" }}
+    >
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_60%_50%,_rgba(140,106,79,0.16),_transparent_58%)]" />
 
       <header className="fixed inset-x-0 top-0 z-50 bg-transparent backdrop-blur-2xl">
         <div className="mx-auto flex max-w-[96rem] items-center justify-between px-6 py-6 md:px-8">
-          <Link href={`/${manifest.id}`} className="font-[family-name:var(--font-geist-sans)] text-2xl font-black uppercase tracking-[-0.08em] text-[#e8be9f]">
+          <Link href={`/${manifest.id}`} className="text-2xl font-bold uppercase tracking-[-0.05em] text-[#e8be9f]" style={{ fontFamily: "Space Grotesk, sans-serif" }}>
             AURUM
           </Link>
 
@@ -58,11 +65,12 @@ function CopperGlowLayout({ manifest, content, currentRoute, children, slug }: C
               <Link
                 key={item.href}
                 href={item.href}
-                className={`font-[family-name:var(--font-geist-sans)] text-sm font-medium uppercase tracking-tight transition-colors ${
+                className={`text-sm font-medium uppercase tracking-tight transition-colors ${
                   currentRoute === item.key
                     ? "border-b-2 border-[#e8be9f] pb-1 text-[#e8be9f]"
                     : "text-[#aab6c9] hover:text-[#e8be9f]"
                 }`}
+                style={{ fontFamily: "Space Grotesk, sans-serif" }}
               >
                 {item.label}
               </Link>
@@ -93,39 +101,36 @@ function CopperGlowLayout({ manifest, content, currentRoute, children, slug }: C
   );
 }
 
-export function CopperGlowHome({ manifest, content, artworks }: CopperGlowGalleryProps) {
-  const heroArtwork = artworks[1] ?? artworks[0];
-  const featureArtwork = artworks[2] ?? artworks[0];
-  const sculpturalArtwork = artworks[3] ?? heroArtwork;
+export function CopperGlowHome({ manifest, content }: CopperGlowPageProps) {
+  const titleLines = copperHeroTitle();
 
   return (
     <CopperGlowLayout manifest={manifest} content={content} currentRoute="home">
       <section className="relative flex min-h-screen flex-col items-center overflow-hidden md:flex-row">
         <div className="w-full px-8 pt-32 md:w-[40%] md:pl-24 md:pt-0">
-          <h1 className="font-[family-name:var(--font-geist-sans)] text-6xl font-black uppercase leading-[0.9] tracking-[-0.07em] text-[#e1e2eb] md:text-8xl lg:text-9xl">
-            Form.
+          <h1 className="text-6xl font-bold uppercase leading-[0.9] tracking-tighter text-[#e1e2eb] md:text-8xl lg:text-9xl" style={{ fontFamily: "Space Grotesk, sans-serif" }}>
+            <span dangerouslySetInnerHTML={{ __html: titleLines[0] }} />
             <br />
-            Color.
+            <span dangerouslySetInnerHTML={{ __html: titleLines[1] }} />
             <br />
-            <span className="text-[#e8be9f]">Void.</span>
+            <span className="text-[#e8be9f]" dangerouslySetInnerHTML={{ __html: titleLines[2] }} />
           </h1>
           <p className="mt-8 max-w-md text-lg leading-relaxed text-[#d3c4b9]">{content.home.description}</p>
           <div className="mt-12 flex flex-col gap-6 sm:flex-row">
-            <Link href={`/${manifest.id}/gallery`} className="bg-[#e8be9f] px-10 py-4 text-sm font-bold uppercase tracking-[0.2em] text-[#442b14] transition-all hover:brightness-110 active:scale-95">
+            <Link href={`/${manifest.id}/gallery`} className="bg-[#e8be9f] px-10 py-4 text-sm font-bold uppercase tracking-[0.2em] text-[#442b14] transition-all hover:brightness-110 active:scale-95" style={{ fontFamily: "Space Grotesk, sans-serif" }}>
               Explore Archive
             </Link>
-            <Link href={`/${manifest.id}/about`} className="border border-[#4f453d]/30 px-10 py-4 text-sm uppercase tracking-[0.2em] text-[#e1e2eb] transition-all hover:bg-[#282a31] active:scale-95">
+            <Link href={`/${manifest.id}/about`} className="border border-[#4f453d]/30 px-10 py-4 text-sm uppercase tracking-[0.2em] text-[#e1e2eb] transition-all hover:bg-[#282a31] active:scale-95" style={{ fontFamily: "Space Grotesk, sans-serif" }}>
               The Manifesto
             </Link>
           </div>
         </div>
 
         <div className="relative mt-12 flex h-[32rem] w-full items-center md:mt-0 md:h-screen md:w-[60%]">
-          {heroArtwork ? (
-            <div className="absolute right-0 h-full w-[120%] translate-x-20 md:translate-x-32">
+          <div className="absolute right-0 h-full w-[120%] translate-x-20 md:translate-x-32">
               <Image
                 src={templateMedia.copperGlow.hero}
-                alt={heroArtwork.title}
+                alt="Abstract copper and charcoal textured art piece"
                 fill
                 priority
                 sizes="(max-width: 768px) 100vw, 60vw"
@@ -133,7 +138,6 @@ export function CopperGlowHome({ manifest, content, artworks }: CopperGlowGaller
               />
               <div className="absolute inset-0 bg-gradient-to-r from-[#11131a] via-transparent to-transparent" />
             </div>
-          ) : null}
         </div>
       </section>
 
@@ -141,23 +145,21 @@ export function CopperGlowHome({ manifest, content, artworks }: CopperGlowGaller
         <div className="mx-auto max-w-[96rem]">
           <div className="mb-16">
             <span className="text-xs uppercase tracking-[0.22em] text-[#e8be9f]">The Vision</span>
-            <h2 className="mt-4 font-[family-name:var(--font-geist-sans)] text-4xl font-black uppercase tracking-[-0.06em] md:text-6xl">Curation of Matter</h2>
+            <h2 className="mt-4 text-4xl font-bold uppercase tracking-[-0.06em] md:text-6xl" style={{ fontFamily: "Space Grotesk, sans-serif" }}>Curation of Matter</h2>
           </div>
 
           <div className="grid h-auto grid-cols-1 gap-8 md:h-[600px] md:grid-cols-3">
             <div className="group relative overflow-hidden bg-[#1d1f26] md:col-span-2">
-              {featureArtwork ? (
-                <Image
-                  src={templateMedia.copperGlow.feature}
-                  alt={featureArtwork.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 66vw"
-                  className="object-cover opacity-40 transition-transform duration-700 group-hover:scale-105"
-                />
-              ) : null}
+              <Image
+                src={templateMedia.copperGlow.feature}
+                alt="Minimalist architectural void with copper lighting"
+                fill
+                sizes="(max-width: 768px) 100vw, 66vw"
+                className="object-cover opacity-40 transition-transform duration-700 group-hover:scale-105"
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0c0e14] to-transparent" />
               <div className="absolute bottom-10 left-10 right-10">
-                <h3 className="font-[family-name:var(--font-geist-sans)] text-2xl font-black uppercase tracking-[-0.05em]">Tactile Resonance</h3>
+                <h3 className="text-2xl font-bold uppercase tracking-[-0.05em]" style={{ fontFamily: "Space Grotesk, sans-serif" }}>Tactile Resonance</h3>
                 <p className="mt-2 max-w-lg text-[#d3c4b9]">
                   The intersection of physical texture and digital void, exploring the boundaries of sensory perception.
                 </p>
@@ -167,12 +169,12 @@ export function CopperGlowHome({ manifest, content, artworks }: CopperGlowGaller
             <div className="flex h-full flex-col gap-8">
               <div className="flex flex-1 flex-col justify-end border-l-2 border-[#e8be9f] bg-[#8c6a4f]/10 p-10">
                 <span className="mb-4 text-[#e8be9f]">ARC</span>
-                <h3 className="font-[family-name:var(--font-geist-sans)] text-xl font-black uppercase tracking-[-0.04em]">Brutalist Form</h3>
+                <h3 className="text-xl font-bold uppercase tracking-[-0.04em]" style={{ fontFamily: "Space Grotesk, sans-serif" }}>Brutalist Form</h3>
                 <p className="mt-2 text-sm text-[#d3c4b9]">Precision meets raw materiality in every architectural curve.</p>
               </div>
               <div className="flex flex-1 flex-col justify-end bg-[#282a31] p-10">
                 <span className="mb-4 text-[#e8be9f]">GLOW</span>
-                <h3 className="font-[family-name:var(--font-geist-sans)] text-xl font-black uppercase tracking-[-0.04em]">Atmospheric Depth</h3>
+                <h3 className="text-xl font-bold uppercase tracking-[-0.04em]" style={{ fontFamily: "Space Grotesk, sans-serif" }}>Atmospheric Depth</h3>
                 <p className="mt-2 text-sm text-[#d3c4b9]">Lighting as a structural element, defining space through shadow.</p>
               </div>
             </div>
@@ -184,21 +186,19 @@ export function CopperGlowHome({ manifest, content, artworks }: CopperGlowGaller
         <div className="w-full md:w-1/2">
           <div className="relative">
             <div className="absolute -inset-10 rounded-full bg-[#8c6a4f]/20 blur-3xl" />
-            {sculpturalArtwork ? (
-              <Image
-                src={templateMedia.copperGlow.sculptural}
-                alt={sculpturalArtwork.title}
-                width={1200}
-                height={1400}
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="relative z-10 h-auto w-full border-r-[20px] border-[#8c6a4f]/30 object-cover grayscale contrast-125"
-              />
-            ) : null}
+            <Image
+              src={templateMedia.copperGlow.sculptural}
+              alt="Close up of polished copper sculpture with deep shadows"
+              width={1200}
+              height={1400}
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="relative z-10 h-auto w-full border-r-[20px] border-[#8c6a4f]/30 object-cover grayscale contrast-125"
+            />
           </div>
         </div>
 
         <div className="w-full md:w-1/2">
-          <h2 className="mb-8 font-[family-name:var(--font-geist-sans)] text-5xl font-black uppercase leading-tight tracking-[-0.06em]">
+          <h2 className="mb-8 text-5xl font-bold uppercase leading-tight tracking-[-0.06em]" style={{ fontFamily: "Space Grotesk, sans-serif" }}>
             Refracted
             <br />
             Persistence
@@ -211,9 +211,9 @@ export function CopperGlowHome({ manifest, content, artworks }: CopperGlowGaller
             <p>Experience the curated collection in high fidelity, where every pixel is tuned to the frequency of the alchemist.</p>
           </div>
           <div className="mt-12">
-            <Link href={`/${manifest.id}/gallery`} className="inline-flex items-center gap-4 text-sm font-bold uppercase tracking-[0.2em] text-[#e8be9f] transition-all hover:gap-6">
+            <Link href={`/${manifest.id}/gallery`} className="inline-flex items-center gap-4 text-sm font-bold uppercase tracking-[0.2em] text-[#e8be9f] transition-all hover:gap-6" style={{ fontFamily: "Space Grotesk, sans-serif" }}>
               View Full Collection
-              <span>--&gt;</span>
+              <span className="material-symbols-outlined">arrow_forward</span>
             </Link>
           </div>
         </div>
@@ -228,7 +228,7 @@ export function CopperGlowGallery({ manifest, content, artworks }: CopperGlowGal
       <section className="mx-auto max-w-[96rem] px-8 pb-24 pt-10">
         <header className="mb-20 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
           <div className="max-w-xl">
-            <h1 className="mb-6 font-[family-name:var(--font-geist-sans)] text-6xl font-black uppercase leading-none tracking-[-0.06em] text-[#e8be9f] md:text-8xl">
+            <h1 className="mb-6 text-6xl font-bold uppercase leading-none tracking-[-0.06em] text-[#e8be9f] md:text-8xl" style={{ fontFamily: "Space Grotesk, sans-serif" }}>
               Curated
               <br />
               Visions
@@ -249,27 +249,27 @@ export function CopperGlowGallery({ manifest, content, artworks }: CopperGlowGal
         </header>
 
         <div className="columns-1 gap-16 md:columns-2 xl:columns-3">
-          {artworks.map((artwork, index) => {
-            const aspect =
-              index % 5 === 0 ? "aspect-[3/4]" : index % 5 === 1 ? "aspect-square" : index % 5 === 2 ? "aspect-[4/5]" : index % 5 === 3 ? "aspect-[3/2]" : "aspect-[9/16]";
+          {templateMedia.copperGlow.gallery.map((card, index) => {
+            const artwork = artworks[index] ?? artworks[index % Math.max(artworks.length, 1)];
+            const href = artwork ? `/${manifest.id}/artwork/${artwork.slug}` : `/${manifest.id}/gallery`;
 
             return (
-              <Link key={artwork.id} href={`/${manifest.id}/artwork/${artwork.slug}`} className="group relative mb-16 block break-inside-avoid">
+              <Link key={card.title} href={href} className="group relative mb-16 block break-inside-avoid">
                 <div className="absolute inset-0 -z-10 bg-[#8c6a4f]/20 opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100" />
                 <div className="relative overflow-hidden bg-[#191b22]">
-                  <div className={`relative w-full ${aspect}`}>
+                  <div className={`relative w-full ${card.aspect}`}>
                     <Image
-                      src={artwork.imagePreview}
-                      alt={artwork.title}
+                      src={card.image}
+                      alt={card.title}
                       fill
                       sizes="(max-width: 1024px) 100vw, 33vw"
                       className="object-cover grayscale transition-all duration-700 ease-in-out group-hover:grayscale-0"
                     />
                   </div>
                   <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-[#11131a] via-transparent to-transparent p-8 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-                    <p className="mb-2 text-xs uppercase tracking-[0.2em] text-[#e8be9f]">Series 0{(index % 6) + 1}</p>
-                    <h3 className="font-[family-name:var(--font-geist-sans)] text-2xl font-black uppercase tracking-[-0.05em] text-[#e1e2eb]">
-                      {artwork.title}
+                    <p className="mb-2 text-xs uppercase tracking-[0.2em] text-[#e8be9f]" style={{ fontFamily: "Space Grotesk, sans-serif" }}>{card.series}</p>
+                    <h3 className="text-2xl font-bold uppercase tracking-[-0.05em] text-[#e1e2eb]" style={{ fontFamily: "Space Grotesk, sans-serif" }}>
+                      {card.title}
                     </h3>
                   </div>
                 </div>
@@ -279,9 +279,9 @@ export function CopperGlowGallery({ manifest, content, artworks }: CopperGlowGal
         </div>
 
         <div className="mt-12 flex justify-center">
-          <Link href={`/${manifest.id}/contacts`} className="group flex items-center gap-4 py-8 text-sm font-bold uppercase tracking-[0.2em] text-[#e8be9f] transition-all hover:tracking-[0.3em]">
+          <Link href={`/${manifest.id}/contacts`} className="group flex items-center gap-4 py-8 text-sm font-bold uppercase tracking-[0.2em] text-[#e8be9f] transition-all hover:tracking-[0.3em]" style={{ fontFamily: "Space Grotesk, sans-serif" }}>
             Explore More Works
-            <span className="transition-transform group-hover:translate-x-2">--&gt;</span>
+            <span className="material-symbols-outlined transition-transform group-hover:translate-x-2">arrow_forward</span>
           </Link>
         </div>
       </section>
@@ -309,7 +309,7 @@ export function CopperGlowDetail({ manifest, content, artwork, artworks }: Coppe
               />
               <div className="p-6 lg:hidden">
                 <p className="mb-2 text-xs uppercase tracking-[0.22em] text-[#e8be9f]">Series 01 // Catalyst</p>
-                <h1 className="font-[family-name:var(--font-geist-sans)] text-4xl font-black uppercase tracking-[-0.05em]">{artwork.title}</h1>
+                <h1 className="text-4xl font-bold uppercase tracking-[-0.05em]" style={{ fontFamily: "Space Grotesk, sans-serif" }}>{artwork.title}</h1>
               </div>
             </div>
 
@@ -329,7 +329,7 @@ export function CopperGlowDetail({ manifest, content, artwork, artworks }: Coppe
                 <span className="h-px w-8 bg-[#e8be9f]" />
                 <span className="text-xs uppercase tracking-[0.2em] text-[#e8be9f]">Limited Edition 1/5</span>
               </div>
-              <h1 className="font-[family-name:var(--font-geist-sans)] text-6xl font-black uppercase leading-none tracking-[-0.06em]">
+              <h1 className="text-6xl font-bold uppercase leading-none tracking-[-0.06em]" style={{ fontFamily: "Space Grotesk, sans-serif" }}>
                 {artwork.title.split(" ")[0]}
                 <br />
                 <span className="text-[#8c6a4f]">{artwork.title.split(" ").slice(1).join(" ") || "Glow"}</span>
@@ -392,7 +392,7 @@ export function CopperGlowDetail({ manifest, content, artwork, artworks }: Coppe
 
         <section className="mt-32 grid grid-cols-1 items-center gap-12 pb-40 md:grid-cols-12">
           <div className="order-2 md:order-1 md:col-span-5">
-            <h2 className="mb-8 font-[family-name:var(--font-geist-sans)] text-3xl font-black uppercase tracking-[-0.05em]">
+            <h2 className="mb-8 text-3xl font-bold uppercase tracking-[-0.05em]" style={{ fontFamily: "Space Grotesk, sans-serif" }}>
               The Process of <span className="text-[#e8be9f]">Luminescence</span>
             </h2>
             <div className="space-y-8">

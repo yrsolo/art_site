@@ -16,6 +16,20 @@
 - корневой `/` превращён в каталог сравнения вариантов;
 - старые top-level public routes переведены на redirect в default variant;
 - backend/admin/data layer оставлены общими.
+- для `cold-mist` выполнен literal-style перенос `home`, `gallery` и `detail` с использованием template media;
+- для `copper-glow` и `mint-rose` усилена близость к исходникам по media, типографике и композиции;
+- панель переключения вариантов вынесена в отдельный вертикальный rail на правом краю экрана;
+- статический showcase опубликован в bucket-hosted preview на `art.solofarm.ru`.
+
+## Локальные И Публичные Проверки
+
+- `npm run build:showcase` проходит успешно;
+- `bash scripts/docs-check.sh` проходит успешно;
+- публикация через `scripts/publish-showcase.ps1` выполнена успешно;
+- `http://art.solofarm.ru/cold-mist/` отвечает `200`;
+- `http://art.solofarm.ru/cold-mist/gallery/` отвечает `200`;
+- `http://art.solofarm.ru/copper-glow/gallery/` отвечает `200`;
+- `http://art.solofarm.ru/mint-rose/gallery/` отвечает `200`.
 
 ## Не Подтверждено Кодом Пока Что
 
@@ -23,7 +37,6 @@
 - полнота page coverage для missing screens внутри отдельных organic variants;
 - интеграция с Yandex Object Storage;
 - Docker-сборка;
-- deploy-конфигурация;
-- production env и домен `art.solofarm.ru`.
+- production admin/deploy контур для закрытой части.
 
 Эти пункты остаются следующими этапами после стабилизации variant architecture и последовательного faithful transfer каждого эскиза.
