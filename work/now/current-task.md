@@ -2,17 +2,16 @@
 
 ## Этап
 
-Local MVP implementation for `apps/web`.
+Variant catalog and independent frontend-faces architecture.
 
 ## Цель
 
-Поднять и зафиксировать локально работающий MVP:
-- публичные маршруты сайта;
-- theme switching;
-- админку с логином;
-- локальное JSON-хранилище картин;
-- локальную загрузку изображений;
-- базовые команды запуска и проверки.
+Перевести проект от theme-like public UI к architecture of independent frontend variants:
+- зафиксировать каталог эскизов в docs;
+- описать 6 самостоятельных витрин;
+- вынести public routes под variant namespace;
+- сохранить общий backend/admin/data layer;
+- убрать смешение разных дизайн-языков в одном публичном интерфейсе.
 
 ## Граница Этапа
 

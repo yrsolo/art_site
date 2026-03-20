@@ -1,63 +1,45 @@
-import Link from "next/link";
-
-import { ArtworkCard } from "@/components/artwork-card";
-import { SectionTitle } from "@/components/section-title";
-import { SiteShell } from "@/components/site-shell";
-import { getArtworkRepository } from "@/server/repository";
-import { getCurrentTheme } from "@/server/theme";
+import { VariantCatalogCard } from "@/components/public/variant-catalog-card";
+import { listVariants } from "@/features/variants";
 
 export const dynamic = "force-dynamic";
 
-export default async function HomePage() {
-  const repository = getArtworkRepository();
-  const [theme, artworks] = await Promise.all([getCurrentTheme(), repository.listPublic()]);
-  const featured = artworks.slice(0, 3);
+export default function HomePage() {
+  const variants = listVariants();
 
   return (
-    <SiteShell
-      theme={theme}
-      currentPath="/"
-      currentThemeId={theme.id}
-      hero={
-        <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-18 md:py-24 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-3xl space-y-6">
-            <p className="text-xs uppercase tracking-[0.35em] opacity-70">Painter portfolio</p>
-            <h1 className="text-5xl font-semibold leading-none md:text-7xl">
-              A local-first gallery MVP that keeps the artwork at the center.
+    <main className="min-h-screen bg-[#f5f1ea] text-[#1f1e1b]">
+      <section className="border-b border-black/10 bg-[radial-gradient(circle_at_top_right,_rgba(140,106,79,0.12),_transparent_32%),linear-gradient(135deg,_#f6f0e8,_#f3ece3_58%,_#ebe3d5)]">
+        <div className="mx-auto flex max-w-7xl flex-col gap-8 px-6 py-18 md:py-24">
+          <div className="space-y-4">
+            <p className="text-xs uppercase tracking-[0.35em] opacity-70">Variant catalog</p>
+            <h1 className="max-w-5xl text-5xl font-semibold leading-none md:text-7xl">
+              Six independent front faces over one shared backend.
             </h1>
-            <p className={`max-w-2xl text-lg ${theme.subtleClassName}`}>
-              This first version supports multiple visual directions, a public gallery, detailed artwork pages,
-              and a simple private admin panel powered by local JSON and local uploads.
+            <p className="max-w-3xl text-lg text-black/70">
+              The point of comparison is the sharpness of difference. Each variant keeps its own layout, pacing,
+              typography, and tone so the final choice remains real instead of collapsing into a mixed compromise.
             </p>
           </div>
-          <div className={`max-w-sm rounded-[2rem] p-6 ${theme.cardClassName}`}>
-            <p className="text-sm uppercase tracking-[0.2em] opacity-70">Current direction</p>
-            <p className="mt-3 text-2xl font-semibold">{theme.label}</p>
-            <p className={`mt-3 text-sm ${theme.subtleClassName}`}>{theme.description}</p>
+          <div className="rounded-[2rem] border border-black/10 bg-white/80 p-6 backdrop-blur-sm">
+            <p className="text-sm font-medium">Current rule</p>
+            <p className="mt-2 text-sm text-black/65">
+              Universalize backend, auth, repository and media contracts only. Keep frontend faces independent.
+            </p>
           </div>
         </div>
-      }
-    >
-      <section className="space-y-8">
-        <SectionTitle
-          eyebrow="Selected works"
-          title="A calm, intentional first pass for the artist's public portfolio."
-          description="The public layer is already reading from the same local repository as the admin, so the next iterations can focus on content and polish instead of restructuring."
-        />
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 py-10">
+        <div className="mb-8 space-y-3">
+          <p className="text-xs uppercase tracking-[0.25em] opacity-70">Available variants</p>
+          <h2 className="text-3xl font-semibold md:text-5xl">Compare families, not colors.</h2>
+        </div>
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {featured.map((artwork) => (
-            <ArtworkCard key={artwork.id} artwork={artwork} theme={theme} />
+          {variants.map((variant) => (
+            <VariantCatalogCard key={variant.id} variant={variant} />
           ))}
         </div>
-        <div className="flex flex-wrap gap-4">
-          <Link href="/gallery" className={`rounded-full px-5 py-3 text-sm font-medium ${theme.accentClassName}`}>
-            Open gallery
-          </Link>
-          <Link href="/admin" className={`rounded-full border px-5 py-3 text-sm font-medium ${theme.cardClassName}`}>
-            Open admin
-          </Link>
-        </div>
       </section>
-    </SiteShell>
+    </main>
   );
 }
