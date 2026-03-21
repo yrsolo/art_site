@@ -44,6 +44,7 @@ export async function createSession(username: string) {
     sameSite: appConfig.cookieSameSite,
     secure: appConfig.cookieSecure,
     path: appConfig.cookiePath,
+    domain: appConfig.cookieDomain,
     expires: new Date(expiresAt),
   });
 }

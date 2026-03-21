@@ -28,6 +28,7 @@
 - `bash scripts/docs-check.sh`
 - `powershell -ExecutionPolicy Bypass -File scripts/publish-showcase.ps1`
 - `powershell -ExecutionPolicy Bypass -File scripts/publish-admin.ps1`
+- `powershell -ExecutionPolicy Bypass -File scripts/deploy-yc-web.ps1`
 
 `apps/web` — это backend-only runtime.
 `apps/showcase` и `apps/admin` — статические сборки для Object Storage.

@@ -126,3 +126,45 @@
 - подключение реального bucket-backed snapshot к `publish-showcase` на постоянной основе в production;
 - live-проверка полного auth/upload/content flow против облачного backend runtime;
 - дальнейшее добивание literal-transfer эскизов после стабилизации нового admin/data контура.
+
+## 2026-03-21 - Infra rollout for admin/art/api split
+
+- Added application-side cross-subdomain support in `apps/web`:
+  - CORS headers for allowed admin origins
+  - configurable `COOKIE_DOMAIN`
+  - updated env contract for `ADMIN_ALLOWED_ORIGINS`
+- Rebuilt and validated the backend runtime after these changes:
+  - `npm run lint --workspace web`
+  - `npm run build --workspace web`
+  - `docker build -t art-site-api-test .`
+  - local smoke via container:
+    - `http://127.0.0.1:3300/api/health` -> `200`
+    - preflight `OPTIONS /api/auth/session` with origin `http://localhost:3001` -> `204` with `Access-Control-Allow-Origin`
+- Created and published the static admin bucket:
+  - bucket `admin.art.solofarm.ru`
+  - website settings `index.html` / `404.html`
+  - DNS record `admin.art.solofarm.ru -> admin.art.solofarm.ru.website.yandexcloud.net.`
+  - managed certificate `art-site-admin` issued and attached to the bucket
+- Live checks after publish:
+  - `http://admin.art.solofarm.ru/` -> `200`
+  - `https://admin.art.solofarm.ru/` -> `200`
+- Built and pushed backend image:
+  - `cr.yandex/crp5tssh5qkdk7mgcilj/art-site/api:20260321-1`
+- Created backend container `art-site-api`
+- Deployed active revision for that container with production env pointing to Object Storage-backed JSON data
+- Created API Gateway `art-site-api`
+- Requested and issued managed certificate `art-site-api` for `api.art.solofarm.ru`
+- Added DNS record:
+  - `api.art.solofarm.ru -> d5d2ud8npokvtedl4fnl.aqkd4clz.apigw.yandexcloud.net.`
+
+### Unresolved blocker
+
+- The API contour is not yet publicly working even though the image, container, gateway, certificate, and DNS preparation exist.
+- Observed state:
+  - direct container URL returns `403 Forbidden: Not authorized`
+  - gateway domain requests time out
+  - `yc serverless container allow-unauthenticated-invoke` returns `PermissionDenied`
+  - `yc serverless container add-access-binding --role serverless-containers.containerInvoker ...` also returns `PermissionDenied`
+- Conclusion:
+  - current cloud credentials are sufficient for bucket publication, image push, container revision deploy, gateway creation, DNS, and certificates;
+  - current credentials are not sufficient to finish the invoke-permission wiring required for `api.art.solofarm.ru`.

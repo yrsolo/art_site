@@ -33,13 +33,24 @@ Deploy теперь разбит на три независимых контур
 2. Sync `apps/admin/out` to the admin bucket
 3. Point `admin.art.solofarm.ru` to that bucket website endpoint
 4. Build admin with correct `NEXT_PUBLIC_API_BASE_URL`
+5. If HTTPS is needed on the bucket host, request a managed certificate and attach it with `yc storage bucket set-https`
 
 ## API Runtime Flow
 
 1. Build `apps/web`
 2. Package and deploy it as Serverless Container
 3. Attach environment/secrets for Object Storage access and session signing
-4. Expose it as `api.art.solofarm.ru`
+4. Expose it through API Gateway as `api.art.solofarm.ru`
+
+## Current Live State
+
+- `art.solofarm.ru` -> working static showcase bucket
+- `admin.art.solofarm.ru` -> static admin bucket is published and DNS is created
+- `api.art.solofarm.ru` -> certificate and DNS preparation are created, but the API contour still needs final invoke wiring between gateway and container
+
+## Operational Note
+
+If `admin` is served from `admin.art.solofarm.ru` and API is served from `api.art.solofarm.ru`, the backend must return CORS headers for the admin origin and set session cookies with a shared domain such as `.art.solofarm.ru`. This repo now includes that application-side support; cloud-side invoke permissions for the container still have to be in place.
 
 ## Notes
 

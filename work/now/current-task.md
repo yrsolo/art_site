@@ -43,3 +43,12 @@ Static frontend split with backend-only container and bucket-backed content sour
 - `copper-glow` public layout is now centered and constrained instead of stretching elastically across the whole viewport.
 - `cold-mist` hero heading spacing was relaxed so the large Russian lines no longer collapse into each other.
 - Public copy is being moved to Russian not only inside literal screens, but also in shared variant content used by the showcase catalog and organic variants.
+
+## Update 2026-03-21 Infra rollout
+
+- Public static showcase is already live on `art.solofarm.ru`.
+- The next operational step is to bring the separated admin and API contours online without collapsing them back into one mixed runtime.
+- Target cloud shape for this rollout:
+  - `admin.art.solofarm.ru` -> static admin bucket publication
+  - `api.art.solofarm.ru` -> backend-only runtime behind a dedicated gateway/domain
+- This pass also includes hardening local deploy scripts so bucket publication and container rollout are reproducible from the repo instead of being one-off console actions.
