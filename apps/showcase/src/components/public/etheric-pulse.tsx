@@ -75,7 +75,30 @@ function EthericPulseLayout({
   );
 }
 
-function EthericFooter() {
+function EthericFooter({ manifest }: { manifest: VariantManifest }) {
+  const basePath = `/${manifest.id}`;
+
+  return (
+    <footer className="w-full bg-transparent py-20">
+      <div className="flex w-full flex-col items-center gap-12 px-4">
+        <div className="flex flex-wrap justify-center gap-12 text-sm uppercase tracking-widest">
+          <Link href={`${basePath}/gallery`} className="text-[#e1e4fb]/40 transition-all duration-700 hover:text-[#a894ff] hover:tracking-[0.2em]">
+            Галерея
+          </Link>
+          <Link href={`${basePath}/about`} className="text-[#e1e4fb]/40 transition-all duration-700 hover:text-[#a894ff] hover:tracking-[0.2em]">
+            О художнице
+          </Link>
+          <Link href={`${basePath}/contacts`} className="text-[#e1e4fb]/40 transition-all duration-700 hover:text-[#a894ff] hover:tracking-[0.2em]">
+            Связь
+          </Link>
+        </div>
+        <p className="text-xs uppercase tracking-[0.2em] text-[#e1e4fb]/40">© 2024 Потоки энергии. Создано в тишине.</p>
+      </div>
+    </footer>
+  );
+}
+
+function EthericLegacyFooter() {
   return (
     <footer className="w-full bg-transparent py-20">
       <div className="flex w-full flex-col items-center gap-12 px-4">
@@ -166,7 +189,7 @@ export function EthericPulseHome({ manifest, content }: VariantProps) {
         </div>
       </section>
 
-      <EthericFooter />
+      <EthericFooter manifest={manifest} />
     </EthericPulseLayout>
   );
 }
@@ -176,7 +199,7 @@ export function EthericPulseGallery({ manifest, content, artworks }: GalleryProp
     <EthericPulseLayout manifest={manifest} content={content} currentRoute="gallery">
       <EthericPulseGalleryClient variantId={manifest.id} artworks={artworks} />
 
-      <EthericFooter />
+      <EthericFooter manifest={manifest} />
     </EthericPulseLayout>
   );
 }
@@ -287,7 +310,7 @@ export function EthericPulseAbout({ manifest, content }: VariantProps) {
         </div>
       </main>
 
-      <EthericFooter />
+      <EthericFooter manifest={manifest} />
     </EthericPulseLayout>
   );
 }

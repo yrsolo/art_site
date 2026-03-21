@@ -364,3 +364,25 @@
 - Group collapse state in admin and public galleries is not persisted across page reloads yet.
 - The new priority page currently targets desktop / pointer workflows first; touch-optimized drag-and-drop is a later refinement.
 - The variants now have shared real grouping logic, but some gallery surfaces still need later fidelity polish to match their original template micro-states more closely.
+
+## 2026-03-21 - Prototype CTA cleanup for public variants
+
+- Removed the remaining obviously fake-looking gallery/detail actions that still suggested real behavior without being wired:
+  - `etheric-pulse` footer links no longer point to `#`; they now lead to real internal routes for gallery, about, and contacts.
+  - `cold-mist` detail secondary CTA now routes to contacts as a specification request instead of pretending to download a file.
+  - `copper-glow` detail now uses a real inquiry tile instead of a `PLAY` placeholder square.
+  - `copper-glow` detail secondary CTA now routes to contacts as a specification request instead of pretending to download a file.
+
+### Validation
+
+- `npm run build:showcase`
+- `powershell -ExecutionPolicy Bypass -File scripts/publish-showcase.ps1`
+- Live GET checks after publish:
+  - `http://art.solofarm.ru/etheric-pulse/` -> `200`
+  - `http://art.solofarm.ru/cold-mist/artwork/cold-mist-mist-01/` -> `200`
+  - `http://art.solofarm.ru/copper-glow/artwork/copper-glow-thin-line/` -> `200`
+
+### Still unresolved
+
+- Contact forms remain the only intentionally fake flow.
+- Some decorative labels such as static exhibition metadata are still present by design and may later be replaced only if a stronger backend source appears for them.

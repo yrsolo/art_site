@@ -306,9 +306,9 @@ export function ColdMistDetail({ manifest, content, artwork }: ColdMistDetailPro
               <Link href={`/${manifest.id}/contacts`} className="bg-[#bfc7cf] text-[#394148] py-6 px-8 text-sm uppercase tracking-[0.2em] font-bold hover:bg-[#cdd5dd] transition-colors duration-400 active:scale-[0.98] text-center">
                 {content.detail.inquiryLabel}
               </Link>
-              <button className="bg-[#16202e] text-[#d9e6fd] py-6 px-8 text-sm uppercase tracking-[0.2em] font-medium hover:bg-[#1e2d41] transition-colors duration-400" type="button">
-                Скачать спецификацию
-              </button>
+              <Link href={`/${manifest.id}/contacts`} className="bg-[#16202e] py-6 px-8 text-center text-sm uppercase tracking-[0.2em] font-medium text-[#d9e6fd] hover:bg-[#1e2d41] transition-colors duration-400">
+                Запросить спецификацию
+              </Link>
             </div>
           </div>
 

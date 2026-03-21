@@ -101,3 +101,11 @@ Static frontend split with backend-only container and bucket-backed content sour
   - adapt grouping controls and group headers per sketch so they feel native to each variant instead of looking generic;
   - extend the admin grouped list from one global collapse flag to full per-group collapse / expand controls;
   - add a dedicated order-management surface in admin that edits the shared `sortOrder` used by every showcase variant.
+
+## Update 2026-03-21 Prototype CTA cleanup
+
+- After grouped galleries landed, the next small hardening pass is removing leftover fake-looking actions from public variants.
+- Focus for this pass:
+  - replace decorative `href="#"` footer links with real internal routes;
+  - replace pseudo-actions such as `PLAY` and `Скачать спецификацию` with real inquiry/navigation flows where no real download exists yet;
+  - keep contact forms as the only intentionally fake workflow.

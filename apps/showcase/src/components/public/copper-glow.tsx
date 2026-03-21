@@ -277,7 +277,9 @@ export function CopperGlowDetail({ manifest, content, artwork, artworks }: Coppe
                       <Image src={item.imagePreview} alt={item.title} width={400} height={400} className="h-full w-full object-cover opacity-50 transition-opacity group-hover:opacity-100" />
                     </Link>
                   ))}
-              <div className="flex aspect-square items-center justify-center bg-[#282a31] text-[#e8be9f]">PLAY</div>
+              <Link href={`/${manifest.id}/contacts`} className="flex aspect-square items-center justify-center bg-[#282a31] text-xs uppercase tracking-[0.22em] text-[#e8be9f] transition-colors hover:bg-[#8c6a4f]/20">
+                Запрос
+              </Link>
             </div>
           </div>
 
@@ -334,9 +336,9 @@ export function CopperGlowDetail({ manifest, content, artwork, artworks }: Coppe
                 {content.detail.inquiryLabel}
                 <span>--&gt;</span>
               </Link>
-              <button className="w-full border border-[#4f453d]/20 py-5 text-xs uppercase tracking-[0.2em] text-[#e1e2eb] transition-all hover:bg-[#282a31]">
-                Скачать спецификацию
-              </button>
+              <Link href={`/${manifest.id}/contacts`} className="block w-full border border-[#4f453d]/20 py-5 text-center text-xs uppercase tracking-[0.2em] text-[#e1e2eb] transition-all hover:bg-[#282a31]">
+                Запросить спецификацию
+              </Link>
             </div>
 
             <div className="flex items-center justify-between border-t border-[#4f453d]/10 pt-8">
