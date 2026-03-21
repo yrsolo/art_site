@@ -6,12 +6,14 @@ export function artworkMeta(artwork: Artwork) {
 
 export function statusLabel(status: Artwork["status"]) {
   switch (status) {
-    case "available":
-      return "Available";
+    case "for_sale":
+      return "Продаётся";
     case "sold":
-      return "Sold";
-    case "hidden":
-      return "Hidden";
+      return "Продана";
+    case "off_market":
+      return "Снята с продажи";
+    case "in_progress":
+      return "В процессе";
     default:
       return status;
   }

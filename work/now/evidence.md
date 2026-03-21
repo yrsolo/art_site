@@ -35,9 +35,9 @@
 
 - точный 1:1 перенос каждого `code.html` и `screen.png` в production-grade React implementation;
 - полнота page coverage для missing screens внутри отдельных organic variants;
-- интеграция с Yandex Object Storage;
-- Docker-сборка;
-- production admin/deploy контур для закрытой части.
+- финальная облачная публикация статической админки на отдельный bucket/domain;
+- production-поддомены `admin.art.solofarm.ru` и `api.art.solofarm.ru`;
+- финальная контейнерная публикация API runtime.
 
 Эти пункты остаются следующими этапами после стабилизации variant architecture и последовательного faithful transfer каждого эскиза.
 
@@ -80,5 +80,49 @@
   - `http://art.solofarm.ru/etheric-pulse/` -> 200
   - `http://art.solofarm.ru/etheric-pulse/gallery/` -> 200
   - `http://art.solofarm.ru/etheric-pulse/about/` -> 200
-  - `http://art.solofarm.ru/copper-glow/` -> 200
-  - `http://art.solofarm.ru/cold-mist/` -> 200
+- `http://art.solofarm.ru/copper-glow/` -> 200
+- `http://art.solofarm.ru/cold-mist/` -> 200
+
+## 2026-03-21 - Static admin + backend-only runtime architecture
+
+- Добавлен новый workspace `apps/admin` как статический frontend для админки.
+- `apps/web` очищен от публичного route layer и теперь собирается как backend-only runtime с API для:
+  - auth/session/change-password
+  - artwork CRUD
+  - photo upload/delete/set primary
+  - content version CRUD + publish
+  - public snapshot export
+- Источник истины для runtime данных переведён на Object Storage-backed JSON layer с локальным fallback-режимом.
+- Расширена доменная модель лота:
+  - multiple photos
+  - series
+  - materials
+  - price/currency
+  - `showInGallery`
+  - `primaryPhotoId`
+  - новые статусы `for_sale | sold | off_market | in_progress`
+- Добавлен bootstrap auth settings flow с паролем `333` и флагом `passwordIsDefault`.
+- `apps/showcase` теперь умеет читать published snapshot из generated JSON input и использовать fallback только если snapshot ещё не выгружен.
+- Добавлены/обновлены operational files:
+  - `.env.example`
+  - `scripts/publish-showcase.ps1`
+  - `scripts/publish-admin.ps1`
+  - `scripts/test.sh`
+  - docs по backend/env/commands/deploy
+
+### Проверки
+
+- `npm install`
+- `npm run lint --workspace web`
+- `npm run lint --workspace admin`
+- `npm run build --workspace web`
+- `npm run build --workspace admin`
+- `npm run build --workspace showcase`
+- `bash scripts/docs-check.sh`
+
+### Осталось
+
+- отдельная облачная публикация static admin на bucket/domain;
+- подключение реального bucket-backed snapshot к `publish-showcase` на постоянной основе в production;
+- live-проверка полного auth/upload/content flow против облачного backend runtime;
+- дальнейшее добивание literal-transfer эскизов после стабилизации нового admin/data контура.

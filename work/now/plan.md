@@ -1,10 +1,10 @@
 # Plan
 
-1. Зафиксировать literal-transfer метод и не смешивать визуальные системы разных витрин
-2. Довести `cold-mist` до близкого 1:1 переноса на home/gallery/detail, включая исходные media
-3. Подтянуть `copper-glow` и `mint-rose` к исходным шаблонам по типографике, media и композиции
-4. Оставить backend/admin/data общими и не трогать их без необходимости
-5. Обновить docs/tracking, пересобрать static showcase и опубликовать его
+1. Расширить доменную модель данных лотов, фото, текстовых версий и admin settings
+2. Перевести `apps/web` в backend-only runtime с Object Storage-backed repositories, API и session auth
+3. Создать `apps/admin` как статический frontend с login, таблицей лотов, редактором карточки и настройками
+4. Подключить `apps/showcase` к published snapshot вместо локально захардкоженных artworks/content
+5. Обновить env/docs/scripts и прогнать build/lint/publish-проверки для нового контура
 
 ## Update 2026-03-20
 

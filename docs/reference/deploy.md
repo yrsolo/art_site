@@ -2,43 +2,47 @@
 
 ## Current Direction
 
-Public preview now has a simpler first stage:
+Deploy теперь разбит на три независимых контура:
 
-- `apps/showcase` is exported as a static site
-- the static export is published to Yandex Object Storage website hosting
-- `art.solofarm.ru` points to the website endpoint
-
-This is intentionally separate from the future admin runtime.
-
-Admin, authentication, uploads, and mutable API routes stay in `apps/web` and can move to Docker later without blocking publication of the public fronts.
+- `apps/showcase` — статическая публичная витрина в Object Storage
+- `apps/admin` — статическая админка в отдельном bucket/domain или на отдельном prefix
+- `apps/web` — backend-only runtime в контейнере для auth, API, uploads и export snapshot
 
 ## Current Cloud Findings
 
 - Public DNS zone `solofarm.ru.` already exists in Yandex Cloud.
 - `art.solofarm.ru` can be served through Object Storage website hosting.
-- The preview bucket should match the host name: `art.solofarm.ru`.
-- Existing bucket `art-site` can stay reserved for future application assets.
+- Existing bucket `art-site` can be used as data/media bucket or as shared operational bucket.
+- `admin.art.solofarm.ru` remains the clean target for static admin publication, but for v1 the same storage account may still be used with a dedicated bucket.
 
 ## Static Preview Flow
 
 1. Build the static showcase:
    - `npm run build:showcase`
+   - before build the script can pull `private/data/export/public-site.json` into generated input for the showcase build
 2. Configure the bucket website entry point:
    - `index.html`
    - `404.html`
 3. Sync `apps/showcase/out` to bucket `art.solofarm.ru`
 4. Point DNS record `art.solofarm.ru` to `art.solofarm.ru.website.yandexcloud.net.`
 
+## Static Admin Flow
+
+1. Build the static admin:
+   - `npm run build:admin`
+2. Sync `apps/admin/out` to the admin bucket
+3. Point `admin.art.solofarm.ru` to that bucket website endpoint
+4. Build admin with correct `NEXT_PUBLIC_API_BASE_URL`
+
+## API Runtime Flow
+
+1. Build `apps/web`
+2. Package and deploy it as Serverless Container
+3. Attach environment/secrets for Object Storage access and session signing
+4. Expose it as `api.art.solofarm.ru`
+
 ## Notes
 
-- For Object Storage website hosting, nested routes should be exported with trailing slashes so each route resolves through its own `index.html`.
-- The public showcase should remain read-only. Admin and uploads are intentionally deferred to the later containerized runtime.
-
-## Later Step
-
-When we are ready to ship admin and authenticated uploads:
-
-1. Build and run `apps/web` in Docker
-2. Publish the runtime to Serverless Containers or another compute target
-3. Keep `art.solofarm.ru` either on the static showcase or switch it to the full app after approval
-4. Move uploaded assets to Object Storage-backed APIs
+- Public showcase should stay read-only and build from published snapshot data.
+- Admin frontend must stay static; changing its UI should require only republishing the bucket, not redeploying the container.
+- Container redeploy is needed only for backend code and secret/runtime changes.

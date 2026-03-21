@@ -1,10 +1,7 @@
-import artworksJson from "@/data/artworks.json";
-import type { Artwork } from "@/features/artworks/types";
-
-const artworks = artworksJson as Artwork[];
+import { getDisplayArtworks } from "@/data/public-site";
 
 export function listPublicArtworks() {
-  return artworks.filter((artwork) => artwork.status !== "hidden").sort((a, b) => a.order - b.order);
+  return getDisplayArtworks();
 }
 
 export function getPublicArtworkBySlug(slug: string) {

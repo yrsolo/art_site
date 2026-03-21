@@ -9,38 +9,48 @@
 
 ## Нужные Группы Переменных
 
-### Public Site
+### API Runtime
 
 - `NEXT_PUBLIC_SITE_URL`
-- `NEXT_PUBLIC_SITE_DOMAIN`
-
-### Admin Auth
-
-- `ADMIN_USERNAME`
-- `ADMIN_PASSWORD`
-- `SESSION_SECRET`
+- `NEXT_PUBLIC_API_BASE_URL`
+- `SESSION_SIGNING_SECRET`
+- `ADMIN_BOOTSTRAP_PASSWORD`
+- `COOKIE_NAME`
+- `COOKIE_SECURE`
+- `COOKIE_SAMESITE`
+- `COOKIE_PATH`
+- `SESSION_TTL_SECONDS`
 
 ### Object Storage
 
-- `YC_STORAGE_BUCKET`
-- `YC_STORAGE_REGION`
-- `YC_ACCESS_KEY_ID`
-- `YC_SECRET_ACCESS_KEY`
-- `YC_STORAGE_ENDPOINT`
+- `OBJECT_STORAGE_MODE`
+- `OBJECT_STORAGE_ENDPOINT`
+- `OBJECT_STORAGE_REGION`
+- `OBJECT_STORAGE_BUCKET`
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `OBJECT_STORAGE_DATA_PREFIX`
+- `OBJECT_STORAGE_MEDIA_PREFIX`
+- `OBJECT_STORAGE_PUBLIC_SNAPSHOT_PREFIX`
+- `PUBLIC_SITE_SNAPSHOT_KEY`
 
-### Metadata Storage
+### Локальные Fallback Пути
 
-- `ARTWORKS_DATA_FILE`
+- `LOCAL_RUNTIME_ROOT`
+- `LOCAL_PUBLIC_SNAPSHOT_FILE`
+- `LOCAL_MEDIA_ROOT`
+
+### Static Admin Publish
+
+- `NEXT_PUBLIC_ADMIN_BASE_URL`
+- `ADMIN_OBJECT_STORAGE_BUCKET`
 
 ## Локальный MVP
 
-На текущем этапе для локального сценария достаточно:
-- `ADMIN_USERNAME`
-- `ADMIN_PASSWORD`
-- `SESSION_SECRET`
-- `ARTWORKS_DATA_FILE`
+Для локального сценария можно стартовать в `OBJECT_STORAGE_MODE=local`.
+Тогда runtime складывает JSON и exported snapshot в локальную `.runtime-storage`, а static admin/showcase продолжают собираться без облачного bucket.
 
-Yandex Cloud переменные пока не блокируют локальную разработку и понадобятся на следующем инфраструктурном этапе.
+В production-режиме основной источник истины — Object Storage-backed JSON.
 
 ## Правила
 

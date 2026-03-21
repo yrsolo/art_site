@@ -1,15 +1,22 @@
 import { NextResponse } from "next/server";
 
-import { getSession } from "@/server/auth";
-import { getArtworkRepository } from "@/server/repository";
+import { reorderArtworks } from "@/server/artwork-repository";
+import { badRequest, unauthorized } from "@/server/http";
+import { requireSession } from "@/server/session";
 
 export async function POST(request: Request) {
-  if (!(await getSession())) {
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+  try {
+    await requireSession();
+  } catch {
+    return unauthorized();
   }
 
-  const body = (await request.json()) as { idsInOrder?: string[] };
-  const idsInOrder = Array.isArray(body.idsInOrder) ? body.idsInOrder : [];
-  const artworks = await getArtworkRepository().reorder(idsInOrder);
+  const body = (await request.json()) as { ids?: string[] };
+
+  if (!Array.isArray(body.ids)) {
+    return badRequest("ids array is required.");
+  }
+
+  const artworks = await reorderArtworks(body.ids);
   return NextResponse.json({ artworks });
 }

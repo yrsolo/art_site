@@ -2,21 +2,27 @@
 
 ## Этап
 
-Literal transfer of public variant screens from source templates.
+Static frontend split with backend-only container and bucket-backed content source.
 
 ## Цель
 
-Сохранить уже выделенную variant-архитектуру, но перестать делать "похожие" витрины.
+Перевести проект из схемы `mixed Next app` в новую архитектуру:
+- `apps/showcase` как статическая публичная витрина;
+- `apps/admin` как статическая админка;
+- `apps/web` как backend-only runtime для auth, API, uploads и публикации данных;
+- Object Storage как источник истины для JSON-данных, медиа и published snapshot.
+
 Текущий фокус:
-- переносить `cold-mist`, `copper-glow`, `mint-rose` от исходных `code.html`, а не от усреднённых React-компонентов;
-- использовать оригинальные template media, тексты, типографику и композицию там, где это возможно;
-- держать общими только backend/data/admin слои;
-- не смешивать визуальные решения разных витрин.
+- расширить доменную модель лотов до production-полей;
+- завести storage-backed repositories и bootstrap auth settings;
+- собрать нейтральную статическую админку с таблицей лотов, редактором карточки и редактором текстовых версий;
+- подключить `showcase` к published snapshot вместо жёстко прошитых данных;
+- подготовить publish/deploy scripts и docs под новую схему.
 
 ## Граница Этапа
 
-В этот этап не входит админская инфраструктура, Docker и production backend-публикация.
-Публичная витрина продолжает жить как статический showcase.
+В этот этап входит рабочий MVP нового admin/data/runtime-контура.
+Не входит: финальная облачная полировка доменов, полное закрытие старых public route слоёв внутри `apps/web`, идеальный production hardening и все будущие role-based расширения.
 
 ## Update 2026-03-20
 

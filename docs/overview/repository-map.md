@@ -14,7 +14,9 @@
 
 ## Продуктовый Код
 
-- `apps/web/` — основной Next.js app для сайта и админки
+- `apps/showcase/` — статическая публичная витрина с route-per-variant страницами
+- `apps/admin/` — статический админский frontend для лотов, текстов и настроек
+- `apps/web/` — backend-only Next.js runtime для auth, API, uploads и export snapshot
 
 ## Документация
 

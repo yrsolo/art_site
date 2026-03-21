@@ -9,6 +9,9 @@
 **/node_modules
 **/.next
 **/out
+apps/showcase/src/generated
+apps/admin/out
+apps/admin/.next
 apps/web/.devserver*
 apps/web/.startserver*
 
