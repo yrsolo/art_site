@@ -219,6 +219,29 @@
 - `scripts/publish-showcase.ps1` was corrected to fetch snapshot input from the runtime data bucket (`OBJECT_STORAGE_BUCKET`, currently `art-site`) instead of the public site bucket.
 - `scripts/deploy-yc-web.ps1` was corrected to avoid sending forbidden `PORT` env to Yandex Serverless Container revisions.
 
+## 2026-03-21 - Artwork editor moved to overlay drawer
+
+- Reworked the admin lots page so the artwork editor no longer lives as a long inline block below the table.
+- `Создать новый лот` now opens a dedicated right-side overlay drawer with the empty artwork form.
+- `Открыть` now opens the selected artwork in the same overlay drawer instead of forcing the user to scroll down through the imported lots table.
+- Updated styles in the static admin for:
+  - fixed backdrop
+  - right-side drawer
+  - full-height scrolling editor panel
+- Validation:
+  - `npm run build:admin`
+  - `powershell -ExecutionPolicy Bypass -File scripts/publish-admin.ps1`
+  - live Playwright verification on `https://admin.art.solofarm.ru/login/`:
+    - login with `admin / 333`
+    - click `Создать новый лот` -> overlay drawer with `Новая картина`
+    - close drawer
+    - click `Открыть` on an existing lot -> overlay drawer with that artwork card
+
+### Remaining follow-up
+
+- The drawer intentionally blocks interaction with the table while open.
+- If faster switching between lots is needed later, the next refinement would be in-drawer next/previous controls or direct row switching without closing the drawer first.
+
 ### Verification
 
 - `npm run lint --workspace web`

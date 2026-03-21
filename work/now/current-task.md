@@ -66,3 +66,9 @@ Static frontend split with backend-only container and bucket-backed content sour
 - Added a server-side import path that converts current sketch gallery images into editable runtime lots with stored photos, metadata, and snapshot export.
 - Imported sketch galleries are now represented in the runtime artwork repository instead of only existing as template-only media in the public showcase layer.
 - Public snapshot was rebuilt from the runtime data bucket after import, so showcase publication can now follow the editable artwork dataset rather than only fallback hardcoded data.
+
+## Update 2026-03-21 Artwork drawer UX
+
+- Artwork creation and opening now use a dedicated overlay drawer instead of rendering the editor deep below the long lots table.
+- This keeps the working context near the user even when the repository already contains dozens of imported sketch lots.
+- The admin lots list remains the stable base layer, while create/open actions bring the card editor to the foreground as a separate panel.
