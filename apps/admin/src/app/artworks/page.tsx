@@ -8,6 +8,10 @@ import { createEmptyArtwork } from "@/lib/defaults";
 import { artworkStatuses, type Artwork, type ArtworkSummary } from "@/lib/types";
 
 type GroupMode = "all" | "year" | "series" | "status";
+type GroupedCollection = {
+  label: string;
+  items: ArtworkSummary[];
+};
 
 function formatStatus(status: string) {
   switch (status) {
@@ -44,7 +48,7 @@ export default function ArtworksPage() {
   const [message, setMessage] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [groupMode, setGroupMode] = useState<GroupMode>("all");
-  const [groupsCollapsed, setGroupsCollapsed] = useState(false);
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
 
   async function loadList(nextSelectedId?: string | null) {
     const response = await apiFetch<{ artworks: ArtworkSummary[] }>("/api/admin/artworks");
@@ -76,7 +80,7 @@ export default function ArtworksPage() {
 
   const sortedItems = useMemo(() => [...items].sort((left, right) => left.sortOrder - right.sortOrder), [items]);
 
-  const groupedItems = useMemo(() => {
+  const groupedItems = useMemo<GroupedCollection[]>(() => {
     if (groupMode === "all") {
       return [];
     }
@@ -109,20 +113,39 @@ export default function ArtworksPage() {
     setArtwork((current) => ({ ...current, [key]: value }));
   }
 
+  function collapseStateForAll() {
+    return groupedItems.every((group) => collapsedGroups[group.label]);
+  }
+
   function handleGroupModeClick(nextMode: GroupMode) {
     if (nextMode === "all") {
       setGroupMode("all");
-      setGroupsCollapsed(false);
       return;
     }
 
     if (groupMode === nextMode) {
-      setGroupsCollapsed((current) => !current);
+      const nextValue = !collapseStateForAll();
+      setCollapsedGroups(Object.fromEntries(groupedItems.map((group) => [group.label, nextValue])));
       return;
     }
 
     setGroupMode(nextMode);
-    setGroupsCollapsed(false);
+    setCollapsedGroups({});
+  }
+
+  function toggleGroup(label: string) {
+    setCollapsedGroups((current) => ({
+      ...current,
+      [label]: !current[label],
+    }));
+  }
+
+  function collapseAll() {
+    setCollapsedGroups(Object.fromEntries(groupedItems.map((group) => [group.label, true])));
+  }
+
+  function expandAll() {
+    setCollapsedGroups(Object.fromEntries(groupedItems.map((group) => [group.label, false])));
   }
 
   async function saveArtwork() {
@@ -301,6 +324,17 @@ export default function ArtworksPage() {
           </button>
         </div>
 
+        {groupMode !== "all" ? (
+          <div className="actions" style={{ marginBottom: 16 }}>
+            <button className="button-secondary" type="button" onClick={collapseAll}>
+              Свернуть все
+            </button>
+            <button className="button-secondary" type="button" onClick={expandAll}>
+              Развернуть все
+            </button>
+          </div>
+        ) : null}
+
         {message ? <p className="subtle" style={{ marginBottom: 16 }}>{message}</p> : null}
 
         <div className="table-grid">
@@ -313,9 +347,11 @@ export default function ArtworksPage() {
                       <strong>{group.label}</strong>
                       <div className="subtle">{group.items.length} шт.</div>
                     </div>
-                    <span className="subtle">{groupsCollapsed ? "Свернуто" : "Развернуто"}</span>
+                    <button className="button-secondary" type="button" onClick={() => toggleGroup(group.label)}>
+                      {collapsedGroups[group.label] ? "Развернуть" : "Свернуть"}
+                    </button>
                   </div>
-                  {!groupsCollapsed ? <div className="table-grid" style={{ marginTop: 12 }}>{group.items.map((item) => renderArtworkRow(item))}</div> : null}
+                  {!collapsedGroups[group.label] ? <div className="table-grid" style={{ marginTop: 12 }}>{group.items.map((item) => renderArtworkRow(item))}</div> : null}
                 </section>
               ))}
         </div>

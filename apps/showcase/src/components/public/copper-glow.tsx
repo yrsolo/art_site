@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import type { Artwork } from "@/features/artworks/types";
+import { CopperGlowGalleryClient } from "@/components/public/variant-gallery-clients";
 import type { VariantContent, VariantManifest, VariantRouteKey } from "@/features/variants/types";
 import { templateMedia } from "@/features/variants/template-media";
 import { getAdminLoginHref } from "@/shared/admin";
@@ -234,65 +235,7 @@ export function CopperGlowHome({ manifest, content }: CopperGlowPageProps) {
 export function CopperGlowGallery({ manifest, content, artworks }: CopperGlowGalleryProps) {
   return (
     <CopperGlowLayout manifest={manifest} content={content} currentRoute="gallery">
-      <section className="mx-auto max-w-[96rem] px-8 pb-24 pt-10">
-        <header className="mb-20 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-          <div className="max-w-xl">
-            <h1 className="mb-6 text-6xl font-bold uppercase leading-none tracking-[-0.06em] text-[#e8be9f] md:text-8xl" style={{ fontFamily: "Space Grotesk, sans-serif" }}>
-              Кураторские
-              <br />
-              видения
-            </h1>
-            <p className="max-w-md text-lg text-[#d3c4b9]">
-              Исследуйте пересечение структурной жёсткости и атмосферного тепла. Коллекция, собранная для Кинематографического Алхимика.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-4 self-start md:self-end">
-            <span className="mr-2 text-xs uppercase tracking-[0.22em] text-[#e8be9f]">Фильтр:</span>
-            <button className="bg-[#e8be9f] px-6 py-2 text-xs font-bold uppercase tracking-[0.2em] text-[#442b14]">Все работы</button>
-            <button className="bg-[#282a31] px-6 py-2 text-xs uppercase tracking-[0.2em] text-[#e1e2eb] transition-colors hover:bg-[#3c4758]">Архитектура</button>
-            <button className="bg-[#282a31] px-6 py-2 text-xs uppercase tracking-[0.2em] text-[#e1e2eb] transition-colors hover:bg-[#3c4758]">Цифровое искусство</button>
-            <button className="bg-[#282a31] px-6 py-2 text-xs uppercase tracking-[0.2em] text-[#e1e2eb] transition-colors hover:bg-[#3c4758]">Минимализм</button>
-          </div>
-        </header>
-
-        <div className="columns-1 gap-16 md:columns-2 xl:columns-3">
-          {templateMedia.copperGlow.gallery.map((card, index) => {
-            const artwork = artworks[index] ?? artworks[index % Math.max(artworks.length, 1)];
-            const href = artwork ? `/${manifest.id}/artwork/${artwork.slug}` : `/${manifest.id}/gallery`;
-
-            return (
-              <Link key={card.title} href={href} className="group relative mb-16 block break-inside-avoid">
-                <div className="absolute inset-0 -z-10 bg-[#8c6a4f]/20 opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100" />
-                <div className="relative overflow-hidden bg-[#191b22]">
-                  <div className={`relative w-full ${card.aspect}`}>
-                    <Image
-                      src={artwork?.imagePreview ?? card.image}
-                      alt={artwork?.title ?? card.title}
-                      fill
-                      sizes="(max-width: 1024px) 100vw, 33vw"
-                      className="object-cover grayscale transition-all duration-700 ease-in-out group-hover:grayscale-0"
-                    />
-                  </div>
-                  <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-[#11131a] via-transparent to-transparent p-8 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-                    <p className="mb-2 text-xs uppercase tracking-[0.2em] text-[#e8be9f]" style={{ fontFamily: "Space Grotesk, sans-serif" }}>{card.series}</p>
-                    <h3 className="text-2xl font-bold uppercase tracking-[-0.05em] text-[#e1e2eb]" style={{ fontFamily: "Space Grotesk, sans-serif" }}>
-                      {artwork?.title ?? card.title}
-                    </h3>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-
-        <div className="mt-12 flex justify-center">
-          <Link href={`/${manifest.id}/contacts`} className="group flex items-center gap-4 py-8 text-sm font-bold uppercase tracking-[0.2em] text-[#e8be9f] transition-all hover:tracking-[0.3em]" style={{ fontFamily: "Space Grotesk, sans-serif" }}>
-            Смотреть дальше
-            <span className="material-symbols-outlined transition-transform group-hover:translate-x-2">arrow_forward</span>
-          </Link>
-        </div>
-      </section>
+      <CopperGlowGalleryClient variantId={manifest.id} artworks={artworks} />
     </CopperGlowLayout>
   );
 }
@@ -317,7 +260,7 @@ export function CopperGlowDetail({ manifest, content, artwork, artworks }: Coppe
                 className="h-[38rem] w-full object-cover grayscale-[0.2] transition-all duration-700 hover:grayscale-0 md:h-[51rem]"
               />
               <div className="p-6 lg:hidden">
-                <p className="mb-2 text-xs uppercase tracking-[0.22em] text-[#e8be9f]">Серия 01 // Катализатор</p>
+                {artwork.series ? <p className="mb-2 text-xs uppercase tracking-[0.22em] text-[#e8be9f]">{artwork.series}</p> : null}
                 <h1 className="text-4xl font-bold uppercase tracking-[-0.05em]" style={{ fontFamily: "Space Grotesk, sans-serif" }}>{artwork.title}</h1>
               </div>
             </div>

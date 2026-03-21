@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import type { Artwork } from "@/features/artworks/types";
+import { OliveCreamGalleryClient } from "@/components/public/variant-gallery-clients";
 import { templateMedia } from "@/features/variants/template-media";
 import { getAdminLoginHref } from "@/shared/admin";
 import type { VariantContent, VariantManifest } from "@/features/variants/types";
@@ -120,31 +121,7 @@ export function OliveCreamHome({ manifest, content }: VariantProps) {
 export function OliveCreamGallery({ manifest, content, artworks }: GalleryProps) {
   return (
     <OliveLayout manifest={manifest} content={content} current="gallery">
-      <main className="mx-auto max-w-[1440px] px-6 py-12 pb-32 md:px-12 lg:px-24">
-        <div className="mb-8 flex flex-wrap gap-4">
-          {["All Works", "Oils", "Charcoal", "Mixed Media", "Sketches"].map((chip, index) => (
-            <span key={chip} className={`rounded-full px-6 py-2 text-base ${index === 0 ? "bg-[#5ea50d] text-[#F2EFE9]" : "bg-[#5ea50d]/10 text-[#5ea50d]"}`}>
-              {chip}
-            </span>
-          ))}
-        </div>
-        <div className="columns-1 gap-10 space-y-10 md:columns-2 lg:columns-3">
-          {templateMedia.oliveCream.gallery.map((image, index) => {
-            const artwork = artworks[index] ?? artworks[index % artworks.length];
-            return (
-              <Link key={`${artwork.slug}-${index}`} href={`/${manifest.id}/artwork/${artwork.slug}`} className="group block break-inside-avoid outline-none">
-                <div className="relative overflow-hidden rounded-xl bg-[#E8E3D9] shadow-[0_20px_40px_-10px_rgba(94,165,13,0.12)]">
-                  <Image src={artwork.imagePreview} alt={artwork.title} width={900} height={1100} className="h-auto w-full object-cover transition duration-700 group-hover:scale-[1.03]" />
-                </div>
-                <div className="mt-5">
-                  <h3 className="text-2xl font-bold">{artwork.title}</h3>
-                  <p className="mt-1 text-base italic text-[#9CA38F]">{artwork.medium}</p>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </main>
+      <OliveCreamGalleryClient variantId={manifest.id} artworks={artworks} />
     </OliveLayout>
   );
 }

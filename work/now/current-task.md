@@ -91,3 +91,13 @@ Static frontend split with backend-only container and bucket-backed content sour
   - let detail pages show real lot metadata such as series, status, and price where the variant composition allows it;
   - use additional artwork photos on public detail screens instead of unrelated placeholder shots where possible;
   - keep the variant-specific layouts intact while making the data source genuinely backend-driven.
+
+## Update 2026-03-21 Gallery grouping and ordering
+
+- After the artwork detail contract pass, the next stage moves the public galleries and the admin list from static presentation into controllable browsing surfaces.
+- Immediate focus:
+  - finish remaining backend-driven detail gaps in `cold-mist` and `copper-glow`;
+  - introduce one shared gallery-state model for `all / year / series`, manual collapse state, and progressive reveal;
+  - adapt grouping controls and group headers per sketch so they feel native to each variant instead of looking generic;
+  - extend the admin grouped list from one global collapse flag to full per-group collapse / expand controls;
+  - add a dedicated order-management surface in admin that edits the shared `sortOrder` used by every showcase variant.

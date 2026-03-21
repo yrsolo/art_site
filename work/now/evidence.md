@@ -316,3 +316,51 @@
 - Home pages still intentionally keep some template-driven atmospheric blocks where they are decorative rather than data-backed.
 - Remaining prototype pass still needs a full click-by-click audit of every CTA outside contact forms.
 - Imported sketch artwork metadata is now editable, but richer multi-photo editorial curation per lot still needs manual follow-up where templates only supplied a single gallery image.
+
+## 2026-03-21 - Gallery grouping, manual collapse controls, and shared order page
+
+- Finished the remaining public artwork detail gaps that were still blocking the gallery campaign:
+  - `cold-mist` detail now surfaces runtime lot price instead of a placeholder value and shows an extra backend-driven photo strip when artwork photos are available.
+  - `copper-glow` detail now uses live series metadata in the mobile detail header instead of a hardcoded label.
+- Added a shared client-side gallery browser state in `apps/showcase/src/components/public/gallery-browser.tsx` with:
+  - `groupMode: all | year | series`
+  - per-group manual collapse state
+  - global collapse / expand actions
+  - client-side progressive reveal through `IntersectionObserver`
+- Implemented per-variant public gallery clients so each sketch keeps its own visual language while sharing the same runtime behavior:
+  - `cold-mist-gallery-client.tsx`
+  - `variant-gallery-clients.tsx`
+- Public galleries across the active variants now support:
+  - `Все / По году / По серии`
+  - manual per-group collapse / expand
+  - global `Свернуть все` / `Развернуть все`
+  - infinite scroll over the published snapshot dataset
+- Replaced the earlier one-flag admin grouped list with full per-group collapse state on the lots page:
+  - each group can now be collapsed independently
+  - global `Свернуть все` / `Развернуть все` are available
+  - repeat click on the active grouping mode still works as a fast toggle, but is no longer the only control
+- Added a new static admin route `/order/` with compact artwork cards and drag-and-drop reorder:
+  - uses the existing reorder backend flow
+  - edits the same global `sortOrder` used by every public sketch
+  - includes filters by gallery visibility, year, series, and status
+- Updated the static admin shell navigation so the new order page is reachable from the main sidebar.
+
+### Validation
+
+- `npm run build --workspace admin`
+- `npm run build:showcase`
+- `npm run build --workspace web`
+- `bash scripts/docs-check.sh`
+- `powershell -ExecutionPolicy Bypass -File scripts/publish-admin.ps1`
+- `powershell -ExecutionPolicy Bypass -File scripts/publish-showcase.ps1`
+- Live GET checks after publish:
+  - `https://admin.art.solofarm.ru/order/` -> `200`
+  - `http://art.solofarm.ru/cold-mist/gallery/` -> `200`
+  - `http://art.solofarm.ru/etheric-pulse/gallery/` -> `200`
+  - `http://art.solofarm.ru/mint-rose/gallery/` -> `200`
+
+### Still unresolved
+
+- Group collapse state in admin and public galleries is not persisted across page reloads yet.
+- The new priority page currently targets desktop / pointer workflows first; touch-optimized drag-and-drop is a later refinement.
+- The variants now have shared real grouping logic, but some gallery surfaces still need later fidelity polish to match their original template micro-states more closely.

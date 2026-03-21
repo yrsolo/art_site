@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import type { Artwork } from "@/features/artworks/types";
+import { SageSandGalleryClient } from "@/components/public/variant-gallery-clients";
 import { templateMedia } from "@/features/variants/template-media";
 import { getAdminLoginHref } from "@/shared/admin";
 import type { VariantContent, VariantManifest } from "@/features/variants/types";
@@ -95,35 +96,7 @@ export function SageSandHome({ manifest, content }: VariantProps) {
 export function SageSandGallery({ manifest, content, artworks }: GalleryProps) {
   return (
     <SageLayout manifest={manifest} content={content} current="gallery">
-      <main className="mx-auto max-w-[1440px] px-6 py-16 md:px-12 lg:px-24">
-        <div className="relative mb-16 text-center">
-          <div className="absolute left-1/2 top-1/2 -z-10 h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-[40%_60%_70%_30%/40%_50%_60%_50%] bg-[#7D8C74]/15 blur-[20px]" />
-          <h1 className="text-5xl font-light italic tracking-wide" style={{ fontFamily: "Cormorant, serif" }}>Collection</h1>
-        </div>
-        <div className="mb-16 flex flex-wrap justify-center gap-4">
-          {["All", "Canvas", "Paper", "Available"].map((chip, index) => (
-            <span key={chip} className={`rounded-full border border-[#7D8C74] px-6 py-2 text-sm font-medium ${index === 0 ? "bg-[#7D8C74] text-white" : "text-[#7D8C74]"}`}>
-              {chip}
-            </span>
-          ))}
-        </div>
-        <div className="columns-1 gap-8 md:columns-2 lg:columns-3">
-          {templateMedia.sageSand.gallery.map((image, index) => {
-            const artwork = artworks[index] ?? artworks[index % artworks.length];
-            return (
-              <Link key={`${artwork.slug}-${index}`} href={`/${manifest.id}/artwork/${artwork.slug}`} className="group mb-8 block break-inside-avoid cursor-pointer">
-                <div className={`overflow-hidden bg-[#F4F0E6] p-4 transition duration-500 group-hover:bg-[#F4F0E6] group-hover:shadow-[0_20px_40px_rgba(43,51,39,0.05)] ${index % 3 === 0 ? "rounded-[24px_48px_32px_24px]" : index % 3 === 1 ? "rounded-[48px_24px_24px_40px]" : "rounded-[32px_32px_48px_24px]"}`}>
-                  <Image src={artwork.imagePreview} alt={artwork.title} width={900} height={1100} className="h-auto w-full object-cover transition duration-700 group-hover:scale-[1.03]" />
-                  <div className="mt-6 px-2">
-                    <h3 className="text-xl font-medium">{artwork.title}</h3>
-                    <p className="text-sm text-[#A3A89F]">{artwork.medium}</p>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </main>
+      <SageSandGalleryClient variantId={manifest.id} artworks={artworks} />
     </SageLayout>
   );
 }

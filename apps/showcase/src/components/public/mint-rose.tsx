@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import type { Artwork } from "@/features/artworks/types";
+import { MintRoseGalleryClient } from "@/components/public/variant-gallery-clients";
 import type { VariantContent, VariantManifest, VariantRouteKey } from "@/features/variants/types";
 import { templateMedia } from "@/features/variants/template-media";
 import { getAdminLoginHref } from "@/shared/admin";
@@ -148,36 +149,7 @@ export function MintRoseHome({ manifest, content }: MintRosePageProps) {
 export function MintRoseGallery({ manifest, content, artworks }: MintRoseGalleryProps) {
   return (
     <MintRoseLayout manifest={manifest} content={content} currentRoute="gallery">
-      <section className="mx-auto max-w-[1200px] px-6 py-12 md:px-12">
-        <div className="mb-12">
-          <p className="text-[32px] italic text-[#4a403a] md:text-[48px]" style={{ fontFamily: "Cormorant Garamond, serif" }}>
-            Exhibition Space
-          </p>
-          <p className="text-lg text-[#bcaaa4]" style={{ fontFamily: "Outfit, sans-serif" }}>
-            A collection of organic, fluid abstractions.
-          </p>
-        </div>
-
-        <div className="columns-1 gap-8 sm:columns-2 lg:columns-3">
-          {templateMedia.mintRose.gallery.map((card, index) => {
-            const artwork = artworks[index] ?? artworks[index % Math.max(artworks.length, 1)];
-            const href = artwork ? `/${manifest.id}/artwork/${artwork.slug}` : `/${manifest.id}/gallery`;
-
-            return (
-              <Link key={card.title} href={href} className={`group relative isolate mb-8 block break-inside-avoid overflow-hidden bg-transparent shadow-[0_20px_40px_rgba(74,64,58,0.05)] ${card.shape} ${card.height}`}>
-                <Image src={artwork?.imagePreview ?? card.image} alt={artwork?.title ?? card.title} fill sizes="(max-width: 1024px) 100vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
-                <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-8 text-center opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-                  <div className="grid min-h-[11rem] w-[72%] max-w-[18rem] place-items-center rounded-[48%_52%_58%_42%/42%_58%_46%_54%] bg-[rgba(19,236,182,0.78)] px-8 py-6 shadow-[0_24px_50px_rgba(19,236,182,0.22)] backdrop-blur-md">
-                    <h3 className="text-3xl italic text-white drop-shadow-md" style={{ fontFamily: "Cormorant Garamond, serif" }}>
-                      {artwork?.title ?? card.title}
-                    </h3>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
+      <MintRoseGalleryClient variantId={manifest.id} artworks={artworks} />
     </MintRoseLayout>
   );
 }

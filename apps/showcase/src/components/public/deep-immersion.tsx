@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import type { Artwork } from "@/features/artworks/types";
+import { DeepImmersionGalleryClient } from "@/components/public/variant-gallery-clients";
 import { templateMedia } from "@/features/variants/template-media";
 import { getAdminLoginHref } from "@/shared/admin";
 import type { VariantContent, VariantManifest, VariantRouteKey } from "@/features/variants/types";
@@ -39,20 +40,6 @@ function buildNavItems(manifest: VariantManifest, content: VariantContent) {
     { key: "about" as const, href: `${basePath}/about`, label: content.nav.about },
     { key: "contacts" as const, href: `${basePath}/contacts`, label: content.nav.contacts },
   ].filter((item) => manifest.supportedRoutes.includes(item.key));
-}
-
-function buildGalleryCards(manifest: VariantManifest, artworks: Artwork[]) {
-  return templateMedia.deepImmersion.gallery.map((item, index) => {
-    const artwork = artworks[index] ?? artworks[index % Math.max(artworks.length, 1)];
-
-    return {
-      ...item,
-      image: artwork?.imagePreview ?? item.image,
-      title: artwork?.title ?? item.title,
-      year: artwork?.year ?? item.year,
-      href: artwork ? `/${manifest.id}/artwork/${artwork.slug}` : `/${manifest.id}/gallery`,
-    };
-  });
 }
 
 const adminLoginHref = getAdminLoginHref();
@@ -146,44 +133,9 @@ export function DeepImmersionHome({ manifest, content }: DeepImmersionPageProps)
 }
 
 export function DeepImmersionGallery({ manifest, content, artworks }: DeepImmersionGalleryProps) {
-  const cards = buildGalleryCards(manifest, artworks);
-
   return (
     <DeepImmersionLayout manifest={manifest} content={content} currentRoute="gallery">
-      <section className="px-6 pb-8 pt-8 md:px-12 lg:px-24">
-        <nav className="flex items-center gap-6 text-[13px] font-medium uppercase tracking-[0.08em] md:gap-8">
-          <span className="relative text-[#F1F4F9] after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:bg-[#1378ec]">Все</span>
-          <span className="text-[#5A657A]">2023</span>
-          <span className="text-[#5A657A]">Монохром</span>
-          <span className="text-[#5A657A]">Холст/масло</span>
-        </nav>
-      </section>
-      <section className="px-6 pb-24 md:px-12 lg:px-24">
-        <div className="mx-auto columns-1 gap-8 md:columns-2 lg:max-w-[1600px] lg:columns-3 lg:gap-16">
-          {cards.map((card) => (
-            <Link key={`${card.title}-${card.year}`} href={card.href} className="group relative mb-16 block break-inside-avoid">
-              <div className="absolute inset-[-20px] -z-10 rounded-[inherit] bg-[radial-gradient(circle_at_center,_rgba(19,120,236,0.15)_0%,_transparent_70%)] opacity-0 blur-[40px] transition-opacity duration-700 group-hover:opacity-100" />
-              <div className="relative overflow-hidden bg-[#12151E]">
-                <div className={`relative w-full ${card.aspect}`}>
-                  <Image
-                    src={card.image}
-                    alt={card.title}
-                    fill
-                    sizes="(max-width: 1024px) 100vw, 33vw"
-                    className="object-cover opacity-90 transition duration-[800ms] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-[1.03] group-hover:opacity-100"
-                  />
-                </div>
-                <div className="absolute inset-x-0 bottom-0 flex h-1/2 flex-col justify-end bg-gradient-to-t from-[#07090F]/90 to-transparent p-6 opacity-0 transition-opacity duration-[800ms] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:opacity-100">
-                  <div className="translate-y-[10px] opacity-0 transition-all delay-100 duration-[800ms] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:translate-y-0 group-hover:opacity-100">
-                    <h2 className="mb-1 text-2xl font-bold tracking-[-0.04em] text-white">{card.title}</h2>
-                    <p className="text-sm font-medium uppercase tracking-[0.22em] text-gray-400">{card.year}</p>
-                  </div>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+      <DeepImmersionGalleryClient variantId={manifest.id} artworks={artworks} />
     </DeepImmersionLayout>
   );
 }

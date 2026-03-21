@@ -2,11 +2,12 @@ import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { ColdMistGalleryClient } from "@/components/public/cold-mist-gallery-client";
 import type { Artwork } from "@/features/artworks/types";
 import { templateMedia } from "@/features/variants/template-media";
 import { getAdminLoginHref } from "@/shared/admin";
 import type { VariantContent, VariantManifest, VariantRouteKey } from "@/features/variants/types";
-import { statusLabel } from "@/shared/format";
+import { artworkPriceLabel, statusLabel } from "@/shared/format";
 
 type ColdMistLayoutProps = {
   manifest: VariantManifest;
@@ -28,13 +29,6 @@ type ColdMistDetailProps = ColdMistPageProps & {
   artwork: Artwork;
 };
 
-type ColdMistTemplateCard = {
-  href: string;
-  image: string;
-  title: string;
-  meta: string;
-};
-
 function buildNavItems(manifest: VariantManifest, content: VariantContent) {
   const basePath = `/${manifest.id}`;
 
@@ -43,20 +37,6 @@ function buildNavItems(manifest: VariantManifest, content: VariantContent) {
     { key: "gallery" as const, href: `${basePath}/gallery`, label: content.nav.gallery },
     { key: "about" as const, href: `${basePath}/about`, label: content.nav.about },
   ].filter((item) => manifest.supportedRoutes.includes(item.key));
-}
-
-function buildColdMistTemplateCards(manifest: VariantManifest, artworks: Artwork[]): ColdMistTemplateCard[][] {
-  const cards: ColdMistTemplateCard[] = templateMedia.coldMist.gallery.map((item, index) => {
-    const artwork = artworks[index] ?? artworks[index % Math.max(artworks.length, 1)];
-    return {
-      image: artwork?.imagePreview ?? item.image,
-      title: artwork?.title ?? item.title,
-      meta: artwork ? `${artwork.year} • ${artwork.medium}` : item.meta,
-      href: artwork ? `/${manifest.id}/artwork/${artwork.slug}` : `/${manifest.id}/gallery`,
-    };
-  });
-
-  return [[cards[0], cards[1]], [cards[2], cards[3]], [cards[4], cards[5]]];
 }
 
 const adminLoginHref = getAdminLoginHref();
@@ -241,83 +221,16 @@ export function ColdMistHome({ manifest, content }: ColdMistPageProps) {
 }
 
 export function ColdMistGallery({ manifest, content, artworks }: ColdMistGalleryProps) {
-  const columns = buildColdMistTemplateCards(manifest, artworks);
-
   return (
     <ColdMistLayout manifest={manifest} content={content} currentRoute="gallery">
-      <section className="mb-16 max-w-7xl mx-auto px-6 md:px-12 pt-10 md:pt-20">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-          <div className="max-w-2xl">
-            <h1 className="text-5xl md:text-7xl font-bold tracking-[-0.05em] text-[#d9e6fd] mb-4">ARCHIVE.</h1>
-            <p className="text-[#9facc1] text-lg tracking-tight font-light leading-relaxed">
-              Кураторская коллекция эфемерных пустот и архитектурной тишины. Исследование пересечения холодного сланца и
-              туманного утреннего света.
-            </p>
-          </div>
-          <div className="flex items-center space-x-8 border-b border-[#3c495b]/30 pb-2">
-            <button className="text-[#bfc7cf] font-medium tracking-tighter text-sm uppercase" type="button">Все</button>
-            <button className="text-[#9facc1] font-medium tracking-tighter text-sm uppercase" type="button">2024</button>
-            <button className="text-[#9facc1] font-medium tracking-tighter text-sm uppercase" type="button">2023</button>
-            <button className="text-[#9facc1] font-medium tracking-tighter text-sm uppercase" type="button">Эксперимент</button>
-          </div>
-        </div>
-      </section>
-
-      <section className="max-w-7xl mx-auto px-6 md:px-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 items-start">
-          {columns.map((column, index) => (
-            <div key={`column-${index}`} className={`flex flex-col gap-12 ${index === 1 ? "md:mt-24" : ""}`}>
-              {column.map((card) => (
-                <Link key={card.title} href={card.href} className="group relative">
-                  <div className="absolute inset-0 mist-gradient -z-10 scale-150 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                  <div className="bg-[#121a25] overflow-hidden">
-                    <div className="relative aspect-[4/5] w-full">
-                      <Image
-                        src={card.image}
-                        alt={card.title}
-                        fill
-                        sizes="(max-width: 768px) 100vw, 33vw"
-                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out cursor-crosshair"
-                      />
-                    </div>
-                  </div>
-                  <div className="mt-4 flex justify-between items-start">
-                    <div>
-                      <h3 className="text-sm font-bold tracking-tighter uppercase text-[#d9e6fd]">{card.title}</h3>
-                      <p className="text-[10px] text-[#9facc1] uppercase tracking-[0.1em]">{card.meta}</p>
-                    </div>
-                    <span className="material-symbols-outlined text-[#6a768a] text-sm">north_east</span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="mt-48 mb-32 max-w-7xl mx-auto flex flex-col md:flex-row gap-12 px-6 md:px-12">
-        <div className="md:w-1/2">
-          <div className="w-full h-px bg-[#3c495b]/30 mb-8" />
-          <h2 className="text-3xl font-bold tracking-tighter text-[#d9e6fd] uppercase mb-6">Соберите свой взгляд.</h2>
-          <p className="text-[#9facc1] max-w-sm">Каждая работа в этой галерее является частью более крупной экосистемы тишины. Используйте кураторский инструмент, чтобы собрать собственный туманный архив.</p>
-          <Link href={`/${manifest.id}/contacts`} className="mt-8 inline-flex px-8 py-4 bg-[#bfc7cf] text-[#394148] font-bold tracking-tighter uppercase text-xs hover:bg-[#cdd5dd] transition-colors">
-            {content.detail.inquiryLabel}
-          </Link>
-        </div>
-        <div className="md:w-1/2 flex justify-end">
-          <div className="w-64 h-64 bg-[#16202e] relative overflow-hidden group">
-            <div className="absolute inset-0 mist-gradient opacity-50" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="material-symbols-outlined text-[#bfc7cf]/20 text-7xl">blur_on</span>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ColdMistGalleryClient variantId={manifest.id} artworks={artworks} />
     </ColdMistLayout>
   );
 }
 
 export function ColdMistDetail({ manifest, content, artwork }: ColdMistDetailProps) {
+  const detailShots = artwork.photos.slice(1, 4);
+
   return (
     <ColdMistLayout manifest={manifest} content={content} currentRoute="detail">
       <div className="min-h-screen pt-0 pb-20 md:pb-0 flex flex-col md:flex-row relative">
@@ -373,11 +286,21 @@ export function ColdMistDetail({ manifest, content, artwork }: ColdMistDetailPro
                   <p className="text-sm font-medium">{artwork.year}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase tracking-widest text-[#9facc1] mb-1">Формат</p>
-                  <p className="text-sm font-medium">Оригинал</p>
+                  <p className="text-[10px] uppercase tracking-widest text-[#9facc1] mb-1">Цена</p>
+                  <p className="text-sm font-medium">{artworkPriceLabel(artwork)}</p>
                 </div>
               </div>
             </div>
+
+            {detailShots.length > 0 ? (
+              <div className="mt-10 grid grid-cols-3 gap-3 border-t border-[#3c495b]/20 pt-8">
+                {detailShots.map((photo) => (
+                  <div key={photo.id} className="relative aspect-square overflow-hidden bg-[#16202e]">
+                    <Image src={photo.urlPreview} alt={artwork.title} fill sizes="20vw" className="object-cover opacity-85" />
+                  </div>
+                ))}
+              </div>
+            ) : null}
 
             <div className="flex flex-col gap-4">
               <Link href={`/${manifest.id}/contacts`} className="bg-[#bfc7cf] text-[#394148] py-6 px-8 text-sm uppercase tracking-[0.2em] font-bold hover:bg-[#cdd5dd] transition-colors duration-400 active:scale-[0.98] text-center">

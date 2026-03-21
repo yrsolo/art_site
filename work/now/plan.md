@@ -45,3 +45,12 @@
 2. Upgrade public detail pages to render real lot metadata (`series`, `status`, `price`) and additional detail photos where the variant composition supports it.
 3. Keep generic fallback detail aligned with the same contract so future variants do not silently regress to the old single-image shape.
 4. Rebuild and republish the static showcase after this pass, then verify several live detail routes against the published runtime snapshot.
+
+## Update 2026-03-21 Galleries, grouping, and ordering
+
+1. Finish the remaining public detail gaps in `cold-mist` and `copper-glow` so every active artwork page uses the same backend-driven contract.
+2. Add a shared showcase gallery-state layer for `all / year / series`, per-group collapse state, and progressive reveal over the published snapshot dataset.
+3. Rework each variant gallery to use that state while keeping variant-specific controls, group headers, and collapse affordances visually native to its design language.
+4. Replace the admin grouped list's single global collapse flag with full manual per-group collapse / expand plus explicit `Свернуть все` / `Развернуть все`.
+5. Add a dedicated admin order page with compact artwork cards and drag-and-drop editing of the shared `sortOrder`.
+6. Rebuild, republish, and live-verify the updated showcase, admin, and API surfaces after the new grouping / ordering flow is wired end-to-end.

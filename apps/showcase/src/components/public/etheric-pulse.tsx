@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import type { Artwork } from "@/features/artworks/types";
+import { EthericPulseGalleryClient } from "@/components/public/variant-gallery-clients";
 import { templateMedia } from "@/features/variants/template-media";
 import { getAdminLoginHref } from "@/shared/admin";
 import type { VariantContent, VariantManifest, VariantRouteKey } from "@/features/variants/types";
@@ -173,48 +174,7 @@ export function EthericPulseHome({ manifest, content }: VariantProps) {
 export function EthericPulseGallery({ manifest, content, artworks }: GalleryProps) {
   return (
     <EthericPulseLayout manifest={manifest} content={content} currentRoute="gallery">
-      <section className="mx-auto max-w-screen-2xl px-6 pb-24 pt-8 md:px-12 lg:px-24">
-        <div className="mb-16 space-y-6">
-          <h1 className="font-[Manrope] text-5xl font-extrabold tracking-[-0.05em] md:text-7xl">Галерея потоков</h1>
-          <p className="max-w-2xl text-lg leading-relaxed text-[#a7aac0]">
-            Исследуйте визуализацию чистой энергии. Каждое произведение - это запечатлённое мгновение духовного движения и безмолвного ритма вселенной.
-          </p>
-          <div className="flex flex-wrap items-center gap-4 pt-4">
-            <span className="rounded-full bg-[#a894ff] px-6 py-2 text-sm text-[#190055]">Все потоки</span>
-            <span className="rounded-full bg-[#1b1f2e] px-6 py-2 text-sm text-[#a7aac0]">Вибрации</span>
-            <span className="rounded-full bg-[#1b1f2e] px-6 py-2 text-sm text-[#a7aac0]">Тишина</span>
-            <span className="rounded-full bg-[#1b1f2e] px-6 py-2 text-sm text-[#a7aac0]">Трансцендентность</span>
-            <div className="ml-auto hidden items-center gap-2 text-sm uppercase tracking-widest text-[#82d3dc] opacity-80 md:flex">
-              <span className="material-symbols-outlined text-base">filter_list</span>
-              <span>Сортировка</span>
-            </div>
-          </div>
-        </div>
-        <div className="columns-1 gap-8 md:columns-2 xl:columns-3">
-          {templateMedia.ethericPulse.gallery.map((image, index) => {
-            const artwork = artworks[index] ?? artworks[index % artworks.length];
-            return (
-              <Link key={`${artwork.slug}-${index}`} href={`/${manifest.id}/artwork/${artwork.slug}`} className="group relative mb-8 block break-inside-avoid overflow-hidden rounded-[1.75rem] bg-[#10131d]">
-                <Image src={artwork.imagePreview} alt={artwork.title} width={900} height={1200} className="h-auto w-full object-cover opacity-90 transition duration-700 group-hover:scale-[1.02] group-hover:opacity-100" />
-                <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-[#0c0e17] via-transparent to-transparent p-8 opacity-0 transition duration-500 group-hover:opacity-100">
-                  <p className="text-xs uppercase tracking-[0.24em] text-[#82d3dc]">{artwork.year}</p>
-                  <h3 className="mt-2 font-[Manrope] text-2xl font-bold">{artwork.title}</h3>
-                  <p className="mt-1 text-sm text-[#ffd6d6]/80">{artwork.medium}</p>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-        <div className="mt-24 flex justify-center">
-          <button type="button" className="group relative overflow-hidden rounded-full px-12 py-4 transition-all duration-500">
-            <div className="absolute inset-0 bg-[#212536] opacity-50 transition-opacity group-hover:opacity-80" />
-            <div className="relative flex items-center gap-3 font-medium text-[#e1e4fb]">
-              <span>Погрузиться глубже</span>
-              <span className="material-symbols-outlined text-[#a894ff] transition-transform group-hover:translate-y-1">expand_more</span>
-            </div>
-          </button>
-        </div>
-      </section>
+      <EthericPulseGalleryClient variantId={manifest.id} artworks={artworks} />
 
       <EthericFooter />
     </EthericPulseLayout>

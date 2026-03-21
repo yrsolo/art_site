@@ -9,6 +9,7 @@ import type { SessionState } from "@/lib/types";
 
 const navigation = [
   { href: "/artworks", label: "Лоты" },
+  { href: "/order", label: "Порядок" },
   { href: "/content", label: "Тексты" },
   { href: "/settings", label: "Настройки" },
 ];
