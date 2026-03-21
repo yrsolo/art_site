@@ -87,7 +87,11 @@ export type PublicVariantContent = {
 };
 
 export type PublicSiteSnapshot = {
+  schemaVersion: number;
+  revision: string;
   generatedAt: string;
+  publishedAt: string;
   artworks: import("@/features/artworks/types").Artwork[];
   variantContent: Record<string, PublicVariantContent>;
+  variantSiteAssets: Record<string, import("@/features/site-assets/types").PublicVariantSiteAssets>;
 };

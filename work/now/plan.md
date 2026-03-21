@@ -62,3 +62,18 @@
 3. Rework the admin lots list around archive-aware grouping, archive visibility toggles, title-click collapse, and bulk actions for delete / archive / unarchive.
 4. Adapt the admin order page for touch interactions while keeping one shared `sortOrder` and adding archive-aware filtering.
 5. Update public galleries so archived works are always excluded and group headers themselves become the collapse affordance without separate secondary buttons.
+
+## Update 2026-03-22 Architecture V2
+
+1. Extend the backend publication model with a versioned public snapshot that includes artworks, published variant content, and future-facing `site-assets` slots.
+2. Write the published public snapshot not only into private runtime storage but also into a public bucket path that can be fetched directly by the static showcase.
+3. Rework `apps/showcase` from build-time embedded snapshot usage to runtime loading of the public snapshot with graceful fallback to local seed data.
+4. Introduce a dedicated `site-assets` domain contract for editable page media such as `home.heroImage` and `about.portraitImage`, even if the editor UI for these slots ships later.
+5. Preserve existing visual variants while moving the public data flow toward `static shell + live data`, so content changes stop depending on front-end republish cycles.
+
+## Update 2026-03-22 Architecture V2 follow-up
+
+1. Keep the runtime public snapshot on a public storage object with CORS enabled so content updates do not depend on static shell republish.
+2. Protect runtime-managed public data objects from `publish-showcase --delete`, especially the `data/` prefix in the public bucket.
+3. Move the remaining public routing gap into a dedicated rewrite/fallback campaign instead of continuing to grow pre-generated detail pages indefinitely.
+4. Keep `site-assets` in the publication contract now, then add editor/application use-cases for `home.heroImage` and `about.portraitImage` in a later campaign.

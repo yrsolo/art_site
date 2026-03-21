@@ -19,7 +19,6 @@ Deploy теперь разбит на три независимых контур
 
 1. Build the static showcase:
    - `npm run build:showcase`
-   - before build the publish script pulls `private/data/export/public-site.json` from the runtime data bucket into generated input for the showcase build
 2. Configure the bucket website entry point:
    - `index.html`
    - `404.html`
@@ -30,6 +29,8 @@ Important:
 - the public site bucket is `art.solofarm.ru`
 - the snapshot source bucket is the runtime data bucket from `OBJECT_STORAGE_BUCKET` (currently `art-site`)
 - these are intentionally different roles and should not be confused during publish
+- the static showcase shell now reads live data from the public storage URL for `data/public-site.json`; any generated snapshot bundled into the app is only a fallback layer
+- `publish-showcase` must not delete the runtime-managed `data/` prefix in the public bucket
 
 ## Static Admin Flow
 
@@ -62,7 +63,18 @@ If `admin` is served from `admin.art.solofarm.ru` and API is served from `api.ar
 
 ## Notes
 
-- Public showcase should stay read-only and build from published snapshot data.
+- Public showcase should stay read-only and fetch published snapshot data from the published public storage object for `data/public-site.json`.
 - Admin frontend must stay static; changing its UI should require only republishing the bucket, not redeploying the container.
 - Container redeploy is needed only for backend code and secret/runtime changes.
 - Importing current sketch gallery images into editable runtime lots is now a backend operation triggered from admin settings, not a manual one-off storage task.
+- Public content changes should become visible after snapshot publication without a showcase republish cycle.
+
+### Public Bucket CORS
+
+If the showcase reads the snapshot from `https://storage.yandexcloud.net/art.solofarm.ru/data/public-site.json`, the bucket needs a CORS policy that allows:
+- `GET`
+- `HEAD`
+- origins `http://art.solofarm.ru`, `https://art.solofarm.ru`
+
+Local development can additionally allow:
+- `http://localhost:3000`

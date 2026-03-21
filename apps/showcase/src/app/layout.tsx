@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, IBM_Plex_Sans } from "next/font/google";
 
+import { PublicSiteProvider } from "@/components/public/public-site-provider";
 import "./globals.css";
 
 const displayFont = Cormorant_Garamond({
@@ -46,7 +47,7 @@ export default function RootLayout({
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
         />
-        {children}
+        <PublicSiteProvider>{children}</PublicSiteProvider>
       </body>
     </html>
   );

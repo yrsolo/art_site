@@ -36,9 +36,9 @@ async function bodyToString(body: unknown) {
   return String(body);
 }
 
-export async function getObjectText(key: string) {
+export async function getObjectText(key: string, bucket = appConfig.objectStorageBucket) {
   const command = new GetObjectCommand({
-    Bucket: appConfig.objectStorageBucket,
+    Bucket: bucket,
     Key: key,
   });
 
@@ -46,13 +46,20 @@ export async function getObjectText(key: string) {
   return bodyToString(response.Body);
 }
 
-export async function putObjectText(key: string, body: string, contentType = "application/json; charset=utf-8") {
+export async function putObjectText(
+  key: string,
+  body: string,
+  contentType = "application/json; charset=utf-8",
+  bucket = appConfig.objectStorageBucket,
+  acl?: "private" | "public-read",
+) {
   await getS3Client().send(
     new PutObjectCommand({
-      Bucket: appConfig.objectStorageBucket,
+      Bucket: bucket,
       Key: key,
       Body: body,
       ContentType: contentType,
+      ACL: acl,
     }),
   );
 }

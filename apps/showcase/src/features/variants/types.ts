@@ -63,3 +63,34 @@ export type VariantContent = {
     note: string;
   };
 };
+
+export type VariantSiteAssets = {
+  home: {
+    heroImage: {
+      assetId: string;
+      url: string;
+      alt: string;
+      caption: string;
+      focalPoint: {
+        x: number;
+        y: number;
+      } | null;
+      decorative: boolean;
+      variantOverrides?: Record<string, string>;
+    } | null;
+  };
+  about: {
+    portraitImage: {
+      assetId: string;
+      url: string;
+      alt: string;
+      caption: string;
+      focalPoint: {
+        x: number;
+        y: number;
+      } | null;
+      decorative: boolean;
+      variantOverrides?: Record<string, string>;
+    } | null;
+  };
+};

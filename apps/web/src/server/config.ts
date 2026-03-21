@@ -43,6 +43,8 @@ export const appConfig = {
   mediaPrefix: process.env.OBJECT_STORAGE_MEDIA_PREFIX ?? "media",
   publicSnapshotPrefix: process.env.OBJECT_STORAGE_PUBLIC_SNAPSHOT_PREFIX ?? "private/data/export",
   publicSiteSnapshotKey: process.env.PUBLIC_SITE_SNAPSHOT_KEY ?? "public-site.json",
+  publicSiteBucket: process.env.PUBLIC_SITE_BUCKET ?? "art.solofarm.ru",
+  publicSiteRuntimeSnapshotKey: process.env.PUBLIC_SITE_RUNTIME_SNAPSHOT_KEY ?? "data/public-site.json",
   localRuntimeRoot: process.env.LOCAL_RUNTIME_ROOT ?? path.join(process.cwd(), ".runtime-storage"),
   localPublicSnapshotFile:
     process.env.LOCAL_PUBLIC_SNAPSHOT_FILE ?? path.join(process.cwd(), ".runtime-storage", "export", "public-site.json"),

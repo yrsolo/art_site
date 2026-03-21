@@ -259,6 +259,49 @@
 
 - Showcase variants still need continued fidelity work against their source `code.html` / `screen.png`.
 
+## 2026-03-22 - Architecture V2 runtime public snapshot
+
+- Added a new backend domain contract for `site-assets`:
+  - `apps/web/src/features/site-assets/types.ts`
+  - `apps/web/src/server/seed-site-assets.ts`
+  - `apps/web/src/server/site-asset-repository.ts`
+- Extended the public snapshot contract to include:
+  - `schemaVersion`
+  - `revision`
+  - `publishedAt`
+  - `variantSiteAssets`
+- `exportPublicSiteSnapshot()` now writes:
+  - private runtime snapshot to `private/data/export/public-site.json`
+  - public runtime snapshot to `s3://art.solofarm.ru/data/public-site.json`
+- `apps/showcase` no longer treats `src/generated/public-site.json` as the primary runtime source:
+  - runtime provider added in `apps/showcase/src/components/public/public-site-provider.tsx`
+  - route rendering moved behind `apps/showcase/src/components/public/variant-route-client.tsx`
+  - public snapshot URL default switched to `https://storage.yandexcloud.net/art.solofarm.ru/data/public-site.json`
+- Public bucket CORS configured for:
+  - `http://art.solofarm.ru`
+  - `https://art.solofarm.ru`
+  - `http://localhost:3000`
+  - methods `GET`, `HEAD`
+- `scripts/publish-showcase.ps1` now excludes `data/*` from `--delete`, so static republish no longer wipes the runtime-managed public snapshot object.
+
+### Validation
+
+- `npm run build:showcase`
+- `bash scripts/docs-check.sh`
+- `POST https://api.art.solofarm.ru/api/auth/login` with `admin / 333` -> `200`
+- authenticated `POST https://api.art.solofarm.ru/api/admin/export/public-site` -> `200`
+- `aws s3 ls s3://art.solofarm.ru/data/` -> `public-site.json` present
+- `curl -I -H "Origin: http://art.solofarm.ru" https://storage.yandexcloud.net/art.solofarm.ru/data/public-site.json`
+  - `Access-Control-Allow-Origin: http://art.solofarm.ru`
+  - `200 OK`
+- `http://art.solofarm.ru/cold-mist/` -> `200`
+- `http://art.solofarm.ru/cold-mist/artwork/cold-mist-mist-01/` -> `200`
+
+### Remaining gap
+
+- Pretty URL runtime rewrite/fallback is still not implemented.
+- Because of that, artwork detail routes are still physically exported for existing slugs, even though the data model has shifted to runtime public snapshot loading.
+
 ## 2026-03-21 - Public artwork detail contract pass
 
 - `apps/showcase` artwork types now preserve runtime `photos[]` and `primaryPhotoId` instead of flattening all snapshot artwork records into a single-image-only shape too early.

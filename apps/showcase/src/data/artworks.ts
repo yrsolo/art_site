@@ -1,7 +1,7 @@
-import { getDisplayArtworks } from "@/data/public-site";
+import { getDisplayArtworks, getEmbeddedPublicSiteSnapshot } from "@/data/public-site";
 
 export function listPublicArtworks() {
-  return getDisplayArtworks();
+  return getDisplayArtworks(getEmbeddedPublicSiteSnapshot());
 }
 
 export function getPublicArtworkBySlug(slug: string) {

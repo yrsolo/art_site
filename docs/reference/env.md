@@ -35,6 +35,8 @@
 - `OBJECT_STORAGE_MEDIA_PREFIX`
 - `OBJECT_STORAGE_PUBLIC_SNAPSHOT_PREFIX`
 - `PUBLIC_SITE_SNAPSHOT_KEY`
+- `PUBLIC_SITE_BUCKET`
+- `PUBLIC_SITE_RUNTIME_SNAPSHOT_KEY`
 
 ### Локальные Fallback Пути
 
@@ -48,12 +50,23 @@
 - `ADMIN_OBJECT_STORAGE_BUCKET`
 - `ADMIN_BUCKET_CERTIFICATE_ID`
 
+### Static Showcase Runtime Data
+
+- `NEXT_PUBLIC_PUBLIC_SNAPSHOT_URL`
+
 ## Локальный MVP
 
 Для локального сценария можно стартовать в `OBJECT_STORAGE_MODE=local`.
 Тогда runtime складывает JSON и exported snapshot в локальную `.runtime-storage`, а static admin/showcase продолжают собираться без облачного bucket.
 
 В production-режиме основной источник истины — Object Storage-backed JSON.
+
+Runtime backend публикует public snapshot и в private runtime prefix, и в public bucket path. Static showcase читает этот JSON напрямую и не требует frontend redeploy для контентных изменений.
+
+В production по умолчанию snapshot читается с public storage URL:
+- `https://storage.yandexcloud.net/art.solofarm.ru/data/public-site.json`
+
+Для такого режима на public bucket должна быть включена CORS-конфигурация, разрешающая `GET` c origin витрины.
 
 ## Правила
 

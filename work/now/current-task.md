@@ -126,3 +126,24 @@ Static frontend split with backend-only container and bucket-backed content sour
   - first inventory and local backup of live `index.json`, `publication`, and currently referenced content-version files;
   - then delete only unreferenced content-version objects under `private/data/content/`.
 - Public site media and artwork data are not part of this cleanup scope.
+
+## Update 2026-03-22 Architecture V2 pivot
+
+- The next implementation stage moves the public site away from build-time embedded content toward a true `static shell + live public data` model.
+- Focus for this pass:
+  - publish a versioned public snapshot that can be fetched directly by the static showcase at runtime;
+  - keep `apps/showcase` static, but stop treating `src/generated/public-site.json` as the primary runtime source of truth;
+  - introduce a dedicated `site-assets` domain and thread it through the public publication contract so future editable hero / biography images do not require another model rewrite;
+  - start separating editorial write-models from the public read-model more explicitly, even while Object Storage remains the storage backend.
+
+## Update 2026-03-22 Architecture V2 runtime fetch
+
+- `apps/showcase` now uses a client-side public snapshot provider and fetches the published JSON snapshot at runtime instead of relying on a build-time bundled snapshot as its primary source.
+- Backend publication now writes a versioned public snapshot to both:
+  - private runtime storage;
+  - public bucket object `s3://art.solofarm.ru/data/public-site.json`.
+- Public bucket CORS was enabled so the static showcase can read the published JSON from the public storage URL without going through the private API runtime.
+- `site-assets` has been added as a first-class domain contract in the backend/public snapshot, even though its editor UI is still a later campaign.
+- Remaining boundary of this pass:
+  - pretty URL rewrite/fallback for runtime-routed artwork pages is still not implemented;
+  - because of that, artwork slugs are still physically exported for now even though their data source has moved toward runtime snapshot loading.
