@@ -20,6 +20,7 @@ export type Artwork = {
   price: string;
   currency: string;
   status: ArtworkStatus;
+  isArchived: boolean;
   photos: ArtworkPhoto[];
   primaryPhotoId: string | null;
   imageOriginal: string;

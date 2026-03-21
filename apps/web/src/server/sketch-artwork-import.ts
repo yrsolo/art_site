@@ -184,6 +184,7 @@ export async function importSketchArtworkSeeds() {
       price: seed.price,
       currency: seed.currency,
       status: seed.status,
+      isArchived: false,
       showInGallery: seed.showInGallery,
       description: seed.description,
       sortOrder: maxSortOrder + index + 1,

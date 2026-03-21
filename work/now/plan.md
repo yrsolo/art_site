@@ -54,3 +54,11 @@
 4. Replace the admin grouped list's single global collapse flag with full manual per-group collapse / expand plus explicit `Свернуть все` / `Развернуть все`.
 5. Add a dedicated admin order page with compact artwork cards and drag-and-drop editing of the shared `sortOrder`.
 6. Rebuild, republish, and live-verify the updated showcase, admin, and API surfaces after the new grouping / ordering flow is wired end-to-end.
+
+## Update 2026-03-21 Archive, CMS repair, and touch ordering
+
+1. Add `isArchived` as a separate editorial flag in the artwork model and propagate it through repository summaries, admin DTOs, and published snapshot filtering.
+2. Fix the text CMS flow so current sketch texts always appear as the default seeded version and save / clone / publish keep a stable current selection without losing payload.
+3. Rework the admin lots list around archive-aware grouping, archive visibility toggles, title-click collapse, and bulk actions for delete / archive / unarchive.
+4. Adapt the admin order page for touch interactions while keeping one shared `sortOrder` and adding archive-aware filtering.
+5. Update public galleries so archived works are always excluded and group headers themselves become the collapse affordance without separate secondary buttons.

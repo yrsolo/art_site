@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { removeArtworkPhoto, updateArtworkPhotoMetadata } from "@/server/artwork-repository";
+import { exportPublicSiteSnapshot } from "@/server/export-service";
 import { unauthorized } from "@/server/http";
 import { removeArtworkImage } from "@/server/media-service";
 import { requireSession } from "@/server/session";
@@ -19,6 +20,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     caption: typeof body.caption === "string" ? body.caption : undefined,
   });
 
+  await exportPublicSiteSnapshot();
   return NextResponse.json({ artwork });
 }
 
@@ -36,5 +38,6 @@ export async function DELETE(_: Request, context: { params: Promise<{ id: string
     await removeArtworkImage(result.removed.storageKey, result.removed.previewStorageKey);
   }
 
+  await exportPublicSiteSnapshot();
   return NextResponse.json({ artwork: result.artwork });
 }

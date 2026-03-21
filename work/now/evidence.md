@@ -386,3 +386,66 @@
 
 - Contact forms remain the only intentionally fake flow.
 - Some decorative labels such as static exhibition metadata are still present by design and may later be replaced only if a stronger backend source appears for them.
+
+## 2026-03-21 - Archive flag, bulk actions, CMS stabilization, and touch-aware ordering
+
+- Added `isArchived` as a separate editorial flag in the shared artwork model for backend, admin, and showcase layers.
+- Normalized artwork summaries so admin and public layers now agree on:
+  - `year`
+  - `series`
+  - `showInGallery`
+  - `isArchived`
+- Updated public filtering rules so showcase galleries now only render artworks where:
+  - `showInGallery = true`
+  - `isArchived = false`
+- Added archive-aware backend batch actions through:
+  - `POST /api/admin/artworks/batch`
+  - supported actions: `delete`, `archive`, `unarchive`
+- Updated artwork mutation routes to rebuild the published snapshot after create/update/delete/reorder/photo mutations and after batch actions.
+- Reworked the admin lots page:
+  - added `Показывать работы из архива`
+  - `Все` mode now always groups lots into `Активные` and `Архив`
+  - grouped modes no longer use separate collapse buttons
+  - group title/header click now toggles collapse
+  - repeat click on the active grouping filter toggles all groups in that mode
+  - added multi-select, `Выбрать все в группе`, and bulk actions (`В архив`, `Из архива`, `Удалить`)
+- Reworked public grouped galleries:
+  - removed separate collapse buttons and explicit `Свернуть все / Развернуть все` controls
+  - group title/header click toggles collapse
+  - repeat click on active `По году` / `По серии` filter toggles all groups
+  - infinite scroll stays active over the filtered, non-archived dataset
+- Reworked the order page for touch-friendly use:
+  - kept desktop drag-and-drop
+  - added visible handle and explicit `Выше` / `Ниже` controls for touch/mobile use
+  - added archive-aware filtering on the ordering surface
+- Fixed the CMS content flow:
+  - repaired server-side seed creation so the first default version is created deterministically instead of relying on a recursive code path
+  - content save / clone / publish flow in admin now preserves the current version selection instead of racing multiple reloads
+  - default sketch texts now appear as the first editable version for `variant + page`
+
+### Validation
+
+- Local checks:
+  - `npm run build --workspace web`
+  - `npm run build --workspace admin`
+  - `npm run build:showcase`
+  - `npm run lint --workspace web`
+  - `npm run lint --workspace admin`
+  - `bash scripts/docs-check.sh`
+- Publish / deploy:
+  - `powershell -ExecutionPolicy Bypass -File scripts/publish-admin.ps1`
+  - `powershell -ExecutionPolicy Bypass -File scripts/publish-showcase.ps1`
+  - `powershell -ExecutionPolicy Bypass -File scripts/deploy-yc-web.ps1`
+- Live checks after rollout:
+  - `GET https://api.art.solofarm.ru/api/health` -> `200`
+  - authenticated `GET https://api.art.solofarm.ru/api/admin/content/versions?variantId=cold-mist&pageKey=home` -> `versions=1`
+  - authenticated `GET https://api.art.solofarm.ru/api/admin/artworks` -> `artworks=43`
+  - `GET https://admin.art.solofarm.ru/artworks/` -> `200`
+  - `GET http://art.solofarm.ru/cold-mist/gallery/` -> `200`
+  - `GET http://art.solofarm.ru/mint-rose/gallery/` -> `200`
+
+### Still unresolved
+
+- Imported sketch artworks still mostly have empty `year` / `series` metadata, so groupings work technically but many records will currently fall into `Год не указан` / `Без серии` until editorial enrichment in admin.
+- The order page is now touch-usable, but it is not yet a full finger drag-and-drop experience; touch editing currently relies on explicit move controls rather than native touch reordering.
+- Public galleries now enforce archive filtering, but a later UX pass may still be needed to polish each variant's grouping micro-interactions against its original sketch.

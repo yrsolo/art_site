@@ -8,7 +8,8 @@ import { createEmptyArtwork } from "@/lib/defaults";
 import { artworkStatuses, type Artwork, type ArtworkSummary } from "@/lib/types";
 
 type GroupMode = "all" | "year" | "series" | "status";
-type GroupedCollection = {
+type ArtworkGroup = {
+  key: string;
   label: string;
   items: ArtworkSummary[];
 };
@@ -40,6 +41,48 @@ function getStatusGroupLabel(item: ArtworkSummary) {
   return formatStatus(item.status);
 }
 
+function buildGroups(items: ArtworkSummary[], groupMode: GroupMode, showArchived: boolean) {
+  if (groupMode === "all") {
+    const active = items.filter((item) => !item.isArchived);
+    const archived = items.filter((item) => item.isArchived);
+    const groups: ArtworkGroup[] = [];
+
+    if (active.length) {
+      groups.push({ key: "all:active", label: "Активные", items: active });
+    }
+
+    if (showArchived && archived.length) {
+      groups.push({ key: "all:archive", label: "Архив", items: archived });
+    }
+
+    return groups;
+  }
+
+  const labelForItem =
+    groupMode === "year"
+      ? getYearGroupLabel
+      : groupMode === "series"
+        ? getSeriesGroupLabel
+        : getStatusGroupLabel;
+
+  const groups = new Map<string, ArtworkSummary[]>();
+
+  for (const item of items) {
+    const label = labelForItem(item);
+    const current = groups.get(label) ?? [];
+    current.push(item);
+    groups.set(label, current);
+  }
+
+  return [...groups.entries()]
+    .map(([label, entries]) => ({
+      key: `${groupMode}:${label}`,
+      label,
+      items: entries,
+    }))
+    .sort((left, right) => left.label.localeCompare(right.label, "ru"));
+}
+
 export default function ArtworksPage() {
   const [items, setItems] = useState<ArtworkSummary[]>([]);
   const [artwork, setArtwork] = useState<Artwork>(createEmptyArtwork());
@@ -49,20 +92,24 @@ export default function ArtworksPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [groupMode, setGroupMode] = useState<GroupMode>("all");
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+  const [showArchived, setShowArchived] = useState(false);
+  const [selectedArtworkIds, setSelectedArtworkIds] = useState<string[]>([]);
 
   async function loadList(nextSelectedId?: string | null) {
     const response = await apiFetch<{ artworks: ArtworkSummary[] }>("/api/admin/artworks");
     setItems(response.artworks);
 
-    const fallbackId = nextSelectedId ?? response.artworks[0]?.id ?? null;
-    if (fallbackId) {
-      const artworkResponse = await apiFetch<{ artwork: Artwork }>(`/api/admin/artworks/${fallbackId}`);
-      setArtwork(artworkResponse.artwork);
-      setEditing(false);
-    } else {
-      setArtwork(createEmptyArtwork());
-      setEditing(true);
+    if (!nextSelectedId) {
+      if (response.artworks.length === 0) {
+        setArtwork(createEmptyArtwork());
+        setEditing(true);
+      }
+      return;
     }
+
+    const artworkResponse = await apiFetch<{ artwork: Artwork }>(`/api/admin/artworks/${nextSelectedId}`);
+    setArtwork(artworkResponse.artwork);
+    setEditing(false);
   }
 
   async function loadArtwork(id: string) {
@@ -79,53 +126,21 @@ export default function ArtworksPage() {
   }, []);
 
   const sortedItems = useMemo(() => [...items].sort((left, right) => left.sortOrder - right.sortOrder), [items]);
-
-  const groupedItems = useMemo<GroupedCollection[]>(() => {
-    if (groupMode === "all") {
-      return [];
-    }
-
-    const labelForItem =
-      groupMode === "year"
-        ? getYearGroupLabel
-        : groupMode === "series"
-          ? getSeriesGroupLabel
-          : getStatusGroupLabel;
-
-    const groups = new Map<string, ArtworkSummary[]>();
-
-    for (const item of sortedItems) {
-      const label = labelForItem(item);
-      const current = groups.get(label) ?? [];
-      current.push(item);
-      groups.set(label, current);
-    }
-
-    return [...groups.entries()]
-      .map(([label, entries]) => ({
-        label,
-        items: entries,
-      }))
-      .sort((left, right) => left.label.localeCompare(right.label, "ru"));
-  }, [groupMode, sortedItems]);
+  const visibleItems = useMemo(
+    () => sortedItems.filter((item) => (showArchived ? true : !item.isArchived)),
+    [showArchived, sortedItems],
+  );
+  const groupedItems = useMemo(() => buildGroups(visibleItems, groupMode, showArchived), [groupMode, showArchived, visibleItems]);
+  const hasAnyCollapsed = useMemo(() => groupedItems.some((group) => collapsedGroups[group.key]), [collapsedGroups, groupedItems]);
 
   function updateField<Key extends keyof Artwork>(key: Key, value: Artwork[Key]) {
     setArtwork((current) => ({ ...current, [key]: value }));
   }
 
-  function collapseStateForAll() {
-    return groupedItems.every((group) => collapsedGroups[group.label]);
-  }
-
   function handleGroupModeClick(nextMode: GroupMode) {
-    if (nextMode === "all") {
-      setGroupMode("all");
-      return;
-    }
-
     if (groupMode === nextMode) {
-      const nextValue = !collapseStateForAll();
-      setCollapsedGroups(Object.fromEntries(groupedItems.map((group) => [group.label, nextValue])));
+      const nextCollapsed = !hasAnyCollapsed;
+      setCollapsedGroups(Object.fromEntries(groupedItems.map((group) => [group.key, nextCollapsed])));
       return;
     }
 
@@ -133,19 +148,64 @@ export default function ArtworksPage() {
     setCollapsedGroups({});
   }
 
-  function toggleGroup(label: string) {
+  function toggleGroup(groupKey: string) {
     setCollapsedGroups((current) => ({
       ...current,
-      [label]: !current[label],
+      [groupKey]: !current[groupKey],
     }));
   }
 
-  function collapseAll() {
-    setCollapsedGroups(Object.fromEntries(groupedItems.map((group) => [group.label, true])));
+  function toggleArtworkSelection(artworkId: string) {
+    setSelectedArtworkIds((current) =>
+      current.includes(artworkId) ? current.filter((id) => id !== artworkId) : [...current, artworkId],
+    );
   }
 
-  function expandAll() {
-    setCollapsedGroups(Object.fromEntries(groupedItems.map((group) => [group.label, false])));
+  function toggleGroupSelection(group: ArtworkGroup) {
+    const groupIds = group.items.map((item) => item.id);
+    const allSelected = groupIds.every((id) => selectedArtworkIds.includes(id));
+
+    setSelectedArtworkIds((current) =>
+      allSelected ? current.filter((id) => !groupIds.includes(id)) : [...new Set([...current, ...groupIds])],
+    );
+  }
+
+  function clearSelection() {
+    setSelectedArtworkIds([]);
+  }
+
+  async function applyBulkAction(action: "delete" | "archive" | "unarchive") {
+    if (selectedArtworkIds.length === 0) {
+      return;
+    }
+
+    setPending(true);
+    setMessage("");
+
+    try {
+      const response = await apiFetch<{ artworks: ArtworkSummary[] }>("/api/admin/artworks/batch", {
+        method: "POST",
+        body: JSON.stringify({ ids: selectedArtworkIds, action }),
+      });
+
+      setItems(response.artworks);
+      if (artwork.id && selectedArtworkIds.includes(artwork.id) && action === "delete") {
+        setArtwork(createEmptyArtwork());
+        setDrawerOpen(false);
+      }
+      clearSelection();
+      setMessage(
+        action === "delete"
+          ? "Выбранные лоты удалены."
+          : action === "archive"
+            ? "Выбранные лоты перенесены в архив."
+            : "Выбранные лоты извлечены из архива.",
+      );
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Не удалось применить массовое действие.");
+    } finally {
+      setPending(false);
+    }
   }
 
   async function saveArtwork() {
@@ -193,6 +253,7 @@ export default function ArtworksPage() {
       await apiFetch(`/api/admin/artworks/${artwork.id}`, { method: "DELETE" });
       await loadList(null);
       setDrawerOpen(false);
+      setArtwork(createEmptyArtwork());
       setMessage("Лот удалён.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Не удалось удалить лот.");
@@ -261,15 +322,22 @@ export default function ArtworksPage() {
   }
 
   function renderArtworkRow(item: ArtworkSummary) {
+    const checked = selectedArtworkIds.includes(item.id);
+
     return (
       <div key={item.id} className={`table-row ${artwork.id === item.id ? "active" : ""}`}>
+        <label className="table-check">
+          <input type="checkbox" checked={checked} onChange={() => toggleArtworkSelection(item.id)} />
+        </label>
         <div className="table-preview" style={{ backgroundImage: item.previewUrl ? `url(${item.previewUrl})` : undefined }} />
         <div>
           <strong>{item.title}</strong>
           <div className="subtle">{item.slug}</div>
         </div>
         <div>{item.series || "Без серии"}</div>
+        <div>{item.year || "Год не указан"}</div>
         <div>{formatStatus(item.status)}</div>
+        <div>{item.isArchived ? "Архив" : "Активна"}</div>
         <label>
           <input type="checkbox" checked={item.showInGallery} onChange={() => toggleGallery(item)} />
         </label>
@@ -277,7 +345,9 @@ export default function ArtworksPage() {
           className="button-secondary"
           type="button"
           onClick={() => {
-            loadArtwork(item.id).catch((error) => setMessage(error instanceof Error ? error.message : "Не удалось загрузить карточку."));
+            void loadArtwork(item.id).catch((error) =>
+              setMessage(error instanceof Error ? error.message : "Не удалось загрузить карточку."),
+            );
           }}
         >
           Открыть
@@ -309,7 +379,7 @@ export default function ArtworksPage() {
           </button>
         </div>
 
-        <div className="actions" style={{ marginBottom: 16 }}>
+        <div className="actions" style={{ marginBottom: 16, alignItems: "center" }}>
           <button className={groupMode === "all" ? "button" : "button-secondary"} type="button" onClick={() => handleGroupModeClick("all")}>
             Все
           </button>
@@ -322,38 +392,64 @@ export default function ArtworksPage() {
           <button className={groupMode === "status" ? "button" : "button-secondary"} type="button" onClick={() => handleGroupModeClick("status")}>
             По статусу
           </button>
+          <label className="field" style={{ minWidth: 220, marginLeft: "auto" }}>
+            <span>
+              <input type="checkbox" checked={showArchived} onChange={(event) => setShowArchived(event.target.checked)} /> Показывать работы из архива
+            </span>
+          </label>
         </div>
 
-        {groupMode !== "all" ? (
-          <div className="actions" style={{ marginBottom: 16 }}>
-            <button className="button-secondary" type="button" onClick={collapseAll}>
-              Свернуть все
-            </button>
-            <button className="button-secondary" type="button" onClick={expandAll}>
-              Развернуть все
-            </button>
+        {selectedArtworkIds.length > 0 ? (
+          <div className="bulk-bar">
+            <strong>Выбрано: {selectedArtworkIds.length}</strong>
+            <div className="actions">
+              <button className="button-secondary" type="button" onClick={() => void applyBulkAction("archive")} disabled={pending}>
+                В архив
+              </button>
+              <button className="button-secondary" type="button" onClick={() => void applyBulkAction("unarchive")} disabled={pending}>
+                Из архива
+              </button>
+              <button className="button-danger" type="button" onClick={() => void applyBulkAction("delete")} disabled={pending}>
+                Удалить
+              </button>
+              <button className="button-secondary" type="button" onClick={clearSelection}>
+                Снять выделение
+              </button>
+            </div>
           </div>
         ) : null}
 
-        {message ? <p className="subtle" style={{ marginBottom: 16 }}>{message}</p> : null}
+        {message ? (
+          <p className="subtle" style={{ marginBottom: 16 }}>
+            {message}
+          </p>
+        ) : null}
 
         <div className="table-grid">
-          {groupMode === "all"
-            ? sortedItems.map((item) => renderArtworkRow(item))
-            : groupedItems.map((group) => (
-                <section key={group.label} className="panel" style={{ padding: 16 }}>
-                  <div className="actions" style={{ alignItems: "center", justifyContent: "space-between" }}>
+          {groupedItems.map((group) => {
+            const allSelected = group.items.length > 0 && group.items.every((item) => selectedArtworkIds.includes(item.id));
+
+            return (
+              <section key={group.key} className="panel grouped-panel">
+                <div className="group-header">
+                  <button className="group-heading-button" type="button" onClick={() => toggleGroup(group.key)}>
                     <div>
                       <strong>{group.label}</strong>
                       <div className="subtle">{group.items.length} шт.</div>
                     </div>
-                    <button className="button-secondary" type="button" onClick={() => toggleGroup(group.label)}>
-                      {collapsedGroups[group.label] ? "Развернуть" : "Свернуть"}
-                    </button>
+                  </button>
+                  <button className="button-secondary" type="button" onClick={() => toggleGroupSelection(group)}>
+                    {allSelected ? "Снять группу" : "Выбрать все в группе"}
+                  </button>
+                </div>
+                {!collapsedGroups[group.key] ? (
+                  <div className="table-grid" style={{ marginTop: 12 }}>
+                    {group.items.map((item) => renderArtworkRow(item))}
                   </div>
-                  {!collapsedGroups[group.label] ? <div className="table-grid" style={{ marginTop: 12 }}>{group.items.map((item) => renderArtworkRow(item))}</div> : null}
-                </section>
-              ))}
+                ) : null}
+              </section>
+            );
+          })}
         </div>
       </section>
 
@@ -438,17 +534,30 @@ export default function ArtworksPage() {
                 </label>
               </div>
 
-              <label className="field">
-                <span>
-                  <input
-                    type="checkbox"
-                    checked={artwork.showInGallery}
-                    onChange={(event) => updateField("showInGallery", event.target.checked)}
-                    disabled={!editing}
-                  />{" "}
-                  Показывать в галерее
-                </span>
-              </label>
+              <div className="field-grid two">
+                <label className="field">
+                  <span>
+                    <input
+                      type="checkbox"
+                      checked={artwork.showInGallery}
+                      onChange={(event) => updateField("showInGallery", event.target.checked)}
+                      disabled={!editing}
+                    />{" "}
+                    Показывать в галерее
+                  </span>
+                </label>
+                <label className="field">
+                  <span>
+                    <input
+                      type="checkbox"
+                      checked={artwork.isArchived}
+                      onChange={(event) => updateField("isArchived", event.target.checked)}
+                      disabled={!editing}
+                    />{" "}
+                    В архиве
+                  </span>
+                </label>
+              </div>
 
               <label className="field">
                 <span>Описание</span>
@@ -511,10 +620,10 @@ export default function ArtworksPage() {
                         </label>
                       </div>
                       <div className="actions" style={{ marginTop: 12 }}>
-                        <button className="button-secondary" type="button" onClick={() => setPrimary(photo.id)}>
+                        <button className="button-secondary" type="button" onClick={() => void setPrimary(photo.id)}>
                           {artwork.primaryPhotoId === photo.id ? "Основное фото" : "Сделать основным"}
                         </button>
-                        <button className="button-danger" type="button" onClick={() => deletePhoto(photo.id)}>
+                        <button className="button-danger" type="button" onClick={() => void deletePhoto(photo.id)}>
                           Удалить
                         </button>
                       </div>

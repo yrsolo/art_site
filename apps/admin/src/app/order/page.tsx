@@ -44,12 +44,32 @@ function reorderItems(items: ArtworkSummary[], draggedId: string, targetId: stri
   return next;
 }
 
+function moveItem(items: ArtworkSummary[], itemId: string, direction: -1 | 1) {
+  const index = items.findIndex((item) => item.id === itemId);
+
+  if (index === -1) {
+    return items;
+  }
+
+  const nextIndex = index + direction;
+
+  if (nextIndex < 0 || nextIndex >= items.length) {
+    return items;
+  }
+
+  const next = [...items];
+  const [item] = next.splice(index, 1);
+  next.splice(nextIndex, 0, item);
+  return next;
+}
+
 export default function OrderPage() {
   const [items, setItems] = useState<ArtworkSummary[]>([]);
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState("");
   const [dragState, setDragState] = useState<DragState>({ draggedId: null, overId: null });
   const [showOnlyGallery, setShowOnlyGallery] = useState(true);
+  const [showArchived, setShowArchived] = useState(false);
   const [yearFilter, setYearFilter] = useState("all");
   const [seriesFilter, setSeriesFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState<"all" | ArtworkStatus>("all");
@@ -79,6 +99,10 @@ export default function OrderPage() {
       const yearLabel = item.year.trim() || "Год не указан";
       const seriesLabel = item.series.trim() || "Без серии";
 
+      if (!showArchived && item.isArchived) {
+        return false;
+      }
+
       if (showOnlyGallery && !item.showInGallery) {
         return false;
       }
@@ -97,7 +121,7 @@ export default function OrderPage() {
 
       return true;
     });
-  }, [items, seriesFilter, showOnlyGallery, statusFilter, yearFilter]);
+  }, [items, seriesFilter, showArchived, showOnlyGallery, statusFilter, yearFilter]);
 
   async function saveOrder() {
     setPending(true);
@@ -123,7 +147,7 @@ export default function OrderPage() {
           <div>
             <p className="admin-kicker">Порядок</p>
             <h2>Очередь галереи</h2>
-            <p className="admin-muted">Один `sortOrder` управляет всеми эскизами. Перетаскивайте карточки и сохраняйте общий порядок.</p>
+            <p className="admin-muted">Один `sortOrder` управляет всеми эскизами. Мышью можно перетаскивать карточки, а на touch-экранах удобно пользоваться ручками и кнопками вверх/вниз.</p>
           </div>
 
           <button className="button" type="button" onClick={saveOrder} disabled={pending}>
@@ -171,6 +195,13 @@ export default function OrderPage() {
               Только показываемые
             </span>
           </label>
+
+          <label className="field" style={{ minWidth: 180 }}>
+            <span>
+              <input type="checkbox" checked={showArchived} onChange={(event) => setShowArchived(event.target.checked)} />{" "}
+              Показывать архив
+            </span>
+          </label>
         </div>
 
         {message ? (
@@ -185,9 +216,8 @@ export default function OrderPage() {
             const isDropTarget = dragState.overId === item.id && dragState.draggedId !== item.id;
 
             return (
-              <button
+              <div
                 key={item.id}
-                type="button"
                 draggable
                 className={`order-card${isDragging ? " dragging" : ""}${isDropTarget ? " over" : ""}`}
                 onDragStart={() => setDragState({ draggedId: item.id, overId: item.id })}
@@ -202,14 +232,28 @@ export default function OrderPage() {
               >
                 <div className="order-card-preview" style={{ backgroundImage: item.previewUrl ? `url(${item.previewUrl})` : undefined }} />
                 <div className="order-card-body">
-                  <div className="order-card-order">#{index + 1}</div>
+                  <div className="order-card-head">
+                    <div className="order-card-order">#{index + 1}</div>
+                    <span className="order-card-handle" aria-hidden="true">
+                      ≡
+                    </span>
+                  </div>
                   <strong>{item.title}</strong>
                   <div className="subtle">{item.series || "Без серии"}</div>
                   <div className="subtle">
                     {item.year || "Год не указан"} · {formatStatus(item.status)}
                   </div>
+                  <div className="subtle">{item.isArchived ? "Архив" : "Активна"}</div>
                 </div>
-              </button>
+                <div className="order-card-touch-actions">
+                  <button className="button-secondary" type="button" onClick={() => setItems((current) => moveItem(current, item.id, -1))}>
+                    Выше
+                  </button>
+                  <button className="button-secondary" type="button" onClick={() => setItems((current) => moveItem(current, item.id, 1))}>
+                    Ниже
+                  </button>
+                </div>
+              </div>
             );
           })}
         </div>

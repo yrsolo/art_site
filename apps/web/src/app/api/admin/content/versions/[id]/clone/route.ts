@@ -1,5 +1,3 @@
-import { NextResponse } from "next/server";
-
 import { cloneContentVersion } from "@/server/content-repository";
 import { badRequest, created, unauthorized } from "@/server/http";
 import { parseContentPageKey } from "@/server/parsers";

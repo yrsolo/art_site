@@ -15,6 +15,28 @@ function artworkKey(id: string) {
   return `${appConfig.dataPrefix}/artworks/${id}.json`;
 }
 
+function normalizeArtwork(artwork: Artwork): Artwork {
+  return {
+    ...artwork,
+    series: artwork.series ?? "",
+    year: artwork.year ?? "",
+    price: artwork.price ?? "",
+    currency: artwork.currency ?? "RUB",
+    isArchived: Boolean(artwork.isArchived),
+    showInGallery: Boolean(artwork.showInGallery),
+  };
+}
+
+function normalizeArtworkListRecord(item: ArtworkListRecord): ArtworkListRecord {
+  return {
+    ...item,
+    series: item.series ?? "",
+    year: item.year ?? "",
+    isArchived: Boolean(item.isArchived),
+    showInGallery: Boolean(item.showInGallery),
+  };
+}
+
 async function readIndex() {
   const index = await readJsonFile<ArtworksIndex>(artworksIndexKey, {
     updatedAt: nowIso(),
@@ -23,10 +45,7 @@ async function readIndex() {
 
   return {
     ...index,
-    items: index.items.map((item) => ({
-      ...item,
-      year: item.year ?? "",
-    })),
+    items: index.items.map(normalizeArtworkListRecord),
   };
 }
 
@@ -59,11 +78,12 @@ export async function listArtworks() {
 
 export async function listPublicArtworks() {
   const artworks = await listArtworks();
-  return artworks.filter((artwork) => artwork.showInGallery);
+  return artworks.filter((artwork) => !artwork.isArchived && artwork.showInGallery);
 }
 
 export async function getArtworkById(id: string) {
-  return readJsonFile<Artwork | null>(artworkKey(id), null);
+  const artwork = await readJsonFile<Artwork | null>(artworkKey(id), null);
+  return artwork ? normalizeArtwork(artwork) : null;
 }
 
 export async function getArtworkBySlug(slug: string) {
@@ -88,6 +108,7 @@ export async function createArtwork(input: ArtworkInput) {
     price: input.price,
     currency: input.currency,
     status: input.status,
+    isArchived: input.isArchived,
     showInGallery: input.showInGallery,
     description: input.description,
     photos: [],
@@ -97,7 +118,7 @@ export async function createArtwork(input: ArtworkInput) {
     updatedAt: timestamp,
   };
 
-  await writeJsonFile(artworkKey(artwork.id), artwork);
+  await writeJsonFile(artworkKey(artwork.id), normalizeArtwork(artwork));
   const index = await listArtworkSummaries();
   index.push(toArtworkSummary(artwork));
   await writeIndex(index);
@@ -114,12 +135,12 @@ export async function updateArtwork(id: string, input: ArtworkInput) {
   const slug = slugify(input.slug || input.title);
   await assertUniqueSlug(slug, id);
 
-  const artwork: Artwork = {
+  const artwork: Artwork = normalizeArtwork({
     ...existing,
     ...input,
     slug,
     updatedAt: nowIso(),
-  };
+  });
 
   await writeJsonFile(artworkKey(id), artwork);
   const index = await listArtworkSummaries();
@@ -182,7 +203,7 @@ export async function addArtworkPhoto(artworkId: string, photo: ArtworkPhoto) {
     .sort((left, right) => left.sortOrder - right.sortOrder);
 
   const updated: Artwork = {
-    ...artwork,
+    ...normalizeArtwork(artwork),
     photos,
     primaryPhotoId: artwork.primaryPhotoId ?? photo.id,
     updatedAt: nowIso(),
@@ -206,7 +227,7 @@ export async function updateArtworkPhotoMetadata(
   }
 
   const updated: Artwork = {
-    ...artwork,
+    ...normalizeArtwork(artwork),
     photos: artwork.photos.map((photo) => (photo.id === photoId ? { ...photo, ...updates } : photo)),
     updatedAt: nowIso(),
   };
@@ -228,7 +249,7 @@ export async function removeArtworkPhoto(artworkId: string, photoId: string) {
     .map((photo, index) => ({ ...photo, sortOrder: index + 1 }));
   const nextPrimary = artwork.primaryPhotoId === photoId ? (photos[0]?.id ?? null) : artwork.primaryPhotoId;
   const updated: Artwork = {
-    ...artwork,
+    ...normalizeArtwork(artwork),
     photos,
     primaryPhotoId: nextPrimary,
     updatedAt: nowIso(),
@@ -255,7 +276,7 @@ export async function setPrimaryArtworkPhoto(artworkId: string, photoId: string)
   }
 
   const updated: Artwork = {
-    ...artwork,
+    ...normalizeArtwork(artwork),
     primaryPhotoId: photoId,
     updatedAt: nowIso(),
   };
@@ -275,7 +296,7 @@ export async function reorderArtworkPhotos(artworkId: string, photoIds: string[]
 
   const orderMap = new Map(photoIds.map((photoId, index) => [photoId, index + 1]));
   const updated: Artwork = {
-    ...artwork,
+    ...normalizeArtwork(artwork),
     photos: artwork.photos
       .map((photo, index) => ({
         ...photo,
@@ -287,4 +308,55 @@ export async function reorderArtworkPhotos(artworkId: string, photoIds: string[]
 
   await writeJsonFile(artworkKey(artworkId), updated);
   return updated;
+}
+
+export async function applyBulkArtworkAction(ids: string[], action: "delete" | "archive" | "unarchive") {
+  const uniqueIds = [...new Set(ids.filter(Boolean))];
+
+  if (uniqueIds.length === 0) {
+    return await listArtworkSummaries();
+  }
+
+  if (action === "delete") {
+    for (const id of uniqueIds) {
+      const artwork = await getArtworkById(id);
+
+      if (artwork) {
+        await deleteJsonFile(artworkKey(id));
+      }
+    }
+
+    const index = await listArtworkSummaries();
+    const nextItems = index.filter((item) => !uniqueIds.includes(item.id));
+    await writeIndex(nextItems);
+    return nextItems;
+  }
+
+  const summaries = await listArtworkSummaries();
+  const updatedSummaries: ArtworkListRecord[] = [];
+
+  for (const summary of summaries) {
+    if (!uniqueIds.includes(summary.id)) {
+      updatedSummaries.push(summary);
+      continue;
+    }
+
+    const artwork = await getArtworkById(summary.id);
+
+    if (!artwork) {
+      continue;
+    }
+
+    const updatedArtwork = normalizeArtwork({
+      ...artwork,
+      isArchived: action === "archive",
+      updatedAt: nowIso(),
+    });
+
+    await writeJsonFile(artworkKey(updatedArtwork.id), updatedArtwork);
+    updatedSummaries.push(toArtworkSummary(updatedArtwork));
+  }
+
+  await writeIndex(updatedSummaries);
+  return updatedSummaries.sort((left, right) => left.sortOrder - right.sortOrder);
 }

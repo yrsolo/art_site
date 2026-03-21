@@ -9,14 +9,10 @@ import type { Artwork } from "@/features/artworks/types";
 function DarkControls({
   groupMode,
   setMode,
-  collapseAll,
-  expandAll,
   accentClass,
 }: {
   groupMode: "all" | "year" | "series";
   setMode: (mode: "all" | "year" | "series") => void;
-  collapseAll: () => void;
-  expandAll: () => void;
   accentClass: string;
 }) {
   return (
@@ -26,21 +22,15 @@ function DarkControls({
         ["year", "По году"],
         ["series", "По серии"],
       ].map(([value, label]) => (
-        <button key={value} className={groupMode === value ? accentClass : "text-[#aab6c9]"} type="button" onClick={() => setMode(value as "all" | "year" | "series")}>
+        <button
+          key={value}
+          className={groupMode === value ? accentClass : "text-[#aab6c9]"}
+          type="button"
+          onClick={() => setMode(value as "all" | "year" | "series")}
+        >
           {label}
         </button>
       ))}
-      {groupMode !== "all" ? (
-        <>
-          <span className="h-4 w-px bg-white/10" />
-          <button className="text-xs uppercase tracking-[0.18em] text-[#aab6c9]" type="button" onClick={collapseAll}>
-            Свернуть все
-          </button>
-          <button className="text-xs uppercase tracking-[0.18em] text-[#aab6c9]" type="button" onClick={expandAll}>
-            Развернуть все
-          </button>
-        </>
-      ) : null}
     </div>
   );
 }
@@ -48,15 +38,11 @@ function DarkControls({
 function OrganicControls({
   groupMode,
   setMode,
-  collapseAll,
-  expandAll,
   activeClass,
   idleClass,
 }: {
   groupMode: "all" | "year" | "series";
   setMode: (mode: "all" | "year" | "series") => void;
-  collapseAll: () => void;
-  expandAll: () => void;
   activeClass: string;
   idleClass: string;
 }) {
@@ -67,26 +53,47 @@ function OrganicControls({
         ["year", "По году"],
         ["series", "По серии"],
       ].map(([value, label]) => (
-        <button key={value} className={groupMode === value ? activeClass : idleClass} type="button" onClick={() => setMode(value as "all" | "year" | "series")}>
+        <button
+          key={value}
+          className={groupMode === value ? activeClass : idleClass}
+          type="button"
+          onClick={() => setMode(value as "all" | "year" | "series")}
+        >
           {label}
         </button>
       ))}
-      {groupMode !== "all" ? (
-        <>
-          <button className={idleClass} type="button" onClick={collapseAll}>
-            Свернуть все
-          </button>
-          <button className={idleClass} type="button" onClick={expandAll}>
-            Развернуть все
-          </button>
-        </>
-      ) : null}
     </div>
   );
 }
 
+function GroupHeader({
+  title,
+  countLabel,
+  collapsed,
+  onToggle,
+  className,
+  indicatorClassName,
+}: {
+  title: string;
+  countLabel: string;
+  collapsed: boolean;
+  onToggle: () => void;
+  className: string;
+  indicatorClassName: string;
+}) {
+  return (
+    <button className={className} type="button" onClick={onToggle}>
+      <div>
+        <h2>{title}</h2>
+        <p>{countLabel}</p>
+      </div>
+      <span className={indicatorClassName}>{collapsed ? "Развернуть" : "Свернуть"}</span>
+    </button>
+  );
+}
+
 export function CopperGlowGalleryClient({ variantId, artworks }: { variantId: string; artworks: Artwork[] }) {
-  const { artworks: visibleArtworks, collapseAll, expandAll, groupMode, groups, hasMore, sentinelRef, setMode, toggleGroup } = useGalleryBrowser(artworks);
+  const { artworks: visibleArtworks, groupMode, groups, hasMore, sentinelRef, setMode, toggleGroup } = useGalleryBrowser(artworks);
 
   return (
     <section className="mx-auto max-w-[96rem] px-8 pb-24 pt-10">
@@ -99,7 +106,7 @@ export function CopperGlowGalleryClient({ variantId, artworks }: { variantId: st
           </h1>
           <p className="max-w-md text-lg text-[#d3c4b9]">Исследуйте пересечение структурной жёсткости и атмосферного тепла.</p>
         </div>
-        <DarkControls groupMode={groupMode} setMode={setMode} collapseAll={collapseAll} expandAll={expandAll} accentClass="bg-[#e8be9f] px-6 py-2 text-xs font-bold uppercase tracking-[0.2em] text-[#442b14]" />
+        <DarkControls groupMode={groupMode} setMode={setMode} accentClass="bg-[#e8be9f] px-6 py-2 text-xs font-bold uppercase tracking-[0.2em] text-[#442b14]" />
       </header>
 
       {groupMode === "all" ? (
@@ -125,15 +132,14 @@ export function CopperGlowGalleryClient({ variantId, artworks }: { variantId: st
         <div className="space-y-12">
           {groups.map((group) => (
             <section key={group.groupKey} className="border-t border-[#4f453d]/20 pt-6">
-              <div className="mb-8 flex items-center justify-between gap-6">
-                <div>
-                  <h2 className="text-xl font-bold uppercase tracking-[0.18em] text-[#e8be9f]" style={{ fontFamily: "Space Grotesk, sans-serif" }}>{group.groupLabel}</h2>
-                  <p className="text-xs uppercase tracking-[0.2em] text-[#aab6c9]">{group.itemCount} работ</p>
-                </div>
-                <button className="text-xs uppercase tracking-[0.2em] text-[#e8be9f]" type="button" onClick={() => toggleGroup(group.groupKey)}>
-                  {group.collapsed ? "Развернуть" : "Свернуть"}
-                </button>
-              </div>
+              <GroupHeader
+                title={group.groupLabel}
+                countLabel={`${group.itemCount} работ`}
+                collapsed={group.collapsed}
+                onToggle={() => toggleGroup(group.groupKey)}
+                className="mb-8 flex w-full items-center justify-between gap-6 text-left"
+                indicatorClassName="text-xs uppercase tracking-[0.2em] text-[#e8be9f]"
+              />
               {!group.collapsed ? (
                 <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
                   {group.items.map((artwork) => (
@@ -160,12 +166,12 @@ export function CopperGlowGalleryClient({ variantId, artworks }: { variantId: st
 }
 
 export function DeepImmersionGalleryClient({ variantId, artworks }: { variantId: string; artworks: Artwork[] }) {
-  const { artworks: visibleArtworks, collapseAll, expandAll, groupMode, groups, hasMore, sentinelRef, setMode, toggleGroup } = useGalleryBrowser(artworks);
+  const { artworks: visibleArtworks, groupMode, groups, hasMore, sentinelRef, setMode, toggleGroup } = useGalleryBrowser(artworks);
 
   return (
     <>
       <section className="px-6 pb-8 pt-8 md:px-12 lg:px-24">
-        <DarkControls groupMode={groupMode} setMode={setMode} collapseAll={collapseAll} expandAll={expandAll} accentClass="relative text-[#F1F4F9] after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:bg-[#1378ec]" />
+        <DarkControls groupMode={groupMode} setMode={setMode} accentClass="relative text-[#F1F4F9] after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:bg-[#1378ec]" />
       </section>
       <section className="px-6 pb-24 md:px-12 lg:px-24">
         {groupMode === "all" ? (
@@ -189,15 +195,14 @@ export function DeepImmersionGalleryClient({ variantId, artworks }: { variantId:
           <div className="space-y-12">
             {groups.map((group) => (
               <section key={group.groupKey} className="border-t border-[#12151E] pt-6">
-                <div className="mb-8 flex items-center justify-between">
-                  <div>
-                    <h2 className="text-lg font-medium uppercase tracking-[0.2em] text-[#1378ec]">{group.groupLabel}</h2>
-                    <p className="text-xs uppercase tracking-[0.18em] text-[#5A657A]">{group.itemCount} работ</p>
-                  </div>
-                  <button className="text-xs uppercase tracking-[0.2em] text-[#F1F4F9]" type="button" onClick={() => toggleGroup(group.groupKey)}>
-                    {group.collapsed ? "Развернуть" : "Свернуть"}
-                  </button>
-                </div>
+                <GroupHeader
+                  title={group.groupLabel}
+                  countLabel={`${group.itemCount} работ`}
+                  collapsed={group.collapsed}
+                  onToggle={() => toggleGroup(group.groupKey)}
+                  className="mb-8 flex w-full items-center justify-between text-left"
+                  indicatorClassName="text-xs uppercase tracking-[0.2em] text-[#F1F4F9]"
+                />
                 {!group.collapsed ? (
                   <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
                     {group.items.map((artwork) => (
@@ -224,14 +229,14 @@ export function DeepImmersionGalleryClient({ variantId, artworks }: { variantId:
 }
 
 export function EthericPulseGalleryClient({ variantId, artworks }: { variantId: string; artworks: Artwork[] }) {
-  const { artworks: visibleArtworks, collapseAll, expandAll, groupMode, groups, hasMore, sentinelRef, setMode, toggleGroup } = useGalleryBrowser(artworks);
+  const { artworks: visibleArtworks, groupMode, groups, hasMore, sentinelRef, setMode, toggleGroup } = useGalleryBrowser(artworks);
 
   return (
     <section className="mx-auto max-w-screen-2xl px-6 pb-24 pt-8 md:px-12 lg:px-24">
       <div className="mb-16 space-y-6">
         <h1 className="font-[Manrope] text-5xl font-extrabold tracking-[-0.05em] md:text-7xl">Галерея потоков</h1>
         <p className="max-w-2xl text-lg leading-relaxed text-[#a7aac0]">Исследуйте визуализацию чистой энергии и безмолвного ритма вселенной.</p>
-        <OrganicControls groupMode={groupMode} setMode={setMode} collapseAll={collapseAll} expandAll={expandAll} activeClass="rounded-full bg-[#a894ff] px-6 py-2 text-sm text-[#190055]" idleClass="rounded-full bg-[#1b1f2e] px-6 py-2 text-sm text-[#a7aac0]" />
+        <OrganicControls groupMode={groupMode} setMode={setMode} activeClass="rounded-full bg-[#a894ff] px-6 py-2 text-sm text-[#190055]" idleClass="rounded-full bg-[#1b1f2e] px-6 py-2 text-sm text-[#a7aac0]" />
       </div>
       {groupMode === "all" ? (
         <div className="columns-1 gap-8 md:columns-2 xl:columns-3">
@@ -250,15 +255,14 @@ export function EthericPulseGalleryClient({ variantId, artworks }: { variantId: 
         <div className="space-y-10">
           {groups.map((group) => (
             <section key={group.groupKey} className="rounded-[1.75rem] border border-white/5 bg-[rgba(22,25,38,0.42)] p-6 backdrop-blur-xl">
-              <div className="mb-6 flex items-center justify-between gap-4">
-                <div>
-                  <h2 className="font-[Manrope] text-2xl font-bold text-[#e1e4fb]">{group.groupLabel}</h2>
-                  <p className="text-xs uppercase tracking-[0.18em] text-[#82d3dc]">{group.itemCount} работ</p>
-                </div>
-                <button className="rounded-full bg-[#1b1f2e] px-5 py-2 text-xs uppercase tracking-[0.16em] text-[#a7aac0]" type="button" onClick={() => toggleGroup(group.groupKey)}>
-                  {group.collapsed ? "Развернуть" : "Свернуть"}
-                </button>
-              </div>
+              <GroupHeader
+                title={group.groupLabel}
+                countLabel={`${group.itemCount} работ`}
+                collapsed={group.collapsed}
+                onToggle={() => toggleGroup(group.groupKey)}
+                className="mb-6 flex w-full items-center justify-between gap-4 text-left"
+                indicatorClassName="rounded-full bg-[#1b1f2e] px-5 py-2 text-xs uppercase tracking-[0.16em] text-[#a7aac0]"
+              />
               {!group.collapsed ? (
                 <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                   {group.items.map((artwork) => (
@@ -288,7 +292,7 @@ const mintShapes = [
 ];
 
 export function MintRoseGalleryClient({ variantId, artworks }: { variantId: string; artworks: Artwork[] }) {
-  const { artworks: visibleArtworks, collapseAll, expandAll, groupMode, groups, hasMore, sentinelRef, setMode, toggleGroup } = useGalleryBrowser(artworks);
+  const { artworks: visibleArtworks, groupMode, groups, hasMore, sentinelRef, setMode, toggleGroup } = useGalleryBrowser(artworks);
 
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-12 md:px-12">
@@ -297,7 +301,7 @@ export function MintRoseGalleryClient({ variantId, artworks }: { variantId: stri
           <p className="text-[32px] italic text-[#4a403a] md:text-[48px]" style={{ fontFamily: "Cormorant Garamond, serif" }}>Exhibition Space</p>
           <p className="text-lg text-[#bcaaa4]" style={{ fontFamily: "Outfit, sans-serif" }}>A collection of organic, fluid abstractions.</p>
         </div>
-        <OrganicControls groupMode={groupMode} setMode={setMode} collapseAll={collapseAll} expandAll={expandAll} activeClass="rounded-full bg-[#13ecb6] px-6 py-2 text-sm text-[#10221d]" idleClass="rounded-full border border-[#4a403a]/10 bg-white/40 px-6 py-2 text-sm text-[#4a403a]" />
+        <OrganicControls groupMode={groupMode} setMode={setMode} activeClass="rounded-full bg-[#13ecb6] px-6 py-2 text-sm text-[#10221d]" idleClass="rounded-full border border-[#4a403a]/10 bg-white/40 px-6 py-2 text-sm text-[#4a403a]" />
       </div>
       {groupMode === "all" ? (
         <div className="columns-1 gap-8 sm:columns-2 lg:columns-3">
@@ -316,15 +320,14 @@ export function MintRoseGalleryClient({ variantId, artworks }: { variantId: stri
         <div className="space-y-10">
           {groups.map((group) => (
             <section key={group.groupKey} className="rounded-[2rem] bg-[rgba(255,245,245,0.6)] p-6 shadow-[0_20px_40px_rgba(74,64,58,0.05)] backdrop-blur-[20px]">
-              <div className="mb-6 flex items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-[30px] italic text-[#4a403a]" style={{ fontFamily: "Cormorant Garamond, serif" }}>{group.groupLabel}</h2>
-                  <p className="text-sm text-[#bcaaa4]">{group.itemCount} работ</p>
-                </div>
-                <button className="rounded-full border border-[#4a403a]/10 bg-white/40 px-5 py-2 text-sm text-[#4a403a]" type="button" onClick={() => toggleGroup(group.groupKey)}>
-                  {group.collapsed ? "Развернуть" : "Свернуть"}
-                </button>
-              </div>
+              <GroupHeader
+                title={group.groupLabel}
+                countLabel={`${group.itemCount} работ`}
+                collapsed={group.collapsed}
+                onToggle={() => toggleGroup(group.groupKey)}
+                className="mb-6 flex w-full items-center justify-between gap-4 text-left"
+                indicatorClassName="rounded-full border border-[#4a403a]/10 bg-white/40 px-5 py-2 text-sm text-[#4a403a]"
+              />
               {!group.collapsed ? (
                 <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                   {group.items.map((artwork, index) => (
@@ -346,12 +349,12 @@ export function MintRoseGalleryClient({ variantId, artworks }: { variantId: stri
 }
 
 export function OliveCreamGalleryClient({ variantId, artworks }: { variantId: string; artworks: Artwork[] }) {
-  const { artworks: visibleArtworks, collapseAll, expandAll, groupMode, groups, hasMore, sentinelRef, setMode, toggleGroup } = useGalleryBrowser(artworks);
+  const { artworks: visibleArtworks, groupMode, groups, hasMore, sentinelRef, setMode, toggleGroup } = useGalleryBrowser(artworks);
 
   return (
     <main className="mx-auto max-w-[1440px] px-6 py-12 pb-32 md:px-12 lg:px-24">
       <div className="mb-8">
-        <OrganicControls groupMode={groupMode} setMode={setMode} collapseAll={collapseAll} expandAll={expandAll} activeClass="rounded-full bg-[#5ea50d] px-6 py-2 text-base text-[#F2EFE9]" idleClass="rounded-full bg-[#5ea50d]/10 px-6 py-2 text-base text-[#5ea50d]" />
+        <OrganicControls groupMode={groupMode} setMode={setMode} activeClass="rounded-full bg-[#5ea50d] px-6 py-2 text-base text-[#F2EFE9]" idleClass="rounded-full bg-[#5ea50d]/10 px-6 py-2 text-base text-[#5ea50d]" />
       </div>
       {groupMode === "all" ? (
         <div className="columns-1 gap-10 space-y-10 md:columns-2 lg:columns-3">
@@ -371,15 +374,14 @@ export function OliveCreamGalleryClient({ variantId, artworks }: { variantId: st
         <div className="space-y-10">
           {groups.map((group) => (
             <section key={group.groupKey} className="rounded-[2rem] bg-[#E8E3D9]/35 p-6">
-              <div className="mb-6 flex items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-3xl font-bold italic tracking-tight">{group.groupLabel}</h2>
-                  <p className="text-sm text-[#9CA38F]">{group.itemCount} работ</p>
-                </div>
-                <button className="rounded-full bg-[#F2EFE9] px-5 py-2 text-sm text-[#5ea50d]" type="button" onClick={() => toggleGroup(group.groupKey)}>
-                  {group.collapsed ? "Развернуть" : "Свернуть"}
-                </button>
-              </div>
+              <GroupHeader
+                title={group.groupLabel}
+                countLabel={`${group.itemCount} работ`}
+                collapsed={group.collapsed}
+                onToggle={() => toggleGroup(group.groupKey)}
+                className="mb-6 flex w-full items-center justify-between gap-4 text-left"
+                indicatorClassName="rounded-full bg-[#F2EFE9] px-5 py-2 text-sm text-[#5ea50d]"
+              />
               {!group.collapsed ? (
                 <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                   {group.items.map((artwork) => (
@@ -404,7 +406,7 @@ export function OliveCreamGalleryClient({ variantId, artworks }: { variantId: st
 }
 
 export function SageSandGalleryClient({ variantId, artworks }: { variantId: string; artworks: Artwork[] }) {
-  const { artworks: visibleArtworks, collapseAll, expandAll, groupMode, groups, hasMore, sentinelRef, setMode, toggleGroup } = useGalleryBrowser(artworks);
+  const { artworks: visibleArtworks, groupMode, groups, hasMore, sentinelRef, setMode, toggleGroup } = useGalleryBrowser(artworks);
   const shapes = ["rounded-[24px_48px_32px_24px]", "rounded-[48px_24px_24px_40px]", "rounded-[32px_32px_48px_24px]"];
 
   return (
@@ -414,7 +416,7 @@ export function SageSandGalleryClient({ variantId, artworks }: { variantId: stri
         <h1 className="text-5xl font-light italic tracking-wide" style={{ fontFamily: "Cormorant, serif" }}>Collection</h1>
       </div>
       <div className="mb-16 flex justify-center">
-        <OrganicControls groupMode={groupMode} setMode={setMode} collapseAll={collapseAll} expandAll={expandAll} activeClass="rounded-full border border-[#7D8C74] bg-[#7D8C74] px-6 py-2 text-sm font-medium text-white" idleClass="rounded-full border border-[#7D8C74] px-6 py-2 text-sm font-medium text-[#7D8C74]" />
+        <OrganicControls groupMode={groupMode} setMode={setMode} activeClass="rounded-full border border-[#7D8C74] bg-[#7D8C74] px-6 py-2 text-sm font-medium text-white" idleClass="rounded-full border border-[#7D8C74] px-6 py-2 text-sm font-medium text-[#7D8C74]" />
       </div>
       {groupMode === "all" ? (
         <div className="columns-1 gap-8 md:columns-2 lg:columns-3">
@@ -434,15 +436,14 @@ export function SageSandGalleryClient({ variantId, artworks }: { variantId: stri
         <div className="space-y-10">
           {groups.map((group) => (
             <section key={group.groupKey} className="rounded-[2rem] bg-[#F4F0E6] p-6 shadow-[0_20px_40px_rgba(43,51,39,0.05)]">
-              <div className="mb-6 flex items-center justify-between gap-4">
-                <div>
-                  <h2 className="font-serif text-3xl italic text-[#2B3327]" style={{ fontFamily: "Cormorant, serif" }}>{group.groupLabel}</h2>
-                  <p className="text-sm text-[#A3A89F]">{group.itemCount} работ</p>
-                </div>
-                <button className="rounded-full border border-[#A3A89F]/30 px-5 py-2 text-sm text-[#7D8C74]" type="button" onClick={() => toggleGroup(group.groupKey)}>
-                  {group.collapsed ? "Развернуть" : "Свернуть"}
-                </button>
-              </div>
+              <GroupHeader
+                title={group.groupLabel}
+                countLabel={`${group.itemCount} работ`}
+                collapsed={group.collapsed}
+                onToggle={() => toggleGroup(group.groupKey)}
+                className="mb-6 flex w-full items-center justify-between gap-4 text-left"
+                indicatorClassName="rounded-full border border-[#A3A89F]/30 px-5 py-2 text-sm text-[#7D8C74]"
+              />
               {!group.collapsed ? (
                 <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                   {group.items.map((artwork, index) => (

@@ -109,3 +109,12 @@ Static frontend split with backend-only container and bucket-backed content sour
   - replace decorative `href="#"` footer links with real internal routes;
   - replace pseudo-actions such as `PLAY` and `Скачать спецификацию` with real inquiry/navigation flows where no real download exists yet;
   - keep contact forms as the only intentionally fake workflow.
+
+## Update 2026-03-21 Archive and CMS stabilization
+
+- The next implementation stage moves the catalog from "grouped and reorderable" to "editorially manageable at scale".
+- Immediate focus:
+  - add an explicit archive flag instead of overloading artwork sale status;
+  - normalize summary/public filtering so admin and showcase agree on year, archive state, and gallery visibility;
+  - repair the text CMS flow so current sketch texts always appear as the default editable version and save/publish no longer feel lossy;
+  - add archive-aware bulk actions, grouped list behavior, and touch-friendly ordering controls.

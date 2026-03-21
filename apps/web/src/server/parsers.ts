@@ -22,6 +22,7 @@ export function parseArtworkInput(body: Record<string, unknown>): ArtworkInput {
     price: String(body.price ?? ""),
     currency: String(body.currency ?? "RUB"),
     status,
+    isArchived: Boolean(body.isArchived),
     showInGallery: Boolean(body.showInGallery),
     description: String(body.description ?? ""),
     sortOrder: Number(body.sortOrder ?? 1),

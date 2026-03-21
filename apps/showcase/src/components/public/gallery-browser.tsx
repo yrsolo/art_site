@@ -29,7 +29,10 @@ function buildGroupKey(mode: Exclude<GalleryGroupMode, "all">, label: string) {
 }
 
 export function useGalleryBrowser(artworks: Artwork[], pageSize = DEFAULT_PAGE_SIZE) {
-  const orderedArtworks = useMemo(() => [...artworks].sort((left, right) => left.order - right.order), [artworks]);
+  const orderedArtworks = useMemo(
+    () => [...artworks].filter((artwork) => !artwork.isArchived).sort((left, right) => left.order - right.order),
+    [artworks],
+  );
   const [groupMode, setGroupMode] = useState<GalleryGroupMode>("all");
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
   const [visibleCount, setVisibleCount] = useState(pageSize);
@@ -97,14 +100,6 @@ export function useGalleryBrowser(artworks: Artwork[], pageSize = DEFAULT_PAGE_S
     }));
   }
 
-  function collapseAll() {
-    setCollapsedGroups(Object.fromEntries(groups.map((group) => [group.groupKey, true])));
-  }
-
-  function expandAll() {
-    setCollapsedGroups(Object.fromEntries(groups.map((group) => [group.groupKey, false])));
-  }
-
   function setMode(nextMode: GalleryGroupMode) {
     if (nextMode === "all") {
       setGroupMode("all");
@@ -128,7 +123,5 @@ export function useGalleryBrowser(artworks: Artwork[], pageSize = DEFAULT_PAGE_S
     sentinelRef,
     setMode,
     toggleGroup,
-    collapseAll,
-    expandAll,
   };
 }

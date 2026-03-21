@@ -169,7 +169,7 @@ textarea {
 
 .table-row {
   display: grid;
-  grid-template-columns: 72px minmax(0, 1.2fr) minmax(0, 0.9fr) 160px 72px 120px;
+  grid-template-columns: 42px 72px minmax(0, 1.2fr) minmax(0, 0.9fr) 120px 160px 100px 72px 120px;
   gap: 14px;
   align-items: center;
   border: 1px solid rgba(31, 28, 24, 0.08);
@@ -179,6 +179,48 @@ textarea {
     border-color 0.18s ease,
     box-shadow 0.18s ease,
     background-color 0.18s ease;
+}
+
+.table-check {
+  display: grid;
+  place-items: center;
+}
+
+.bulk-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(31, 28, 24, 0.08);
+  background: #fcfaf6;
+  padding: 14px 16px;
+}
+
+.grouped-panel {
+  padding: 16px;
+}
+
+.group-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.group-heading-button {
+  flex: 1 1 280px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.active-chip {
+  background: #1f1c18;
+  color: #fff;
 }
 
 .table-row.active {
@@ -314,11 +356,37 @@ textarea {
   gap: 4px;
 }
 
+.order-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .order-card-order {
   font-size: 12px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: rgba(31, 28, 24, 0.45);
+}
+
+.order-card-handle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 32px;
+  border: 1px solid rgba(31, 28, 24, 0.12);
+  background: #fcfaf6;
+  color: rgba(31, 28, 24, 0.55);
+  font-size: 20px;
+  line-height: 1;
+  touch-action: none;
+}
+
+.order-card-touch-actions {
+  display: flex;
+  gap: 8px;
 }
 
 @media (max-width: 1100px) {
@@ -328,10 +396,14 @@ textarea {
   }
 
   .table-row {
-    grid-template-columns: 72px minmax(0, 1fr);
+    grid-template-columns: 42px 72px minmax(0, 1fr);
   }
 
   .admin-drawer {
     width: 100vw;
+  }
+
+  .order-card-touch-actions {
+    flex-wrap: wrap;
   }
 }

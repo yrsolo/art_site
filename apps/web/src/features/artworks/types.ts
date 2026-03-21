@@ -25,6 +25,7 @@ export type Artwork = {
   price: string;
   currency: string;
   status: ArtworkStatus;
+  isArchived: boolean;
   showInGallery: boolean;
   description: string;
   photos: ArtworkPhoto[];
@@ -47,6 +48,7 @@ export type ArtworkInput = Pick<
   | "price"
   | "currency"
   | "status"
+  | "isArchived"
   | "showInGallery"
   | "description"
   | "sortOrder"
@@ -54,7 +56,7 @@ export type ArtworkInput = Pick<
 
 export type ArtworkSummary = Pick<
   Artwork,
-  "id" | "slug" | "title" | "series" | "year" | "status" | "showInGallery" | "sortOrder" | "updatedAt"
+  "id" | "slug" | "title" | "series" | "year" | "status" | "isArchived" | "showInGallery" | "sortOrder" | "updatedAt"
 > & {
   previewUrl: string | null;
 };
@@ -66,6 +68,7 @@ export type ArtworkListRecord = {
   series: string;
   year: string;
   status: ArtworkStatus;
+  isArchived: boolean;
   showInGallery: boolean;
   sortOrder: number;
   updatedAt: string;
@@ -88,6 +91,7 @@ export function toArtworkSummary(artwork: Artwork): ArtworkSummary {
     series: artwork.series,
     year: artwork.year,
     status: artwork.status,
+    isArchived: artwork.isArchived,
     showInGallery: artwork.showInGallery,
     sortOrder: artwork.sortOrder,
     updatedAt: artwork.updatedAt,

@@ -16,6 +16,7 @@ type SnapshotArtwork = {
   price: string;
   currency: string;
   status: "for_sale" | "sold" | "off_market" | "in_progress";
+  isArchived: boolean;
   showInGallery: boolean;
   description: string;
   photos: Array<{
@@ -67,6 +68,7 @@ function mapSnapshotArtwork(artwork: SnapshotArtwork): Artwork {
     price: artwork.price,
     currency: artwork.currency,
     status: artwork.status,
+    isArchived: Boolean(artwork.isArchived),
     photos,
     primaryPhotoId: artwork.primaryPhotoId,
     imageOriginal: primaryPhoto.urlOriginal,
@@ -118,6 +120,7 @@ function buildFallbackSnapshot(): PublicSiteSnapshot {
       price: artwork.price ?? "",
       currency: artwork.currency ?? "RUB",
       status: normalizeFallbackStatus(artwork.status),
+      isArchived: false,
       showInGallery: artwork.status !== "hidden",
       description: artwork.description,
       photos: [
@@ -154,6 +157,7 @@ export function getPublicSiteSnapshot() {
 export function getDisplayArtworks() {
   return getPublicSiteSnapshot()
     .artworks.filter((artwork) => artwork.showInGallery)
+    .filter((artwork) => !artwork.isArchived)
     .map(mapSnapshotArtwork)
     .sort((left, right) => left.order - right.order);
 }

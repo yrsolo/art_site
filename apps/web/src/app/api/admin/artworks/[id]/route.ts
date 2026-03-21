@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { deleteArtwork, getArtworkById, updateArtwork } from "@/server/artwork-repository";
+import { exportPublicSiteSnapshot } from "@/server/export-service";
 import { badRequest, notFound, unauthorized } from "@/server/http";
 import { parseArtworkInput } from "@/server/parsers";
 import { requireSession } from "@/server/session";
@@ -28,6 +29,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 
   try {
     const artwork = await updateArtwork(id, parseArtworkInput((await request.json()) as Record<string, unknown>));
+    await exportPublicSiteSnapshot();
     return NextResponse.json({ artwork });
   } catch (error) {
     return badRequest(error instanceof Error ? error.message : "Failed to update artwork.");
@@ -45,6 +47,7 @@ export async function DELETE(_: Request, context: { params: Promise<{ id: string
 
   try {
     const artwork = await deleteArtwork(id);
+    await exportPublicSiteSnapshot();
     return NextResponse.json({ artwork });
   } catch (error) {
     return badRequest(error instanceof Error ? error.message : "Failed to delete artwork.");

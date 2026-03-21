@@ -20,30 +20,42 @@ export default function ContentPage() {
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState(false);
 
-  async function loadVersions(nextVariantId = variantId, nextPageKey = pageKey) {
+  async function fetchVersion(versionId: string, nextVariantId = variantId, nextPageKey = pageKey) {
+    const response = await apiFetch<{ version: ContentVersion }>(
+      `/api/admin/content/versions/${versionId}?variantId=${nextVariantId}&pageKey=${nextPageKey}`,
+    );
+    return response.version;
+  }
+
+  async function loadVersions(nextVariantId = variantId, nextPageKey = pageKey, preferredVersionId?: string | null) {
     const response = await apiFetch<{ versions: ContentVersionRecord[] }>(
       `/api/admin/content/versions?variantId=${nextVariantId}&pageKey=${nextPageKey}`,
     );
     setVersions(response.versions);
 
-    if (response.versions[0]) {
-      await loadVersion(response.versions[0].id, nextVariantId, nextPageKey);
-    } else {
-      setVersion(createEmptyContentVersion(nextVariantId, nextPageKey));
+    const nextSelectedRecord =
+      (preferredVersionId ? response.versions.find((item) => item.id === preferredVersionId) : undefined) ??
+      (version.id ? response.versions.find((item) => item.id === version.id) : undefined) ??
+      response.versions.find((item) => item.isPublishedActive) ??
+      response.versions[0];
+
+    if (nextSelectedRecord) {
+      setVersion(await fetchVersion(nextSelectedRecord.id, nextVariantId, nextPageKey));
+      return;
     }
+
+    setVersion(createEmptyContentVersion(nextVariantId, nextPageKey));
   }
 
   async function loadVersion(versionId: string, nextVariantId = variantId, nextPageKey = pageKey) {
-    const response = await apiFetch<{ version: ContentVersion }>(
-      `/api/admin/content/versions/${versionId}?variantId=${nextVariantId}&pageKey=${nextPageKey}`,
-    );
-    setVersion(response.version);
+    setVersion(await fetchVersion(versionId, nextVariantId, nextPageKey));
   }
 
   useEffect(() => {
     void loadVersions().catch((error) => {
       setMessage(error instanceof Error ? error.message : "Не удалось загрузить версии.");
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageKey, variantId]);
 
   function updatePayload(key: string, value: string | string[]) {
@@ -71,8 +83,7 @@ export default function ContentPage() {
         }),
       });
 
-      setVersion(response.version);
-      await loadVersions(variantId, pageKey);
+      await loadVersions(variantId, pageKey, response.version.id);
       setMessage("Создана новая версия.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Не удалось создать версию.");
@@ -98,8 +109,8 @@ export default function ContentPage() {
           status: version.status,
         }),
       });
-      setVersion(response.version);
-      await loadVersions(variantId, pageKey);
+
+      await loadVersions(variantId, pageKey, response.version.id);
       setMessage("Версия сохранена.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Не удалось сохранить версию.");
@@ -122,8 +133,7 @@ export default function ContentPage() {
         body: JSON.stringify({ variantId, pageKey }),
       });
 
-      setVersion(response.version);
-      await loadVersions(variantId, pageKey);
+      await loadVersions(variantId, pageKey, response.version.id);
       setMessage("Создана копия версии.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Не удалось создать копию версии.");
@@ -145,7 +155,7 @@ export default function ContentPage() {
         method: "POST",
         body: JSON.stringify({ variantId, pageKey }),
       });
-      await loadVersions(variantId, pageKey);
+      await loadVersions(variantId, pageKey, version.id);
       setMessage("Версия опубликована и snapshot обновлён.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Не удалось опубликовать версию.");
@@ -161,16 +171,7 @@ export default function ContentPage() {
           <div className="field-grid two">
             <label className="field">
               <span>Вариант</span>
-              <select
-                value={variantId}
-                onChange={(event) => {
-                  const nextVariantId = event.target.value as (typeof variantIds)[number];
-                  setVariantId(nextVariantId);
-                  void loadVersions(nextVariantId, pageKey).catch((error) =>
-                    setMessage(error instanceof Error ? error.message : "Не удалось переключить вариант."),
-                  );
-                }}
-              >
+              <select value={variantId} onChange={(event) => setVariantId(event.target.value as (typeof variantIds)[number])}>
                 {variantIds.map((item) => (
                   <option key={item} value={item}>
                     {item}
@@ -181,16 +182,7 @@ export default function ContentPage() {
 
             <label className="field">
               <span>Страница</span>
-              <select
-                value={pageKey}
-                onChange={(event) => {
-                  const nextPageKey = event.target.value as PageKey;
-                  setPageKey(nextPageKey);
-                  void loadVersions(variantId, nextPageKey).catch((error) =>
-                    setMessage(error instanceof Error ? error.message : "Не удалось переключить страницу."),
-                  );
-                }}
-              >
+              <select value={pageKey} onChange={(event) => setPageKey(event.target.value as PageKey)}>
                 {pageKeys.map((item) => (
                   <option key={item} value={item}>
                     {item}
@@ -219,7 +211,7 @@ export default function ContentPage() {
               {versions.map((item) => (
                 <button
                   key={item.id}
-                  className="button-secondary"
+                  className={`button-secondary${item.id === version.id ? " active-chip" : ""}`}
                   type="button"
                   onClick={() =>
                     void loadVersion(item.id).catch((error) =>

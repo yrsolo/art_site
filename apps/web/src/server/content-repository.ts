@@ -47,6 +47,41 @@ async function writeIndex(variantId: string, pageKey: ContentPageKey, items: Con
   });
 }
 
+async function createVersionRecord(
+  variantId: string,
+  pageKey: ContentPageKey,
+  versionName: string,
+  payload: ContentVersion["payload"],
+  status: ContentVersion["status"] = "draft",
+) {
+  const timestamp = nowIso();
+  const version: ContentVersion = {
+    id: newId(),
+    variantId,
+    pageKey,
+    versionName,
+    status,
+    payload,
+    createdAt: timestamp,
+    updatedAt: timestamp,
+  };
+
+  await writeJsonFile(contentVersionKey(variantId, pageKey, version.id), version);
+  const index = await readIndex(variantId, pageKey);
+  await writeIndex(variantId, pageKey, [
+    {
+      id: version.id,
+      versionName: version.versionName,
+      status: version.status,
+      updatedAt: version.updatedAt,
+      isPublishedActive: false,
+    },
+    ...index.items,
+  ]);
+
+  return version;
+}
+
 function getSeedPayload(
   variantId: string,
   pageKey: ContentPageKey,
@@ -94,8 +129,20 @@ export async function ensureSeedContentVersion(variantId: string, pageKey: Conte
     return existingItems.items;
   }
 
-  const created = await createContentVersion(variantId, pageKey, buildSeedVersionName(pageKey), seedPayload as never);
-  await publishContentVersion(variantId, pageKey, created.id);
+  const created = await createVersionRecord(
+    variantId,
+    pageKey,
+    buildSeedVersionName(pageKey),
+    seedPayload as never,
+    "published",
+  );
+  await writeJsonFile(publicationKey(variantId), {
+    variantId,
+    activeVersions: {
+      [pageKey]: created.id,
+    },
+    updatedAt: nowIso(),
+  } satisfies PagePublication);
 
   const publication = await getPublication(variantId);
   return (await readIndex(variantId, pageKey)).items.map((item) => ({
@@ -125,29 +172,7 @@ export async function createContentVersion(
   versionName: string,
   payload: ContentVersion["payload"],
 ) {
-  const timestamp = nowIso();
-  const version: ContentVersion = {
-    id: newId(),
-    variantId,
-    pageKey,
-    versionName,
-    status: "draft",
-    payload,
-    createdAt: timestamp,
-    updatedAt: timestamp,
-  };
-
-  await writeJsonFile(contentVersionKey(variantId, pageKey, version.id), version);
-  const items = await listContentVersions(variantId, pageKey);
-  items.unshift({
-    id: version.id,
-    versionName: version.versionName,
-    status: version.status,
-    updatedAt: version.updatedAt,
-    isPublishedActive: false,
-  });
-  await writeIndex(variantId, pageKey, items);
-  return version;
+  return createVersionRecord(variantId, pageKey, versionName, payload, "draft");
 }
 
 function nextClonedVersionName(versionName: string) {

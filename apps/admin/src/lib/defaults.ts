@@ -14,6 +14,7 @@ export function createEmptyArtwork(): Artwork {
     price: "",
     currency: "RUB",
     status: "for_sale",
+    isArchived: false,
     showInGallery: true,
     description: "",
     photos: [],

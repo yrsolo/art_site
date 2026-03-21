@@ -24,6 +24,7 @@ export type Artwork = {
   price: string;
   currency: string;
   status: ArtworkStatus;
+  isArchived: boolean;
   showInGallery: boolean;
   description: string;
   photos: ArtworkPhoto[];
@@ -40,6 +41,7 @@ export type ArtworkSummary = {
   series: string;
   year: string;
   status: ArtworkStatus;
+  isArchived: boolean;
   showInGallery: boolean;
   sortOrder: number;
   updatedAt: string;
