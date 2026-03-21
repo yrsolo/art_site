@@ -52,3 +52,9 @@ Static frontend split with backend-only container and bucket-backed content sour
   - `admin.art.solofarm.ru` -> static admin bucket publication
   - `api.art.solofarm.ru` -> backend-only runtime behind a dedicated gateway/domain
 - This pass also includes hardening local deploy scripts so bucket publication and container rollout are reproducible from the repo instead of being one-off console actions.
+
+## Update 2026-03-21 Infra live
+
+- `admin.art.solofarm.ru` is now live as a static admin bucket with HTTPS.
+- `api.art.solofarm.ru` is now live through API Gateway -> Serverless Container.
+- Cross-subdomain cookie auth between static admin and backend runtime is confirmed working with `Domain=.art.solofarm.ru`.

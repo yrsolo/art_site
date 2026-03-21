@@ -45,12 +45,12 @@ Deploy теперь разбит на три независимых контур
 ## Current Live State
 
 - `art.solofarm.ru` -> working static showcase bucket
-- `admin.art.solofarm.ru` -> static admin bucket is published and DNS is created
-- `api.art.solofarm.ru` -> certificate and DNS preparation are created, but the API contour still needs final invoke wiring between gateway and container
+- `admin.art.solofarm.ru` -> working static admin bucket with HTTPS
+- `api.art.solofarm.ru` -> working API Gateway domain backed by Serverless Container
 
 ## Operational Note
 
-If `admin` is served from `admin.art.solofarm.ru` and API is served from `api.art.solofarm.ru`, the backend must return CORS headers for the admin origin and set session cookies with a shared domain such as `.art.solofarm.ru`. This repo now includes that application-side support; cloud-side invoke permissions for the container still have to be in place.
+If `admin` is served from `admin.art.solofarm.ru` and API is served from `api.art.solofarm.ru`, the backend must return CORS headers for the admin origin and set session cookies with a shared domain such as `.art.solofarm.ru`. This repo now includes and uses that application-side support in production.
 
 ## Notes
 

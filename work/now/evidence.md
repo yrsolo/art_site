@@ -159,12 +159,31 @@
 
 ### Unresolved blocker
 
-- The API contour is not yet publicly working even though the image, container, gateway, certificate, and DNS preparation exist.
-- Observed state:
-  - direct container URL returns `403 Forbidden: Not authorized`
-  - gateway domain requests time out
-  - `yc serverless container allow-unauthenticated-invoke` returns `PermissionDenied`
-  - `yc serverless container add-access-binding --role serverless-containers.containerInvoker ...` also returns `PermissionDenied`
-- Conclusion:
-  - current cloud credentials are sufficient for bucket publication, image push, container revision deploy, gateway creation, DNS, and certificates;
-  - current credentials are not sufficient to finish the invoke-permission wiring required for `api.art.solofarm.ru`.
+- Initially the API contour was blocked by missing invoke/IAM rights and then by a runtime port mismatch.
+- Both are now resolved:
+  - folder role `serverless-containers.admin` became visible for service account `aje1kqd422vq2vefkbbl`
+  - unauthenticated invoke for container `art-site-api` was enabled
+  - backend image was rebuilt with serverless-compatible port expectations and redeployed as revision `bbaoekfagfupm5ggbp8e`
+
+### Live verification
+
+- `https://admin.art.solofarm.ru/` -> `200`
+- `https://api.art.solofarm.ru/api/health` -> `200`
+- `OPTIONS https://api.art.solofarm.ru/api/auth/session` with origin `https://admin.art.solofarm.ru` -> `204`
+- `GET https://api.art.solofarm.ru/api/auth/session` with origin `https://admin.art.solofarm.ru` -> `200`, unauthenticated payload
+- `POST https://api.art.solofarm.ru/api/auth/login` with `admin / 333` -> `200`
+- response includes `Set-Cookie` with:
+  - `Domain=.art.solofarm.ru`
+  - `Secure`
+  - `HttpOnly`
+  - `SameSite=Lax`
+- subsequent `GET /api/auth/session` with the issued cookie returns:
+  - `authenticated: true`
+  - `username: admin`
+  - `passwordIsDefault: true`
+
+### Remaining follow-up
+
+- Rotate the default admin password away from `333` through the settings flow.
+- Decide whether to keep `art-site` as the runtime cookie name or rename it back to a more specific value.
+- Continue from infra rollout into actual admin CRUD/content workflows and then the remaining public/content integration passes.
