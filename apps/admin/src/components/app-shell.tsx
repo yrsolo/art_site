@@ -48,7 +48,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         <nav className="admin-nav">
           {navigation.map((item) => (
-            <Link key={item.href} href={item.href} className={pathname === item.href ? "active" : ""}>
+            <Link key={item.href} href={item.href} prefetch={false} className={pathname === item.href ? "active" : ""}>
               {item.label}
             </Link>
           ))}

@@ -58,3 +58,11 @@ Static frontend split with backend-only container and bucket-backed content sour
 - `admin.art.solofarm.ru` is now live as a static admin bucket with HTTPS.
 - `api.art.solofarm.ru` is now live through API Gateway -> Serverless Container.
 - Cross-subdomain cookie auth between static admin and backend runtime is confirmed working with `Domain=.art.solofarm.ru`.
+
+## Update 2026-03-21 Sketch import wiring
+
+- Static admin is now the real entrypoint for live artwork operations at `https://admin.art.solofarm.ru/login/`.
+- Admin navigation was stabilized for the bucket-hosted static build so route transitions no longer look broken because of noisy prefetch failures.
+- Added a server-side import path that converts current sketch gallery images into editable runtime lots with stored photos, metadata, and snapshot export.
+- Imported sketch galleries are now represented in the runtime artwork repository instead of only existing as template-only media in the public showcase layer.
+- Public snapshot was rebuilt from the runtime data bucket after import, so showcase publication can now follow the editable artwork dataset rather than only fallback hardcoded data.

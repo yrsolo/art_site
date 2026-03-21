@@ -70,6 +70,51 @@ export async function uploadArtworkImage(file: File, artworkId: string) {
   };
 }
 
+export async function importRemoteArtworkImage(sourceUrl: string, artworkId: string, filenameHint: string) {
+  const response = await fetch(sourceUrl);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch remote artwork image: ${response.status}`);
+  }
+
+  const contentType = response.headers.get("content-type") || "image/jpeg";
+  const extension = contentType.includes("png") ? ".png" : contentType.includes("webp") ? ".webp" : ".jpg";
+  const safeFilename = sanitizeFilename(`${filenameHint}${extension}`);
+  const id = newId();
+  const baseKey = `${artworkId}/${id}-${safeFilename.replace(extension, "")}`;
+  const originalKey = `${appConfig.mediaPrefix}/${baseKey}${extension}`;
+  const previewKey = `${appConfig.mediaPrefix}/${baseKey}-preview.webp`;
+  const originalBuffer = Buffer.from(await response.arrayBuffer());
+  const previewBuffer = await sharp(originalBuffer).resize({ width: 1200, withoutEnlargement: true }).webp({ quality: 82 }).toBuffer();
+
+  let urlOriginal = "";
+  let urlPreview = "";
+
+  if (appConfig.storageMode === "s3") {
+    await putObjectBuffer(originalKey, originalBuffer, contentType, "public-read");
+    await putObjectBuffer(previewKey, previewBuffer, "image/webp", "public-read");
+    urlOriginal = publicObjectUrl(originalKey);
+    urlPreview = publicObjectUrl(previewKey);
+  } else {
+    urlOriginal = await writeLocalMedia(path.basename(originalKey), originalBuffer);
+    urlPreview = await writeLocalMedia(path.basename(previewKey), previewBuffer);
+  }
+
+  return {
+    photo: {
+      id,
+      storageKey: originalKey,
+      previewStorageKey: previewKey,
+      urlOriginal,
+      urlPreview,
+      alt: "",
+      caption: "",
+      sortOrder: 0,
+      createdAt: nowIso(),
+    },
+  };
+}
+
 export async function removeArtworkImage(originalKey: string, previewKey?: string) {
   if (appConfig.storageMode === "s3") {
     await deleteObject(originalKey);

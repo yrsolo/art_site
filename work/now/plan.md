@@ -21,3 +21,11 @@
 3. Create and publish the static admin bucket on its own subdomain.
 4. Deploy the backend runtime and expose it on `api.art.solofarm.ru`.
 5. Verify DNS, HTTP responses, and cross-app wiring between static admin and API.
+
+## Update 2026-03-21 Sketch-backed admin data
+
+1. Stabilize the bucket-hosted admin navigation so static export quirks do not look like broken buttons.
+2. Add a protected admin action for importing gallery images from current sketch variants into editable artwork records.
+3. Store imported sketch images through the same runtime media pipeline used for regular artwork photos.
+4. Rebuild and republish the public snapshot from the runtime data bucket after import.
+5. Verify the live flow through `admin.art.solofarm.ru`, `api.art.solofarm.ru`, and the rebuilt showcase publication.

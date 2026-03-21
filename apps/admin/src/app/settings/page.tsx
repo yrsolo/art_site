@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { AppShell } from "@/components/app-shell";
 import { apiFetch } from "@/lib/api";
@@ -11,6 +11,7 @@ export default function SettingsPage() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [passwordIsDefault, setPasswordIsDefault] = useState(false);
+  const [pendingAction, setPendingAction] = useState("");
 
   useEffect(() => {
     apiFetch<{ passwordIsDefault: boolean }>("/api/admin/settings")
@@ -24,14 +25,41 @@ export default function SettingsPage() {
   }
 
   async function changePassword() {
-    await apiFetch("/api/auth/change-password", {
-      method: "POST",
-      body: JSON.stringify({ nextPassword: password }),
-    });
+    setPendingAction("password");
+    try {
+      await apiFetch("/api/auth/change-password", {
+        method: "POST",
+        body: JSON.stringify({ nextPassword: password }),
+      });
 
-    setPassword("");
-    setPasswordIsDefault(false);
-    setMessage("Пароль обновлён.");
+      setPassword("");
+      setPasswordIsDefault(false);
+      setMessage("Пароль обновлён.");
+    } finally {
+      setPendingAction("");
+    }
+  }
+
+  async function importSketchLots() {
+    setPendingAction("import");
+    try {
+      const response = await apiFetch<{ created: number; skipped: number; total: number }>("/api/admin/import/sketch-artworks", {
+        method: "POST",
+      });
+      setMessage(`Импорт завершён: создано ${response.created}, пропущено ${response.skipped}, всего эскизных работ ${response.total}.`);
+    } finally {
+      setPendingAction("");
+    }
+  }
+
+  async function exportSnapshot() {
+    setPendingAction("export");
+    try {
+      const response = await apiFetch<{ generatedAt: string }>("/api/admin/export/public-site", { method: "POST" });
+      setMessage(`Public snapshot пересобран: ${response.generatedAt}.`);
+    } finally {
+      setPendingAction("");
+    }
   }
 
   return (
@@ -52,16 +80,34 @@ export default function SettingsPage() {
               <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} />
             </label>
             <div className="actions">
-              <button className="button" type="button" onClick={changePassword}>
-                Сменить пароль
+              <button className="button" type="button" onClick={changePassword} disabled={pendingAction !== ""}>
+                {pendingAction === "password" ? "Сохраняем..." : "Сменить пароль"}
               </button>
-              <button className="button-secondary" type="button" onClick={logout}>
+              <button className="button-secondary" type="button" onClick={logout} disabled={pendingAction !== ""}>
                 Выйти
               </button>
             </div>
           </div>
+        </section>
 
-          {message ? <p className="subtle">{message}</p> : null}
+        <section className="detail-card">
+          <p className="admin-kicker">Данные витрины</p>
+          <h2>Эскизные лоты и snapshot</h2>
+          <p className="subtle">
+            Здесь можно один раз перевести текущие картинки из эскизных галерей в живые редактируемые лоты и пересобрать published
+            snapshot для публичной витрины.
+          </p>
+
+          <div className="actions" style={{ marginTop: 20 }}>
+            <button className="button" type="button" onClick={importSketchLots} disabled={pendingAction !== ""}>
+              {pendingAction === "import" ? "Импортируем..." : "Импортировать лоты из эскизов"}
+            </button>
+            <button className="button-secondary" type="button" onClick={exportSnapshot} disabled={pendingAction !== ""}>
+              {pendingAction === "export" ? "Собираем..." : "Пересобрать public snapshot"}
+            </button>
+          </div>
+
+          {message ? <p className="subtle" style={{ marginTop: 16 }}>{message}</p> : null}
         </section>
       </div>
     </AppShell>

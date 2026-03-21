@@ -187,3 +187,52 @@
 - Rotate the default admin password away from `333` through the settings flow.
 - Decide whether to keep `art-site` as the runtime cookie name or rename it back to a more specific value.
 - Continue from infra rollout into actual admin CRUD/content workflows and then the remaining public/content integration passes.
+
+## 2026-03-21 - Live admin access and sketch artwork import
+
+- Verified that the static admin opens at `https://admin.art.solofarm.ru/login/` and authenticates against the live API contour.
+- Confirmed live login flow with:
+  - `admin / 333`
+  - redirect to `/artworks/`
+  - working authenticated artwork table and detail view
+- Reduced bucket-hosted admin navigation noise by disabling prefetch on sidebar links in the static admin shell.
+- Added a protected admin API route:
+  - `POST /api/admin/import/sketch-artworks`
+- Added runtime import service that:
+  - downloads current sketch gallery images from template sources
+  - stores them through the same media pipeline used for regular artwork uploads
+  - creates editable artwork records with metadata and primary photos
+  - triggers `exportPublicSiteSnapshot()` after import
+- Added an admin settings action for:
+  - importing sketch lots
+  - rebuilding the public snapshot
+- Live import execution completed successfully against production API:
+  - imported total source entries: `43`
+  - created editable lots: `43`
+  - skipped: `0`
+  - runtime artwork repository final count: `43`
+- Live admin table now shows imported records such as:
+  - `Эхо безмолвия`
+  - `Туманная плоскость`
+  - `Пустота алхимика`
+  - `Фиолетовый поток`
+- `scripts/publish-showcase.ps1` was corrected to fetch snapshot input from the runtime data bucket (`OBJECT_STORAGE_BUCKET`, currently `art-site`) instead of the public site bucket.
+- `scripts/deploy-yc-web.ps1` was corrected to avoid sending forbidden `PORT` env to Yandex Serverless Container revisions.
+
+### Verification
+
+- `npm run lint --workspace web`
+- `npm run build --workspace web`
+- `npm run build:admin`
+- `GET https://api.art.solofarm.ru/api/public-snapshot` -> `200`
+- `GET http://art.solofarm.ru/cold-mist/artwork/cold-mist-mist-01/` -> `200`
+- Playwright live checks:
+  - `https://admin.art.solofarm.ru/login/` opens
+  - login succeeds
+  - `/artworks/` shows imported editable lots
+  - artwork detail opens with imported preview and metadata
+
+### Still unresolved
+
+- Showcase variants still need continued fidelity work against their source `code.html` / `screen.png`.
+- Imported sketch artwork metadata is now editable, but richer multi-photo editorial curation per lot still needs manual follow-up where templates only supplied a single gallery image.

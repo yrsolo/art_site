@@ -30,5 +30,10 @@
 - `powershell -ExecutionPolicy Bypass -File scripts/publish-admin.ps1`
 - `powershell -ExecutionPolicy Bypass -File scripts/deploy-yc-web.ps1`
 
+Полезные живые entrypoints:
+- `https://art.solofarm.ru/`
+- `https://admin.art.solofarm.ru/login/`
+- `https://api.art.solofarm.ru/api/health`
+
 `apps/web` — это backend-only runtime.
 `apps/showcase` и `apps/admin` — статические сборки для Object Storage.

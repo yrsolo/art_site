@@ -19,12 +19,17 @@ Deploy теперь разбит на три независимых контур
 
 1. Build the static showcase:
    - `npm run build:showcase`
-   - before build the script can pull `private/data/export/public-site.json` into generated input for the showcase build
+   - before build the publish script pulls `private/data/export/public-site.json` from the runtime data bucket into generated input for the showcase build
 2. Configure the bucket website entry point:
    - `index.html`
    - `404.html`
 3. Sync `apps/showcase/out` to bucket `art.solofarm.ru`
 4. Point DNS record `art.solofarm.ru` to `art.solofarm.ru.website.yandexcloud.net.`
+
+Important:
+- the public site bucket is `art.solofarm.ru`
+- the snapshot source bucket is the runtime data bucket from `OBJECT_STORAGE_BUCKET` (currently `art-site`)
+- these are intentionally different roles and should not be confused during publish
 
 ## Static Admin Flow
 
@@ -34,6 +39,9 @@ Deploy теперь разбит на три независимых контур
 3. Point `admin.art.solofarm.ru` to that bucket website endpoint
 4. Build admin with correct `NEXT_PUBLIC_API_BASE_URL`
 5. If HTTPS is needed on the bucket host, request a managed certificate and attach it with `yc storage bucket set-https`
+
+Live entrypoint:
+- `https://admin.art.solofarm.ru/login/`
 
 ## API Runtime Flow
 
@@ -57,3 +65,4 @@ If `admin` is served from `admin.art.solofarm.ru` and API is served from `api.ar
 - Public showcase should stay read-only and build from published snapshot data.
 - Admin frontend must stay static; changing its UI should require only republishing the bucket, not redeploying the container.
 - Container redeploy is needed only for backend code and secret/runtime changes.
+- Importing current sketch gallery images into editable runtime lots is now a backend operation triggered from admin settings, not a manual one-off storage task.

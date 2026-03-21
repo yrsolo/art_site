@@ -2,6 +2,7 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $bucket = "art.solofarm.ru"
+$snapshotBucket = $env:OBJECT_STORAGE_BUCKET
 $endpoint = "https://storage.yandexcloud.net"
 $snapshotKey = "private/data/export/public-site.json"
 $generatedDir = Join-Path $repoRoot "apps\\showcase\\src\\generated"
@@ -11,8 +12,12 @@ Push-Location $repoRoot
 try {
   New-Item -ItemType Directory -Force -Path $generatedDir | Out-Null
 
+  if (-not $snapshotBucket) {
+    $snapshotBucket = "art-site"
+  }
+
   try {
-    aws --endpoint-url $endpoint s3 cp "s3://$bucket/$snapshotKey" $generatedSnapshot | Out-Null
+    aws --endpoint-url $endpoint s3 cp "s3://$snapshotBucket/$snapshotKey" $generatedSnapshot | Out-Null
   }
   catch {
     Write-Host "showcase snapshot not found in bucket, using local fallback data"
