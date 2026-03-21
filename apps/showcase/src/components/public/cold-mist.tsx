@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import type { Artwork } from "@/features/artworks/types";
 import { templateMedia } from "@/features/variants/template-media";
+import { getAdminLoginHref } from "@/shared/admin";
 import type { VariantContent, VariantManifest, VariantRouteKey } from "@/features/variants/types";
 import { statusLabel } from "@/shared/format";
 
@@ -53,6 +54,8 @@ function buildColdMistTemplateCards(manifest: VariantManifest, artworks: Artwork
   return [[cards[0], cards[1]], [cards[2], cards[3]], [cards[4], cards[5]]];
 }
 
+const adminLoginHref = getAdminLoginHref();
+
 function coldMistHeroTitle() {
   return ["&#1060;&#1086;&#1088;&#1084;&#1072;.", "&#1062;&#1074;&#1077;&#1090;.", "&#1055;&#1091;&#1089;&#1090;&#1086;&#1090;&#1072;."];
 }
@@ -87,12 +90,20 @@ function ColdMistLayout({ manifest, content, currentRoute, children }: ColdMistL
           ))}
         </nav>
         <div className="flex items-center gap-4">
-          <button className="p-2 text-slate-200 transition-all duration-400 hover:bg-slate-800/50 active:scale-95" type="button">
+          <Link
+            href={adminLoginHref}
+            className="p-2 text-slate-200 transition-all duration-400 hover:bg-slate-800/50 active:scale-95"
+            aria-label="Открыть админку"
+          >
             <span className="material-symbols-outlined">settings</span>
-          </button>
-          <button className="p-2 text-slate-200 transition-all duration-400 hover:bg-slate-800/50 active:scale-95" type="button">
+          </Link>
+          <Link
+            href={adminLoginHref}
+            className="p-2 text-slate-200 transition-all duration-400 hover:bg-slate-800/50 active:scale-95"
+            aria-label="Войти в админку"
+          >
             <span className="material-symbols-outlined">person</span>
-          </button>
+          </Link>
         </div>
       </header>
 

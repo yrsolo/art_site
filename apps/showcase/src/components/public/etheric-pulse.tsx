@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import type { Artwork } from "@/features/artworks/types";
 import { templateMedia } from "@/features/variants/template-media";
+import { getAdminLoginHref } from "@/shared/admin";
 import type { VariantContent, VariantManifest, VariantRouteKey } from "@/features/variants/types";
 import { statusLabel } from "@/shared/format";
 
@@ -24,6 +25,8 @@ function navItems(manifest: VariantManifest, content: VariantContent) {
     { key: "contacts" as const, href: `${basePath}/contacts`, label: content.nav.contacts },
   ].filter((item) => manifest.supportedRoutes.includes(item.key));
 }
+
+const adminLoginHref = getAdminLoginHref();
 
 function EthericPulseLayout({
   manifest,
@@ -57,9 +60,13 @@ function EthericPulseLayout({
               </Link>
             ))}
           </nav>
-          <button className="rounded-full p-2 text-[#e1e4fb] hover:bg-white/5" type="button">
+          <Link
+            href={adminLoginHref}
+            className="rounded-full p-2 text-[#e1e4fb] hover:bg-white/5"
+            aria-label="Войти в админку"
+          >
             <span className="material-symbols-outlined">account_circle</span>
-          </button>
+          </Link>
         </div>
       </header>
       <main className="relative z-10 pt-24">{children}</main>
