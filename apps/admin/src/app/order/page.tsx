@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { AppShell } from "@/components/app-shell";
 import { apiFetch } from "@/lib/api";
@@ -9,6 +9,11 @@ import type { ArtworkSummary, ArtworkStatus } from "@/lib/types";
 type DragState = {
   draggedId: string | null;
   overId: string | null;
+};
+
+type PointerDragState = {
+  pointerId: number;
+  draggedId: string;
 };
 
 function formatStatus(status: ArtworkStatus) {
@@ -68,6 +73,7 @@ export default function OrderPage() {
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState("");
   const [dragState, setDragState] = useState<DragState>({ draggedId: null, overId: null });
+  const pointerDragRef = useRef<PointerDragState | null>(null);
   const [showOnlyGallery, setShowOnlyGallery] = useState(true);
   const [showArchived, setShowArchived] = useState(false);
   const [yearFilter, setYearFilter] = useState("all");
@@ -138,6 +144,51 @@ export default function OrderPage() {
     } finally {
       setPending(false);
     }
+  }
+
+  function startPointerDrag(pointerId: number, artworkId: string) {
+    pointerDragRef.current = {
+      pointerId,
+      draggedId: artworkId,
+    };
+    setDragState({
+      draggedId: artworkId,
+      overId: artworkId,
+    });
+  }
+
+  function updatePointerDrag(clientX: number, clientY: number) {
+    const current = pointerDragRef.current;
+
+    if (!current) {
+      return;
+    }
+
+    const element = document.elementFromPoint(clientX, clientY);
+    const card = element?.closest<HTMLElement>("[data-order-card-id]");
+    const overId = card?.dataset.orderCardId ?? current.draggedId;
+
+    setDragState({
+      draggedId: current.draggedId,
+      overId,
+    });
+  }
+
+  function finishPointerDrag() {
+    const current = pointerDragRef.current;
+
+    if (!current) {
+      return;
+    }
+
+    pointerDragRef.current = null;
+    setItems((existing) => reorderItems(existing, current.draggedId, dragState.overId ?? current.draggedId));
+    setDragState({ draggedId: null, overId: null });
+  }
+
+  function cancelPointerDrag() {
+    pointerDragRef.current = null;
+    setDragState({ draggedId: null, overId: null });
   }
 
   return (
@@ -219,6 +270,7 @@ export default function OrderPage() {
               <div
                 key={item.id}
                 draggable
+                data-order-card-id={item.id}
                 className={`order-card${isDragging ? " dragging" : ""}${isDropTarget ? " over" : ""}`}
                 onDragStart={() => setDragState({ draggedId: item.id, overId: item.id })}
                 onDragEnter={() => setDragState((current) => ({ ...current, overId: item.id }))}
@@ -234,9 +286,46 @@ export default function OrderPage() {
                 <div className="order-card-body">
                   <div className="order-card-head">
                     <div className="order-card-order">#{index + 1}</div>
-                    <span className="order-card-handle" aria-hidden="true">
+                    <button
+                      className="order-card-handle"
+                      type="button"
+                      aria-label={`Переместить ${item.title}`}
+                      onPointerDown={(event) => {
+                        startPointerDrag(event.pointerId, item.id);
+                        event.currentTarget.setPointerCapture(event.pointerId);
+                      }}
+                      onPointerMove={(event) => {
+                        if (pointerDragRef.current?.pointerId !== event.pointerId) {
+                          return;
+                        }
+
+                        updatePointerDrag(event.clientX, event.clientY);
+                      }}
+                      onPointerUp={(event) => {
+                        if (pointerDragRef.current?.pointerId !== event.pointerId) {
+                          return;
+                        }
+
+                        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+                          event.currentTarget.releasePointerCapture(event.pointerId);
+                        }
+
+                        finishPointerDrag();
+                      }}
+                      onPointerCancel={(event) => {
+                        if (pointerDragRef.current?.pointerId !== event.pointerId) {
+                          return;
+                        }
+
+                        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+                          event.currentTarget.releasePointerCapture(event.pointerId);
+                        }
+
+                        cancelPointerDrag();
+                      }}
+                    >
                       ≡
-                    </span>
+                    </button>
                   </div>
                   <strong>{item.title}</strong>
                   <div className="subtle">{item.series || "Без серии"}</div>

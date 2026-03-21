@@ -218,7 +218,15 @@ textarea {
   cursor: pointer;
 }
 
-.active-chip {
+.active-chip,
+.button-secondary.active-chip {
+  background: #1f1c18;
+  color: #fff;
+  border-color: #1f1c18;
+}
+
+.button-secondary.active-chip:hover,
+.button-secondary.active-chip:focus-visible {
   background: #1f1c18;
   color: #fff;
 }

@@ -449,3 +449,34 @@
 - Imported sketch artworks still mostly have empty `year` / `series` metadata, so groupings work technically but many records will currently fall into `Год не указан` / `Без серии` until editorial enrichment in admin.
 - The order page is now touch-usable, but it is not yet a full finger drag-and-drop experience; touch editing currently relies on explicit move controls rather than native touch reordering.
 - Public galleries now enforce archive filtering, but a later UX pass may still be needed to polish each variant's grouping micro-interactions against its original sketch.
+
+## 2026-03-21 - Admin polish: active preset contrast and touch drag
+
+- Fixed the content version preset styling in the static admin so the selected preset no longer renders white text on a near-white button state.
+- Strengthened `.button-secondary.active-chip` in `apps/admin/src/app/globals.css` so active content presets keep a dark background and white foreground consistently.
+- Added pointer-based touch reordering to the admin order page:
+  - drag now starts from the visible handle on touch devices
+  - drop target is resolved from the pointer position
+  - desktop HTML drag-and-drop still remains in place
+  - explicit `Выше / Ниже` controls remain as a fallback for touch editing
+
+### Validation
+
+- `npm run build --workspace admin`
+- `npm run lint --workspace admin`
+- `powershell -ExecutionPolicy Bypass -File scripts/publish-admin.ps1`
+
+### Bucket state check
+
+- Verified current object counts:
+  - public showcase bucket `art.solofarm.ru`: `3283` objects
+  - runtime bucket `art-site`: `20601` objects
+  - `art-site/private/data`: `20513` objects
+  - `art-site/private/data/content`: `20464` objects
+  - `art-site/media`: `88` objects
+- Conclusion: the large object count is not caused by public pages or artwork media.
+- The bulk of the growth is inside versioned CMS content storage and is consistent with the earlier buggy seed/content-version flow that could create excessive content objects before the server-side seed fix landed.
+
+### Still unresolved
+
+- The content bucket likely needs a dedicated cleanup/migration pass to prune the historical excess content-version objects that were already written before the fix.
