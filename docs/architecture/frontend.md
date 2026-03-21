@@ -34,4 +34,11 @@ Frontend должен покрывать два режима:
 - frontend faces должны быть разделены по variant namespace;
 - нельзя схлопывать различия в один “средний” вариант.
 
+## Текущее Правило Для Работающих Прототипов
+
+- все варианты должны иметь живой вход в админку в своей естественной utility-зоне;
+- gallery и artwork detail по возможности показывают данные из published snapshot, а не только template media;
+- fallback seed-контент допустим только как временный bootstrap или аварийный dev-слой;
+- единственный осознанно fake-контур на текущем этапе — формы связи.
+
 Подробности см. в [Frontend Variants](frontend-variants.md) и [Sketch Catalog](../catalog/sketch-catalog.md).

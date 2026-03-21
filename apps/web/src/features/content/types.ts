@@ -63,6 +63,7 @@ export type ContentVersionRecord = {
   versionName: string;
   status: ContentVersionStatus;
   updatedAt: string;
+  isPublishedActive?: boolean;
 };
 
 export type PagePublication = {

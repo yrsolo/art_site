@@ -258,4 +258,38 @@
 ### Still unresolved
 
 - Showcase variants still need continued fidelity work against their source `code.html` / `screen.png`.
+
+## 2026-03-21 - Campaign pass for backend-driven texts and prototype wiring
+
+- Seeded CMS text versions from current sketch copy at the backend repository layer:
+  - `listContentVersions()` now auto-creates an initial editable version per `variant + page` when none exist yet
+  - seeded version is immediately published as the active baseline instead of leaving the editor empty
+- Added content version cloning:
+  - backend route `POST /api/admin/content/versions/[id]/clone`
+  - deterministic numeric suffix naming (`Имя` -> `Имя 2` -> `Имя 3`)
+- Updated static admin content editor so it now supports:
+  - `Сохранить`
+  - `Сохранить как копию`
+  - display of the currently published active version
+- Extended artwork summaries with `year` and normalized old index records so grouped admin views can work against previously imported lots.
+- Reworked admin lots list to support grouped views:
+  - `Все`
+  - `По году`
+  - `По серии`
+  - `По статусу`
+  - repeat click on the active grouping toggles all groups between expanded and collapsed
+- Continued global showcase wiring:
+  - added admin entry buttons to `deep-immersion`, `copper-glow`, `mint-rose`, `olive-cream`, and `sage-sand`
+  - `cold-mist`, `etheric-pulse`, `deep-immersion`, `mint-rose`, `olive-cream`, `sage-sand`, and `copper-glow` now use live artwork `imagePreview` / `imageOriginal` in key gallery/detail surfaces instead of template-only images where backend data already exists
+- Validation:
+  - `npm run build --workspace web`
+  - `npm run build --workspace admin`
+  - `npm run build:showcase`
+  - `bash scripts/docs-check.sh`
+
+### Still unresolved after this pass
+
+- Showcase detail pages still use a simplified single-primary-photo contract; full multi-photo public presentation remains the next campaign.
+- Home pages still intentionally keep some template-driven atmospheric blocks where they are decorative rather than data-backed.
+- Remaining prototype pass still needs a full click-by-click audit of every CTA outside contact forms.
 - Imported sketch artwork metadata is now editable, but richer multi-photo editorial curation per lot still needs manual follow-up where templates only supplied a single gallery image.

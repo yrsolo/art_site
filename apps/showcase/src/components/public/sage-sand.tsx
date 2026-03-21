@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import type { Artwork } from "@/features/artworks/types";
 import { templateMedia } from "@/features/variants/template-media";
+import { getAdminLoginHref } from "@/shared/admin";
 import type { VariantContent, VariantManifest } from "@/features/variants/types";
 
 type VariantProps = { manifest: VariantManifest; content: VariantContent };
@@ -11,6 +12,7 @@ type DetailProps = VariantProps & { artwork: Artwork };
 
 function SageLayout({ manifest, content, current, children }: VariantProps & { current: "home" | "gallery" | "detail" | "about" | "contacts"; children: React.ReactNode }) {
   const basePath = `/${manifest.id}`;
+  const adminLoginHref = getAdminLoginHref();
   const nav = [
     { href: basePath, key: "home", label: content.nav.home },
     { href: `${basePath}/gallery`, key: "gallery", label: content.nav.gallery },
@@ -32,6 +34,13 @@ function SageLayout({ manifest, content, current, children }: VariantProps & { c
                 {item.label}
               </Link>
             ))}
+            <Link
+              href={adminLoginHref}
+              className="grid size-10 place-items-center rounded-full border border-[#A3A89F]/30 text-[#7D8C74] transition hover:border-[#7D8C74] hover:bg-white/40"
+              aria-label="Войти в админку"
+            >
+              <span className="material-symbols-outlined text-[20px]">account_circle</span>
+            </Link>
           </nav>
         </div>
       </header>
@@ -103,7 +112,7 @@ export function SageSandGallery({ manifest, content, artworks }: GalleryProps) {
             return (
               <Link key={`${artwork.slug}-${index}`} href={`/${manifest.id}/artwork/${artwork.slug}`} className="group mb-8 block break-inside-avoid cursor-pointer">
                 <div className={`overflow-hidden bg-[#F4F0E6] p-4 transition duration-500 group-hover:bg-[#F4F0E6] group-hover:shadow-[0_20px_40px_rgba(43,51,39,0.05)] ${index % 3 === 0 ? "rounded-[24px_48px_32px_24px]" : index % 3 === 1 ? "rounded-[48px_24px_24px_40px]" : "rounded-[32px_32px_48px_24px]"}`}>
-                  <Image src={image} alt={artwork.title} width={900} height={1100} className="h-auto w-full object-cover transition duration-700 group-hover:scale-[1.03]" />
+                  <Image src={artwork.imagePreview} alt={artwork.title} width={900} height={1100} className="h-auto w-full object-cover transition duration-700 group-hover:scale-[1.03]" />
                   <div className="mt-6 px-2">
                     <h3 className="text-xl font-medium">{artwork.title}</h3>
                     <p className="text-sm text-[#A3A89F]">{artwork.medium}</p>
@@ -151,7 +160,7 @@ export function SageSandDetail({ manifest, content, artwork }: DetailProps) {
       <main className="mx-auto max-w-[1200px] px-6 py-16 md:px-12">
         <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="overflow-hidden rounded-[32px] bg-[#F4F0E6] shadow-[0_20px_40px_rgba(43,51,39,0.05)]">
-            <Image src={templateMedia.sageSand.gallery[0]} alt={artwork.title} width={1400} height={1700} className="h-auto w-full object-cover" />
+            <Image src={artwork.imageOriginal} alt={artwork.title} width={1400} height={1700} className="h-auto w-full object-cover" />
           </div>
           <div className="space-y-8 lg:pt-10">
             <h1 className="font-serif text-5xl italic" style={{ fontFamily: "Cormorant, serif" }}>{artwork.title}</h1>

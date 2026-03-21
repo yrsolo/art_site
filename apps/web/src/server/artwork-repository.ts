@@ -16,10 +16,18 @@ function artworkKey(id: string) {
 }
 
 async function readIndex() {
-  return readJsonFile<ArtworksIndex>(artworksIndexKey, {
+  const index = await readJsonFile<ArtworksIndex>(artworksIndexKey, {
     updatedAt: nowIso(),
     items: [],
   });
+
+  return {
+    ...index,
+    items: index.items.map((item) => ({
+      ...item,
+      year: item.year ?? "",
+    })),
+  };
 }
 
 async function writeIndex(items: ArtworkListRecord[]) {

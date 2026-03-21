@@ -7,6 +7,8 @@ import { apiFetch, apiFormFetch } from "@/lib/api";
 import { createEmptyArtwork } from "@/lib/defaults";
 import { artworkStatuses, type Artwork, type ArtworkSummary } from "@/lib/types";
 
+type GroupMode = "all" | "year" | "series" | "status";
+
 function formatStatus(status: string) {
   switch (status) {
     case "for_sale":
@@ -22,6 +24,18 @@ function formatStatus(status: string) {
   }
 }
 
+function getYearGroupLabel(item: ArtworkSummary) {
+  return item.year.trim() || "Год не указан";
+}
+
+function getSeriesGroupLabel(item: ArtworkSummary) {
+  return item.series.trim() || "Без серии";
+}
+
+function getStatusGroupLabel(item: ArtworkSummary) {
+  return formatStatus(item.status);
+}
+
 export default function ArtworksPage() {
   const [items, setItems] = useState<ArtworkSummary[]>([]);
   const [artwork, setArtwork] = useState<Artwork>(createEmptyArtwork());
@@ -29,6 +43,8 @@ export default function ArtworksPage() {
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [groupMode, setGroupMode] = useState<GroupMode>("all");
+  const [groupsCollapsed, setGroupsCollapsed] = useState(false);
 
   async function loadList(nextSelectedId?: string | null) {
     const response = await apiFetch<{ artworks: ArtworkSummary[] }>("/api/admin/artworks");
@@ -60,8 +76,53 @@ export default function ArtworksPage() {
 
   const sortedItems = useMemo(() => [...items].sort((left, right) => left.sortOrder - right.sortOrder), [items]);
 
+  const groupedItems = useMemo(() => {
+    if (groupMode === "all") {
+      return [];
+    }
+
+    const labelForItem =
+      groupMode === "year"
+        ? getYearGroupLabel
+        : groupMode === "series"
+          ? getSeriesGroupLabel
+          : getStatusGroupLabel;
+
+    const groups = new Map<string, ArtworkSummary[]>();
+
+    for (const item of sortedItems) {
+      const label = labelForItem(item);
+      const current = groups.get(label) ?? [];
+      current.push(item);
+      groups.set(label, current);
+    }
+
+    return [...groups.entries()]
+      .map(([label, entries]) => ({
+        label,
+        items: entries,
+      }))
+      .sort((left, right) => left.label.localeCompare(right.label, "ru"));
+  }, [groupMode, sortedItems]);
+
   function updateField<Key extends keyof Artwork>(key: Key, value: Artwork[Key]) {
     setArtwork((current) => ({ ...current, [key]: value }));
+  }
+
+  function handleGroupModeClick(nextMode: GroupMode) {
+    if (nextMode === "all") {
+      setGroupMode("all");
+      setGroupsCollapsed(false);
+      return;
+    }
+
+    if (groupMode === nextMode) {
+      setGroupsCollapsed((current) => !current);
+      return;
+    }
+
+    setGroupMode(nextMode);
+    setGroupsCollapsed(false);
   }
 
   async function saveArtwork() {
@@ -176,6 +237,32 @@ export default function ArtworksPage() {
     await loadList(summary.id);
   }
 
+  function renderArtworkRow(item: ArtworkSummary) {
+    return (
+      <div key={item.id} className={`table-row ${artwork.id === item.id ? "active" : ""}`}>
+        <div className="table-preview" style={{ backgroundImage: item.previewUrl ? `url(${item.previewUrl})` : undefined }} />
+        <div>
+          <strong>{item.title}</strong>
+          <div className="subtle">{item.slug}</div>
+        </div>
+        <div>{item.series || "Без серии"}</div>
+        <div>{formatStatus(item.status)}</div>
+        <label>
+          <input type="checkbox" checked={item.showInGallery} onChange={() => toggleGallery(item)} />
+        </label>
+        <button
+          className="button-secondary"
+          type="button"
+          onClick={() => {
+            loadArtwork(item.id).catch((error) => setMessage(error instanceof Error ? error.message : "Не удалось загрузить карточку."));
+          }}
+        >
+          Открыть
+        </button>
+      </div>
+    );
+  }
+
   return (
     <AppShell>
       <section className="table-card">
@@ -199,32 +286,38 @@ export default function ArtworksPage() {
           </button>
         </div>
 
+        <div className="actions" style={{ marginBottom: 16 }}>
+          <button className={groupMode === "all" ? "button" : "button-secondary"} type="button" onClick={() => handleGroupModeClick("all")}>
+            Все
+          </button>
+          <button className={groupMode === "year" ? "button" : "button-secondary"} type="button" onClick={() => handleGroupModeClick("year")}>
+            По году
+          </button>
+          <button className={groupMode === "series" ? "button" : "button-secondary"} type="button" onClick={() => handleGroupModeClick("series")}>
+            По серии
+          </button>
+          <button className={groupMode === "status" ? "button" : "button-secondary"} type="button" onClick={() => handleGroupModeClick("status")}>
+            По статусу
+          </button>
+        </div>
+
         {message ? <p className="subtle" style={{ marginBottom: 16 }}>{message}</p> : null}
 
         <div className="table-grid">
-          {sortedItems.map((item) => (
-            <div key={item.id} className={`table-row ${artwork.id === item.id ? "active" : ""}`}>
-              <div className="table-preview" style={{ backgroundImage: item.previewUrl ? `url(${item.previewUrl})` : undefined }} />
-              <div>
-                <strong>{item.title}</strong>
-                <div className="subtle">{item.slug}</div>
-              </div>
-              <div>{item.series || "Без серии"}</div>
-              <div>{formatStatus(item.status)}</div>
-              <label>
-                <input type="checkbox" checked={item.showInGallery} onChange={() => toggleGallery(item)} />
-              </label>
-              <button
-                className="button-secondary"
-                type="button"
-                onClick={() => {
-                  loadArtwork(item.id).catch((error) => setMessage(error instanceof Error ? error.message : "Не удалось загрузить карточку."));
-                }}
-              >
-                Открыть
-              </button>
-            </div>
-          ))}
+          {groupMode === "all"
+            ? sortedItems.map((item) => renderArtworkRow(item))
+            : groupedItems.map((group) => (
+                <section key={group.label} className="panel" style={{ padding: 16 }}>
+                  <div className="actions" style={{ alignItems: "center", justifyContent: "space-between" }}>
+                    <div>
+                      <strong>{group.label}</strong>
+                      <div className="subtle">{group.items.length} шт.</div>
+                    </div>
+                    <span className="subtle">{groupsCollapsed ? "Свернуто" : "Развернуто"}</span>
+                  </div>
+                  {!groupsCollapsed ? <div className="table-grid" style={{ marginTop: 12 }}>{group.items.map((item) => renderArtworkRow(item))}</div> : null}
+                </section>
+              ))}
         </div>
       </section>
 

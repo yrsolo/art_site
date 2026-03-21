@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { Artwork } from "@/features/artworks/types";
 import type { VariantContent, VariantManifest, VariantRouteKey } from "@/features/variants/types";
 import { templateMedia } from "@/features/variants/template-media";
+import { getAdminLoginHref } from "@/shared/admin";
 
 type MintRoseLayoutProps = {
   manifest: VariantManifest;
@@ -39,6 +40,7 @@ function buildNavItems(manifest: VariantManifest, content: VariantContent) {
 
 function MintRoseLayout({ manifest, content, currentRoute, children }: MintRoseLayoutProps) {
   const navItems = buildNavItems(manifest, content);
+  const adminLoginHref = getAdminLoginHref();
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#f9ecec] text-[#4a403a] selection:bg-[#98d8c8]/40 selection:text-[#30423b]">
@@ -76,6 +78,13 @@ function MintRoseLayout({ manifest, content, currentRoute, children }: MintRoseL
           </nav>
 
           <div className="flex items-center gap-3">
+            <Link
+              href={adminLoginHref}
+              className="grid size-10 place-items-center rounded-full border border-[#4a403a]/10 bg-white/40 text-[#4a403a] transition-colors hover:border-[#13ecb6] hover:text-[#13ecb6]"
+              aria-label="Войти в админку"
+            >
+              <span className="material-symbols-outlined text-[20px]">account_circle</span>
+            </Link>
             <span className="md:hidden">MENU</span>
           </div>
         </div>
@@ -155,11 +164,11 @@ export function MintRoseGallery({ manifest, content, artworks }: MintRoseGallery
 
             return (
               <Link key={card.title} href={href} className={`group relative isolate mb-8 block break-inside-avoid overflow-hidden bg-transparent shadow-[0_20px_40px_rgba(74,64,58,0.05)] ${card.shape} ${card.height}`}>
-                <Image src={card.image} alt={card.title} fill sizes="(max-width: 1024px) 100vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
+                <Image src={artwork?.imagePreview ?? card.image} alt={artwork?.title ?? card.title} fill sizes="(max-width: 1024px) 100vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
                 <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-8 text-center opacity-0 transition-opacity duration-500 group-hover:opacity-100">
                   <div className="grid min-h-[11rem] w-[72%] max-w-[18rem] place-items-center rounded-[48%_52%_58%_42%/42%_58%_46%_54%] bg-[rgba(19,236,182,0.78)] px-8 py-6 shadow-[0_24px_50px_rgba(19,236,182,0.22)] backdrop-blur-md">
                     <h3 className="text-3xl italic text-white drop-shadow-md" style={{ fontFamily: "Cormorant Garamond, serif" }}>
-                      {card.title}
+                      {artwork?.title ?? card.title}
                     </h3>
                   </div>
                 </div>
@@ -182,7 +191,7 @@ export function MintRoseDetail({ manifest, content, artwork, artworks }: MintRos
           <div className="group sticky top-12">
             <div className="rounded-xl border border-slate-100 bg-white/50 p-3 shadow-sm">
               <Image
-                src={templateMedia.mintRose.detail}
+                src={artwork.imageOriginal}
                 alt={artwork.title}
                 width={1400}
                 height={1800}
@@ -221,7 +230,7 @@ export function MintRoseDetail({ manifest, content, artwork, artworks }: MintRos
               {detailShots[0] ? (
                 <div className="mt-12">
                   <Image
-                    src={templateMedia.mintRose.gallery[1].image}
+                    src={detailShots[0].imagePreview}
                     alt={detailShots[0].title}
                     width={600}
                     height={800}
@@ -233,7 +242,7 @@ export function MintRoseDetail({ manifest, content, artwork, artworks }: MintRos
               {detailShots[1] ? (
                 <div>
                   <Image
-                    src={templateMedia.mintRose.gallery[2].image}
+                    src={detailShots[1].imagePreview}
                     alt={detailShots[1].title}
                     width={600}
                     height={600}

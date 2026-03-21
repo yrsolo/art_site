@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { Artwork } from "@/features/artworks/types";
 import type { VariantContent, VariantManifest, VariantRouteKey } from "@/features/variants/types";
 import { templateMedia } from "@/features/variants/template-media";
+import { getAdminLoginHref } from "@/shared/admin";
 import { statusLabel } from "@/shared/format";
 
 type CopperGlowLayoutProps = {
@@ -44,6 +45,7 @@ function buildNavItems(manifest: VariantManifest, content: VariantContent) {
 
 function CopperGlowLayout({ manifest, content, currentRoute, children }: CopperGlowLayoutProps) {
   const navItems = buildNavItems(manifest, content);
+  const adminLoginHref = getAdminLoginHref();
 
   return (
     <div
@@ -76,6 +78,13 @@ function CopperGlowLayout({ manifest, content, currentRoute, children }: CopperG
           </nav>
 
           <div className="flex items-center gap-4">
+            <Link
+              href={adminLoginHref}
+              className="grid size-10 place-items-center border border-[#4f453d]/20 text-[#e8be9f] transition-all duration-300 hover:bg-[#8c6a4f]/20"
+              aria-label="Войти в админку"
+            >
+              <span className="material-symbols-outlined text-[20px]">account_circle</span>
+            </Link>
             <span className="grid h-10 w-10 place-items-center text-[#e8be9f] transition-all duration-300 hover:bg-[#8c6a4f]/20">MENU</span>
           </div>
         </div>
@@ -258,8 +267,8 @@ export function CopperGlowGallery({ manifest, content, artworks }: CopperGlowGal
                 <div className="relative overflow-hidden bg-[#191b22]">
                   <div className={`relative w-full ${card.aspect}`}>
                     <Image
-                      src={card.image}
-                      alt={card.title}
+                      src={artwork?.imagePreview ?? card.image}
+                      alt={artwork?.title ?? card.title}
                       fill
                       sizes="(max-width: 1024px) 100vw, 33vw"
                       className="object-cover grayscale transition-all duration-700 ease-in-out group-hover:grayscale-0"
@@ -268,7 +277,7 @@ export function CopperGlowGallery({ manifest, content, artworks }: CopperGlowGal
                   <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-[#11131a] via-transparent to-transparent p-8 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
                     <p className="mb-2 text-xs uppercase tracking-[0.2em] text-[#e8be9f]" style={{ fontFamily: "Space Grotesk, sans-serif" }}>{card.series}</p>
                     <h3 className="text-2xl font-bold uppercase tracking-[-0.05em] text-[#e1e2eb]" style={{ fontFamily: "Space Grotesk, sans-serif" }}>
-                      {card.title}
+                      {artwork?.title ?? card.title}
                     </h3>
                   </div>
                 </div>

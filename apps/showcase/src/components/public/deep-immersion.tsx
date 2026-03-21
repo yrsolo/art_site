@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import type { Artwork } from "@/features/artworks/types";
 import { templateMedia } from "@/features/variants/template-media";
+import { getAdminLoginHref } from "@/shared/admin";
 import type { VariantContent, VariantManifest, VariantRouteKey } from "@/features/variants/types";
 
 const deepImmersionNoise =
@@ -45,10 +46,15 @@ function buildGalleryCards(manifest: VariantManifest, artworks: Artwork[]) {
 
     return {
       ...item,
+      image: artwork?.imagePreview ?? item.image,
+      title: artwork?.title ?? item.title,
+      year: artwork?.year ?? item.year,
       href: artwork ? `/${manifest.id}/artwork/${artwork.slug}` : `/${manifest.id}/gallery`,
     };
   });
 }
+
+const adminLoginHref = getAdminLoginHref();
 
 function DeepImmersionLayout({ manifest, content, currentRoute, children }: DeepImmersionLayoutProps) {
   const navItems = buildNavItems(manifest, content);
@@ -81,6 +87,13 @@ function DeepImmersionLayout({ manifest, content, currentRoute, children }: Deep
                 {item.label}
               </Link>
             ))}
+            <Link
+              href={adminLoginHref}
+              className="grid size-10 place-items-center rounded-full border border-[#12151E] text-[#5A657A] transition-colors hover:border-[#1378ec] hover:text-[#F1F4F9]"
+              aria-label="Войти в админку"
+            >
+              <span className="material-symbols-outlined text-[20px]">account_circle</span>
+            </Link>
           </nav>
         </div>
       </header>
@@ -190,7 +203,7 @@ export function DeepImmersionDetail({ manifest, content, artwork }: DeepImmersio
             <div className="pointer-events-none absolute inset-[10%] -z-10 bg-[radial-gradient(circle,_rgba(140,106,79,0.15)_0%,_rgba(7,9,15,0)_70%)] blur-[120px]" />
             <div className="relative h-[40rem] w-full overflow-hidden border border-[#12151E] shadow-2xl md:h-[51rem]">
               <Image
-                src={templateMedia.deepImmersion.detail}
+                src={artwork.imageOriginal}
                 alt={artwork.title}
                 fill
                 priority

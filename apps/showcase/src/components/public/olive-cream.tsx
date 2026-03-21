@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import type { Artwork } from "@/features/artworks/types";
 import { templateMedia } from "@/features/variants/template-media";
+import { getAdminLoginHref } from "@/shared/admin";
 import type { VariantContent, VariantManifest } from "@/features/variants/types";
 
 type VariantProps = { manifest: VariantManifest; content: VariantContent };
@@ -11,6 +12,7 @@ type DetailProps = VariantProps & { artwork: Artwork };
 
 function OliveLayout({ manifest, content, current, children }: VariantProps & { current: "home" | "gallery" | "detail" | "contacts"; children: React.ReactNode }) {
   const basePath = `/${manifest.id}`;
+  const adminLoginHref = getAdminLoginHref();
   const items = [
     { label: content.nav.home, href: basePath, key: "home" },
     { label: content.nav.gallery, href: `${basePath}/gallery`, key: "gallery" },
@@ -32,10 +34,19 @@ function OliveLayout({ manifest, content, current, children }: VariantProps & { 
               </Link>
             ))}
           </nav>
-          <Link href={`${basePath}/contacts`} className="hidden items-center gap-2 text-sm text-[#9CA38F] transition hover:text-[#5ea50d] md:flex">
-            <span>Inquire</span>
-            <span className="material-symbols-outlined text-sm">arrow_forward</span>
-          </Link>
+          <div className="hidden items-center gap-3 md:flex">
+            <Link href={`${basePath}/contacts`} className="items-center gap-2 text-sm text-[#9CA38F] transition hover:text-[#5ea50d] md:flex">
+              <span>Inquire</span>
+              <span className="material-symbols-outlined text-sm">arrow_forward</span>
+            </Link>
+            <Link
+              href={adminLoginHref}
+              className="grid size-10 place-items-center rounded-full border border-[#E8E3D9] text-[#9CA38F] transition hover:border-[#5ea50d] hover:text-[#5ea50d]"
+              aria-label="Войти в админку"
+            >
+              <span className="material-symbols-outlined text-[20px]">account_circle</span>
+            </Link>
+          </div>
         </div>
       </header>
       {children}
@@ -122,7 +133,7 @@ export function OliveCreamGallery({ manifest, content, artworks }: GalleryProps)
             return (
               <Link key={`${artwork.slug}-${index}`} href={`/${manifest.id}/artwork/${artwork.slug}`} className="group block break-inside-avoid outline-none">
                 <div className="relative overflow-hidden rounded-xl bg-[#E8E3D9] shadow-[0_20px_40px_-10px_rgba(94,165,13,0.12)]">
-                  <Image src={image} alt={artwork.title} width={900} height={1100} className="h-auto w-full object-cover transition duration-700 group-hover:scale-[1.03]" />
+                  <Image src={artwork.imagePreview} alt={artwork.title} width={900} height={1100} className="h-auto w-full object-cover transition duration-700 group-hover:scale-[1.03]" />
                 </div>
                 <div className="mt-5">
                   <h3 className="text-2xl font-bold">{artwork.title}</h3>
@@ -143,7 +154,7 @@ export function OliveCreamDetail({ manifest, content, artwork }: DetailProps) {
       <main className="flex min-h-screen flex-col pt-4 lg:flex-row">
         <section className="sticky top-0 flex w-full items-center justify-center overflow-hidden bg-[#E8E3D9] lg:h-screen lg:w-[60%]">
           <div className="relative h-[614px] w-full lg:h-full">
-            <Image src={templateMedia.oliveCream.detail} alt={artwork.title} fill className="object-cover" sizes="(max-width: 1024px) 100vw, 60vw" />
+            <Image src={artwork.imageOriginal} alt={artwork.title} fill className="object-cover" sizes="(max-width: 1024px) 100vw, 60vw" />
           </div>
         </section>
         <section className="min-h-screen w-full bg-[#F2EFE9] px-6 py-12 md:px-16 lg:w-[40%] lg:px-20 lg:py-24">

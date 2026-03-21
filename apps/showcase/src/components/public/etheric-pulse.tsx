@@ -195,7 +195,7 @@ export function EthericPulseGallery({ manifest, content, artworks }: GalleryProp
             const artwork = artworks[index] ?? artworks[index % artworks.length];
             return (
               <Link key={`${artwork.slug}-${index}`} href={`/${manifest.id}/artwork/${artwork.slug}`} className="group relative mb-8 block break-inside-avoid overflow-hidden rounded-[1.75rem] bg-[#10131d]">
-                <Image src={image} alt={artwork.title} width={900} height={1200} className="h-auto w-full object-cover opacity-90 transition duration-700 group-hover:scale-[1.02] group-hover:opacity-100" />
+                <Image src={artwork.imagePreview} alt={artwork.title} width={900} height={1200} className="h-auto w-full object-cover opacity-90 transition duration-700 group-hover:scale-[1.02] group-hover:opacity-100" />
                 <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-[#0c0e17] via-transparent to-transparent p-8 opacity-0 transition duration-500 group-hover:opacity-100">
                   <p className="text-xs uppercase tracking-[0.24em] text-[#82d3dc]">{artwork.year}</p>
                   <h3 className="mt-2 font-[Manrope] text-2xl font-bold">{artwork.title}</h3>
@@ -339,7 +339,7 @@ export function EthericPulseDetail({ manifest, content, artwork }: DetailProps) 
         <div className="flex w-full justify-center lg:w-[65%]">
           <div className="group relative w-full max-w-[900px] cursor-zoom-in">
             <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle,_rgba(168,148,255,0.16),_rgba(7,9,15,0)_70%)] blur-[120px]" />
-            <Image src={templateMedia.ethericPulse.detail} alt={artwork.title} width={1400} height={1800} className="h-[819px] w-full border border-[#12151e] object-cover shadow-2xl transition duration-700 group-hover:scale-[1.02]" />
+            <Image src={artwork.imageOriginal} alt={artwork.title} width={1400} height={1800} className="h-[819px] w-full border border-[#12151e] object-cover shadow-2xl transition duration-700 group-hover:scale-[1.02]" />
           </div>
         </div>
         <aside className="w-full lg:w-[35%]">

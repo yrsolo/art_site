@@ -7,6 +7,7 @@ import type {
 } from "@/features/content/types";
 import { appConfig } from "@/server/config";
 import { readJsonFile, writeJsonFile } from "@/server/json-store";
+import { variantContent as seedVariantContent } from "@/server/seed-variant-content";
 import { newId, nowIso } from "@/server/utils";
 
 type ContentIndex = {
@@ -46,12 +47,75 @@ async function writeIndex(variantId: string, pageKey: ContentPageKey, items: Con
   });
 }
 
+function getSeedPayload(
+  variantId: string,
+  pageKey: ContentPageKey,
+): ContentVersion["payload"] | null {
+  const variant = seedVariantContent[variantId];
+
+  if (!variant) {
+    return null;
+  }
+
+  if (pageKey === "artwork") {
+    return variant.detail;
+  }
+
+  return variant[pageKey];
+}
+
+function buildSeedVersionName(pageKey: ContentPageKey) {
+  switch (pageKey) {
+    case "home":
+      return "Текущий home";
+    case "gallery":
+      return "Текущая gallery";
+    case "artwork":
+      return "Текущий artwork";
+    case "about":
+      return "Текущий about";
+    case "contacts":
+      return "Текущие contacts";
+    default:
+      return "Текущая версия";
+  }
+}
+
+export async function ensureSeedContentVersion(variantId: string, pageKey: ContentPageKey) {
+  const existingItems = await readIndex(variantId, pageKey);
+
+  if (existingItems.items.length > 0) {
+    return existingItems.items;
+  }
+
+  const seedPayload = getSeedPayload(variantId, pageKey);
+
+  if (!seedPayload) {
+    return existingItems.items;
+  }
+
+  const created = await createContentVersion(variantId, pageKey, buildSeedVersionName(pageKey), seedPayload as never);
+  await publishContentVersion(variantId, pageKey, created.id);
+
+  const publication = await getPublication(variantId);
+  return (await readIndex(variantId, pageKey)).items.map((item) => ({
+    ...item,
+    isPublishedActive: publication.activeVersions[pageKey] === item.id,
+  }));
+}
+
 export async function listContentVersions(variantId: string, pageKey: ContentPageKey) {
+  await ensureSeedContentVersion(variantId, pageKey);
   const index = await readIndex(variantId, pageKey);
-  return index.items;
+  const publication = await getPublication(variantId);
+  return index.items.map((item) => ({
+    ...item,
+    isPublishedActive: publication.activeVersions[pageKey] === item.id,
+  }));
 }
 
 export async function getContentVersion(variantId: string, pageKey: ContentPageKey, versionId: string) {
+  await ensureSeedContentVersion(variantId, pageKey);
   return readJsonFile<ContentVersion | null>(contentVersionKey(variantId, pageKey, versionId), null);
 }
 
@@ -80,9 +144,33 @@ export async function createContentVersion(
     versionName: version.versionName,
     status: version.status,
     updatedAt: version.updatedAt,
+    isPublishedActive: false,
   });
   await writeIndex(variantId, pageKey, items);
   return version;
+}
+
+function nextClonedVersionName(versionName: string) {
+  const trimmed = versionName.trim();
+  const match = trimmed.match(/^(.*?)(?:\s+(\d+))?$/);
+
+  if (!match) {
+    return `${trimmed} 2`;
+  }
+
+  const base = (match[1] || trimmed).trim();
+  const number = match[2] ? Number(match[2]) : 1;
+  return `${base} ${number + 1}`;
+}
+
+export async function cloneContentVersion(variantId: string, pageKey: ContentPageKey, versionId: string) {
+  const version = await getContentVersion(variantId, pageKey, versionId);
+
+  if (!version) {
+    throw new Error("Content version not found.");
+  }
+
+  return createContentVersion(variantId, pageKey, nextClonedVersionName(version.versionName), version.payload);
 }
 
 export async function updateContentVersion(
@@ -110,7 +198,13 @@ export async function updateContentVersion(
     pageKey,
     items.map((item) =>
       item.id === versionId
-        ? { id: versionId, versionName: nextVersion.versionName, status: nextVersion.status, updatedAt: nextVersion.updatedAt }
+        ? {
+            id: versionId,
+            versionName: nextVersion.versionName,
+            status: nextVersion.status,
+            updatedAt: nextVersion.updatedAt,
+            isPublishedActive: item.isPublishedActive ?? false,
+          }
         : item,
     ),
   );

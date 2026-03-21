@@ -18,6 +18,7 @@ export default function ContentPage() {
   const [versions, setVersions] = useState<ContentVersionRecord[]>([]);
   const [version, setVersion] = useState<ContentVersion>(createEmptyContentVersion("cold-mist", "home"));
   const [message, setMessage] = useState("");
+  const [pending, setPending] = useState(false);
 
   async function loadVersions(nextVariantId = variantId, nextPageKey = pageKey) {
     const response = await apiFetch<{ versions: ContentVersionRecord[] }>(
@@ -40,23 +41,9 @@ export default function ContentPage() {
   }
 
   useEffect(() => {
-    void (async () => {
-      try {
-        const response = await apiFetch<{ versions: ContentVersionRecord[] }>(
-          `/api/admin/content/versions?variantId=${variantId}&pageKey=${pageKey}`,
-        );
-        setVersions(response.versions);
-
-        if (response.versions[0]) {
-          const versionResponse = await apiFetch<{ version: ContentVersion }>(
-            `/api/admin/content/versions/${response.versions[0].id}?variantId=${variantId}&pageKey=${pageKey}`,
-          );
-          setVersion(versionResponse.version);
-        }
-      } catch (error) {
-        setMessage(error instanceof Error ? error.message : "Не удалось загрузить версии.");
-      }
-    })();
+    void loadVersions().catch((error) => {
+      setMessage(error instanceof Error ? error.message : "Не удалось загрузить версии.");
+    });
   }, [pageKey, variantId]);
 
   function updatePayload(key: string, value: string | string[]) {
@@ -70,36 +57,79 @@ export default function ContentPage() {
   }
 
   async function createVersion() {
-    const response = await apiFetch<{ version: ContentVersion }>("/api/admin/content/versions", {
-      method: "POST",
-      body: JSON.stringify({
-        variantId,
-        pageKey,
-        versionName: "Новая версия",
-        payload: {},
-      }),
-    });
+    setPending(true);
+    setMessage("");
 
-    setVersion(response.version);
-    await loadVersions(variantId, pageKey);
+    try {
+      const response = await apiFetch<{ version: ContentVersion }>("/api/admin/content/versions", {
+        method: "POST",
+        body: JSON.stringify({
+          variantId,
+          pageKey,
+          versionName: "Новая версия",
+          payload: version.payload,
+        }),
+      });
+
+      setVersion(response.version);
+      await loadVersions(variantId, pageKey);
+      setMessage("Создана новая версия.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Не удалось создать версию.");
+    } finally {
+      setPending(false);
+    }
   }
 
   async function saveVersion() {
-    const path = version.id ? `/api/admin/content/versions/${version.id}` : "/api/admin/content/versions";
-    const method = version.id ? "PATCH" : "POST";
-    const response = await apiFetch<{ version: ContentVersion }>(path, {
-      method,
-      body: JSON.stringify({
-        variantId,
-        pageKey,
-        versionName: version.versionName,
-        payload: version.payload,
-        status: version.status,
-      }),
-    });
-    setVersion(response.version);
-    await loadVersions(variantId, pageKey);
-    setMessage("Версия сохранена.");
+    setPending(true);
+    setMessage("");
+
+    try {
+      const path = version.id ? `/api/admin/content/versions/${version.id}` : "/api/admin/content/versions";
+      const method = version.id ? "PATCH" : "POST";
+      const response = await apiFetch<{ version: ContentVersion }>(path, {
+        method,
+        body: JSON.stringify({
+          variantId,
+          pageKey,
+          versionName: version.versionName,
+          payload: version.payload,
+          status: version.status,
+        }),
+      });
+      setVersion(response.version);
+      await loadVersions(variantId, pageKey);
+      setMessage("Версия сохранена.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Не удалось сохранить версию.");
+    } finally {
+      setPending(false);
+    }
+  }
+
+  async function cloneVersion() {
+    if (!version.id) {
+      return;
+    }
+
+    setPending(true);
+    setMessage("");
+
+    try {
+      const response = await apiFetch<{ version: ContentVersion }>(`/api/admin/content/versions/${version.id}/clone`, {
+        method: "POST",
+        body: JSON.stringify({ variantId, pageKey }),
+      });
+
+      setVersion(response.version);
+      await loadVersions(variantId, pageKey);
+      setMessage("Создана копия версии.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Не удалось создать копию версии.");
+    } finally {
+      setPending(false);
+    }
   }
 
   async function publishVersion() {
@@ -107,12 +137,21 @@ export default function ContentPage() {
       return;
     }
 
-    await apiFetch(`/api/admin/content/versions/${version.id}/publish`, {
-      method: "POST",
-      body: JSON.stringify({ variantId, pageKey }),
-    });
-    await loadVersions(variantId, pageKey);
-    setMessage("Версия опубликована и snapshot обновлён.");
+    setPending(true);
+    setMessage("");
+
+    try {
+      await apiFetch(`/api/admin/content/versions/${version.id}/publish`, {
+        method: "POST",
+        body: JSON.stringify({ variantId, pageKey }),
+      });
+      await loadVersions(variantId, pageKey);
+      setMessage("Версия опубликована и snapshot обновлён.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Не удалось опубликовать версию.");
+    } finally {
+      setPending(false);
+    }
   }
 
   return (
@@ -127,7 +166,7 @@ export default function ContentPage() {
                 onChange={(event) => {
                   const nextVariantId = event.target.value as (typeof variantIds)[number];
                   setVariantId(nextVariantId);
-                  loadVersions(nextVariantId, pageKey).catch((error) =>
+                  void loadVersions(nextVariantId, pageKey).catch((error) =>
                     setMessage(error instanceof Error ? error.message : "Не удалось переключить вариант."),
                   );
                 }}
@@ -147,7 +186,7 @@ export default function ContentPage() {
                 onChange={(event) => {
                   const nextPageKey = event.target.value as PageKey;
                   setPageKey(nextPageKey);
-                  loadVersions(variantId, nextPageKey).catch((error) =>
+                  void loadVersions(variantId, nextPageKey).catch((error) =>
                     setMessage(error instanceof Error ? error.message : "Не удалось переключить страницу."),
                   );
                 }}
@@ -167,9 +206,11 @@ export default function ContentPage() {
             <div className="actions" style={{ justifyContent: "space-between" }}>
               <div>
                 <p className="admin-kicker">Версии</p>
-                <h2>{variantId} / {pageKey}</h2>
+                <h2>
+                  {variantId} / {pageKey}
+                </h2>
               </div>
-              <button className="button-secondary" type="button" onClick={createVersion}>
+              <button className="button-secondary" type="button" onClick={createVersion} disabled={pending}>
                 Создать версию
               </button>
             </div>
@@ -180,9 +221,14 @@ export default function ContentPage() {
                   key={item.id}
                   className="button-secondary"
                   type="button"
-                  onClick={() => loadVersion(item.id).catch((error) => setMessage(error instanceof Error ? error.message : "Не удалось загрузить версию."))}
+                  onClick={() =>
+                    void loadVersion(item.id).catch((error) =>
+                      setMessage(error instanceof Error ? error.message : "Не удалось загрузить версию."),
+                    )
+                  }
                 >
                   {item.versionName} · {item.status}
+                  {item.isPublishedActive ? " · active" : ""}
                 </button>
               ))}
             </div>
@@ -195,10 +241,13 @@ export default function ContentPage() {
                 <h2>{version.versionName}</h2>
               </div>
               <div className="actions">
-                <button className="button-secondary" type="button" onClick={saveVersion}>
+                <button className="button-secondary" type="button" onClick={saveVersion} disabled={pending}>
                   Сохранить
                 </button>
-                <button className="button" type="button" onClick={publishVersion} disabled={!version.id}>
+                <button className="button-secondary" type="button" onClick={cloneVersion} disabled={!version.id || pending}>
+                  Сохранить как копию
+                </button>
+                <button className="button" type="button" onClick={publishVersion} disabled={!version.id || pending}>
                   Опубликовать
                 </button>
               </div>
@@ -209,7 +258,10 @@ export default function ContentPage() {
             <div className="stack">
               <label className="field">
                 <span>Имя версии</span>
-                <input value={version.versionName} onChange={(event) => setVersion((current) => ({ ...current, versionName: event.target.value }))} />
+                <input
+                  value={version.versionName}
+                  onChange={(event) => setVersion((current) => ({ ...current, versionName: event.target.value }))}
+                />
               </label>
 
               {contentSchema[pageKey].map((field) => {
@@ -232,7 +284,10 @@ export default function ContentPage() {
                   return (
                     <label key={field.key} className="field">
                       <span>{field.label}</span>
-                      <textarea value={typeof value === "string" ? value : ""} onChange={(event) => updatePayload(field.key, event.target.value)} />
+                      <textarea
+                        value={typeof value === "string" ? value : ""}
+                        onChange={(event) => updatePayload(field.key, event.target.value)}
+                      />
                     </label>
                   );
                 }
@@ -240,7 +295,10 @@ export default function ContentPage() {
                 return (
                   <label key={field.key} className="field">
                     <span>{field.label}</span>
-                    <input value={typeof value === "string" ? value : ""} onChange={(event) => updatePayload(field.key, event.target.value)} />
+                    <input
+                      value={typeof value === "string" ? value : ""}
+                      onChange={(event) => updatePayload(field.key, event.target.value)}
+                    />
                   </label>
                 );
               })}

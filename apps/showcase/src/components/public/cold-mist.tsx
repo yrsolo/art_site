@@ -28,8 +28,11 @@ type ColdMistDetailProps = ColdMistPageProps & {
   artwork: Artwork;
 };
 
-type ColdMistTemplateCard = (typeof templateMedia.coldMist.gallery)[number] & {
+type ColdMistTemplateCard = {
   href: string;
+  image: string;
+  title: string;
+  meta: string;
 };
 
 function buildNavItems(manifest: VariantManifest, content: VariantContent) {
@@ -43,10 +46,12 @@ function buildNavItems(manifest: VariantManifest, content: VariantContent) {
 }
 
 function buildColdMistTemplateCards(manifest: VariantManifest, artworks: Artwork[]): ColdMistTemplateCard[][] {
-  const cards = templateMedia.coldMist.gallery.map((item, index) => {
+  const cards: ColdMistTemplateCard[] = templateMedia.coldMist.gallery.map((item, index) => {
     const artwork = artworks[index] ?? artworks[index % Math.max(artworks.length, 1)];
     return {
-      ...item,
+      image: artwork?.imagePreview ?? item.image,
+      title: artwork?.title ?? item.title,
+      meta: artwork ? `${artwork.year} • ${artwork.medium}` : item.meta,
       href: artwork ? `/${manifest.id}/artwork/${artwork.slug}` : `/${manifest.id}/gallery`,
     };
   });
@@ -322,7 +327,7 @@ export function ColdMistDetail({ manifest, content, artwork }: ColdMistDetailPro
           <div className="relative w-full h-full group">
             <div className="absolute inset-0 bg-[#121a25] shadow-[0_0_100px_rgba(0,0,0,0.8)] z-0" />
             <Image
-              src={templateMedia.coldMist.detail}
+              src={artwork.imageOriginal}
               alt={artwork.title}
               fill
               priority
@@ -340,7 +345,9 @@ export function ColdMistDetail({ manifest, content, artwork }: ColdMistDetailPro
         <section className="w-full md:w-2/5 lg:w-1/3 bg-[#0e141c] min-h-screen z-10 px-8 py-16 md:px-16 md:py-32 flex flex-col justify-between">
           <div>
             <div className="mb-12">
-              <span className="text-[10px] uppercase tracking-[0.4em] text-[#9facc1] block mb-4">Том IV / Серия 02</span>
+              <span className="text-[10px] uppercase tracking-[0.4em] text-[#9facc1] block mb-4">
+                {artwork.series ? `Серия / ${artwork.series}` : "Архив / основная работа"}
+              </span>
               <h1 className="text-5xl md:text-7xl font-bold tracking-[-0.05em] text-[#d9e6fd] leading-none mb-6 uppercase">
                 {artwork.title}
               </h1>

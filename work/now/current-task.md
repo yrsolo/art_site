@@ -72,3 +72,13 @@ Static frontend split with backend-only container and bucket-backed content sour
 - Artwork creation and opening now use a dedicated overlay drawer instead of rendering the editor deep below the long lots table.
 - This keeps the working context near the user even when the repository already contains dozens of imported sketch lots.
 - The admin lots list remains the stable base layer, while create/open actions bring the card editor to the foreground as a separate panel.
+
+## Update 2026-03-21 Backend-driven prototype campaigns
+
+- The next pass moves the project from "editable runtime exists" to "all sketches are actually driven by that runtime".
+- Immediate focus:
+  - seed text CMS entries from current sketch copy;
+  - allow saving text versions as numbered copies;
+  - connect all variant layouts to the live admin entrypoint;
+  - ensure gallery/detail routes render live lot data and photos instead of template-only placeholders where possible;
+  - add grouped lot views in admin for large imported collections.

@@ -38,6 +38,7 @@ export type ArtworkSummary = {
   slug: string;
   title: string;
   series: string;
+  year: string;
   status: ArtworkStatus;
   showInGallery: boolean;
   sortOrder: number;
@@ -74,6 +75,7 @@ export type ContentVersionRecord = {
   versionName: string;
   status: "draft" | "published" | "archived";
   updatedAt: string;
+  isPublishedActive?: boolean;
 };
 
 export type SessionState = {

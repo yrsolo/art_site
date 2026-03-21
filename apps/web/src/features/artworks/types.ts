@@ -54,7 +54,7 @@ export type ArtworkInput = Pick<
 
 export type ArtworkSummary = Pick<
   Artwork,
-  "id" | "slug" | "title" | "series" | "status" | "showInGallery" | "sortOrder" | "updatedAt"
+  "id" | "slug" | "title" | "series" | "year" | "status" | "showInGallery" | "sortOrder" | "updatedAt"
 > & {
   previewUrl: string | null;
 };
@@ -64,6 +64,7 @@ export type ArtworkListRecord = {
   slug: string;
   title: string;
   series: string;
+  year: string;
   status: ArtworkStatus;
   showInGallery: boolean;
   sortOrder: number;
@@ -85,6 +86,7 @@ export function toArtworkSummary(artwork: Artwork): ArtworkSummary {
     slug: artwork.slug,
     title: artwork.title,
     series: artwork.series,
+    year: artwork.year,
     status: artwork.status,
     showInGallery: artwork.showInGallery,
     sortOrder: artwork.sortOrder,

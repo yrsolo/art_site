@@ -29,3 +29,12 @@
 3. Store imported sketch images through the same runtime media pipeline used for regular artwork photos.
 4. Rebuild and republish the public snapshot from the runtime data bucket after import.
 5. Verify the live flow through `admin.art.solofarm.ru`, `api.art.solofarm.ru`, and the rebuilt showcase publication.
+
+## Update 2026-03-21 Backend-driven showcase campaigns
+
+1. Seed the CMS text store from current variant seed content so editors start from the real sketch copy instead of empty forms.
+2. Add content version cloning with deterministic numeric suffixes and show which version is currently published.
+3. Keep `apps/showcase` on published snapshot as the primary content source and remove remaining practical dependence on static text fallbacks.
+4. Wire every variant layout to the live admin login and replace gallery/detail template media with real artwork photos where public routes are already backend-driven.
+5. Add grouped artwork list modes in admin (`all`, `year`, `series`, `status`) with collapse/expand behavior for large imported datasets.
+6. Rebuild, republish, redeploy, and verify `admin.art.solofarm.ru`, `api.art.solofarm.ru`, and `art.solofarm.ru` against the new content/data flow.
