@@ -1,0 +1,16 @@
+{
+  "id": "c64521f5-241b-4fe4-b8e9-09b5aa223c6d",
+  "variantId": "etheric-pulse",
+  "pageKey": "home",
+  "versionName": "Текущий home111",
+  "status": "published",
+  "payload": {
+    "eyebrow": "Тёмная атмосфера / эфирный импульс",
+    "title": "Искусство как поток",
+    "description": "Мистическая и текучая витрина, где стекло, свечение и мягкие импульсы являются конструктивной логикой.",
+    "primaryCta": "Войти в галерею",
+    "secondaryCta": "Узнать больше"
+  },
+  "createdAt": "2026-03-21T19:10:19.160Z",
+  "updatedAt": "2026-03-21T19:10:27.956Z"
+}

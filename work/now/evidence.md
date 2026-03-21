@@ -480,3 +480,39 @@
 ### Still unresolved
 
 - The content bucket likely needs a dedicated cleanup/migration pass to prune the historical excess content-version objects that were already written before the fix.
+
+## 2026-03-22 - Conservative cleanup of orphaned content objects
+
+- Audited the runtime bucket after confirming that the large object count was concentrated almost entirely in the content prefix rather than in public pages or media.
+- Recorded a local cleanup audit in:
+  - `work/archive/bucket-audit-2026-03-22/content-keys.txt`
+  - `work/archive/bucket-audit-2026-03-22/content-keep-keys.txt`
+  - `work/archive/bucket-audit-2026-03-22/content-delete-keys.txt`
+  - local backup of currently referenced live content files under `work/archive/bucket-audit-2026-03-22/content-keep-files/`
+  - local backup of current publication files under `work/archive/bucket-audit-2026-03-22/publication/`
+- Cleanup rule:
+  - preserve all live `index.json` files
+  - preserve all content-version JSON files referenced by those indices
+  - preserve all content-version JSON files referenced by current `publication/*.json`
+  - delete only the remaining orphaned files under `private/data/content/`
+- Execution method:
+  - built a local mirror of the 11 kept content files
+  - applied `aws s3 sync ... --delete` from that mirror to `s3://art-site/private/data/content/`
+  - this avoided hand-written mass deletes and kept the cleanup reproducible from the preserved manifest
+
+### Validation
+
+- Before cleanup:
+  - `art-site/private/data/content`: `20464` objects
+  - `art-site`: `20601` objects
+- After cleanup:
+  - `art-site/private/data/content`: `11` objects
+  - `art-site`: `148` objects
+- Post-cleanup runtime checks:
+  - authenticated `GET https://api.art.solofarm.ru/api/admin/content/versions?variantId=cold-mist&pageKey=home` -> `versions=1`
+  - live API auth still works after cleanup
+
+### Still unresolved
+
+- Only the content prefix was cleaned. If additional historical storage bloat appears later, it should be audited separately instead of assumed to be safe for bulk deletion.
+- The local audit artifacts live in `work/archive/` and are intentionally not treated as application runtime state.

@@ -118,3 +118,11 @@ Static frontend split with backend-only container and bucket-backed content sour
   - normalize summary/public filtering so admin and showcase agree on year, archive state, and gallery visibility;
   - repair the text CMS flow so current sketch texts always appear as the default editable version and save/publish no longer feel lossy;
   - add archive-aware bulk actions, grouped list behavior, and touch-friendly ordering controls.
+
+## Update 2026-03-22 Content storage cleanup
+
+- Runtime content storage was audited after the CMS seed/versioning bug had already created a large number of orphaned JSON objects in Object Storage.
+- The cleanup pass is intentionally conservative:
+  - first inventory and local backup of live `index.json`, `publication`, and currently referenced content-version files;
+  - then delete only unreferenced content-version objects under `private/data/content/`.
+- Public site media and artwork data are not part of this cleanup scope.
