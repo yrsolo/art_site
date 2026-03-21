@@ -259,6 +259,29 @@
 
 - Showcase variants still need continued fidelity work against their source `code.html` / `screen.png`.
 
+## 2026-03-21 - Public artwork detail contract pass
+
+- `apps/showcase` artwork types now preserve runtime `photos[]` and `primaryPhotoId` instead of flattening all snapshot artwork records into a single-image-only shape too early.
+- `apps/showcase/src/data/public-site.ts` now maps published snapshot photos into the public artwork dataset while still deriving compatibility fields `imageOriginal` / `imagePreview` from the primary photo.
+- Added shared price formatting helper in `apps/showcase/src/shared/format.ts`.
+- Public detail variants updated to show more real lot data from backend snapshot:
+  - `deep-immersion` now surfaces `series`, `status`, `price`, and uses current artwork photos for the lower detail strip.
+  - `etheric-pulse` now surfaces `series`, `status`, `price`, and uses current artwork photos for detail previews.
+  - `olive-cream` now surfaces `series`, `status`, `price`, and uses current artwork photos for its supporting detail gallery.
+  - `sage-sand` now surfaces `series`, `status`, `price`, and uses current artwork photos for lower-page detail shots.
+  - `mint-rose` now prefers current artwork photos for detail shots and falls back to related artworks only when extra photos are absent.
+  - `copper-glow` now prefers current artwork photos in the lower thumbnail rail, shows `series` in the sidebar, and surfaces lot price.
+- Generic fallback detail page in `apps/showcase/src/app/[variant]/artwork/[slug]/page.tsx` now follows the same contract with `series`, `price`, and additional photos.
+
+### Verification
+
+- `npm run build:showcase`
+
+### Still unresolved
+
+- `cold-mist` detail still needs a dedicated follow-up pass for additional backend photo strip and price placement inside its custom layout.
+- Some variants are now backend-driven in data but still need later fidelity polish to match their source templates 1:1.
+
 ## 2026-03-21 - Campaign pass for backend-driven texts and prototype wiring
 
 - Seeded CMS text versions from current sketch copy at the backend repository layer:

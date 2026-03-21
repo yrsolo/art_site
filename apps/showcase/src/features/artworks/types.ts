@@ -2,6 +2,12 @@ export const artworkStatuses = ["for_sale", "sold", "off_market", "in_progress"]
 
 export type ArtworkStatus = (typeof artworkStatuses)[number];
 
+export type ArtworkPhoto = {
+  id: string;
+  urlOriginal: string;
+  urlPreview: string;
+};
+
 export type Artwork = {
   id: string;
   slug: string;
@@ -14,6 +20,8 @@ export type Artwork = {
   price: string;
   currency: string;
   status: ArtworkStatus;
+  photos: ArtworkPhoto[];
+  primaryPhotoId: string | null;
   imageOriginal: string;
   imagePreview: string;
   order: number;

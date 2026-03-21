@@ -6,7 +6,7 @@ import type { Artwork } from "@/features/artworks/types";
 import type { VariantContent, VariantManifest, VariantRouteKey } from "@/features/variants/types";
 import { templateMedia } from "@/features/variants/template-media";
 import { getAdminLoginHref } from "@/shared/admin";
-import { statusLabel } from "@/shared/format";
+import { artworkPriceLabel, statusLabel } from "@/shared/format";
 
 type CopperGlowLayoutProps = {
   manifest: VariantManifest;
@@ -298,7 +298,8 @@ export function CopperGlowGallery({ manifest, content, artworks }: CopperGlowGal
 }
 
 export function CopperGlowDetail({ manifest, content, artwork, artworks }: CopperGlowDetailProps) {
-  const thumbnails = artworks.filter((item) => item.id !== artwork.id).slice(0, 3);
+  const photoThumbnails = artwork.photos.slice(1, 4);
+  const relatedArtworks = artworks.filter((item) => item.id !== artwork.id).slice(0, 3);
 
   return (
     <CopperGlowLayout manifest={manifest} content={content} currentRoute="detail">
@@ -322,11 +323,17 @@ export function CopperGlowDetail({ manifest, content, artwork, artworks }: Coppe
             </div>
 
             <div className="mt-8 grid max-w-2xl grid-cols-4 gap-4">
-              {thumbnails.map((item) => (
-                <Link key={item.id} href={`/${manifest.id}/artwork/${item.slug}`} className="group aspect-square overflow-hidden border border-[#4f453d]/20 bg-[#282a31]">
-                  <Image src={item.imagePreview} alt={item.title} width={400} height={400} className="h-full w-full object-cover opacity-50 transition-opacity group-hover:opacity-100" />
-                </Link>
-              ))}
+              {photoThumbnails.length > 0
+                ? photoThumbnails.map((photo) => (
+                    <div key={photo.id} className="aspect-square overflow-hidden border border-[#4f453d]/20 bg-[#282a31]">
+                      <Image src={photo.urlPreview} alt={artwork.title} width={400} height={400} className="h-full w-full object-cover opacity-70" />
+                    </div>
+                  ))
+                : relatedArtworks.map((item) => (
+                    <Link key={item.id} href={`/${manifest.id}/artwork/${item.slug}`} className="group aspect-square overflow-hidden border border-[#4f453d]/20 bg-[#282a31]">
+                      <Image src={item.imagePreview} alt={item.title} width={400} height={400} className="h-full w-full object-cover opacity-50 transition-opacity group-hover:opacity-100" />
+                    </Link>
+                  ))}
               <div className="flex aspect-square items-center justify-center bg-[#282a31] text-[#e8be9f]">PLAY</div>
             </div>
           </div>
@@ -337,6 +344,9 @@ export function CopperGlowDetail({ manifest, content, artwork, artworks }: Coppe
                 <span className="h-px w-8 bg-[#e8be9f]" />
                 <span className="text-xs uppercase tracking-[0.2em] text-[#e8be9f]">Лимитированный выпуск 1/5</span>
               </div>
+              {artwork.series ? (
+                <p className="text-xs uppercase tracking-[0.22em] text-[#aab6c9]">{artwork.series}</p>
+              ) : null}
               <h1 className="text-6xl font-bold uppercase leading-none tracking-[-0.06em]" style={{ fontFamily: "Space Grotesk, sans-serif" }}>
                 {artwork.title.split(" ")[0]}
                 <br />
@@ -360,6 +370,10 @@ export function CopperGlowDetail({ manifest, content, artwork, artworks }: Coppe
               <div className="bg-[#11131a] p-6">
                 <p className="mb-1 text-[10px] uppercase tracking-[0.2em] text-[#aab6c9]">Статус</p>
                 <p className="font-medium text-[#e1e2eb]">{statusLabel(artwork.status)}</p>
+              </div>
+              <div className="col-span-2 bg-[#11131a] p-6">
+                <p className="mb-1 text-[10px] uppercase tracking-[0.2em] text-[#aab6c9]">Цена</p>
+                <p className="font-medium text-[#e1e2eb]">{artworkPriceLabel(artwork)}</p>
               </div>
             </div>
 

@@ -3,7 +3,7 @@ import path from "node:path";
 
 import artworksJson from "@/data/artworks.json";
 import { variantContent as fallbackVariantContent } from "@/features/variants/content";
-import type { Artwork } from "@/features/artworks/types";
+import type { Artwork, ArtworkPhoto } from "@/features/artworks/types";
 
 type SnapshotArtwork = {
   id: string;
@@ -36,13 +36,24 @@ type PublicSiteSnapshot = {
 const generatedSnapshotPath = path.join(process.cwd(), "src", "generated", "public-site.json");
 
 function mapSnapshotArtwork(artwork: SnapshotArtwork): Artwork {
+  const photos: ArtworkPhoto[] =
+    artwork.photos.length > 0
+      ? artwork.photos.map((photo) => ({
+          id: photo.id,
+          urlOriginal: photo.urlOriginal,
+          urlPreview: photo.urlPreview,
+        }))
+      : [
+          {
+            id: `${artwork.id}-fallback`,
+            urlOriginal: "/uploads/placeholder-dawn.svg",
+            urlPreview: "/uploads/placeholder-dawn.svg",
+          },
+        ];
+
   const primaryPhoto =
-    artwork.photos.find((photo) => photo.id === artwork.primaryPhotoId) ??
-    artwork.photos[0] ?? {
-      id: `${artwork.id}-fallback`,
-      urlOriginal: "/uploads/placeholder-dawn.svg",
-      urlPreview: "/uploads/placeholder-dawn.svg",
-    };
+    photos.find((photo) => photo.id === artwork.primaryPhotoId) ??
+    photos[0];
 
   return {
     id: artwork.id,
@@ -56,6 +67,8 @@ function mapSnapshotArtwork(artwork: SnapshotArtwork): Artwork {
     price: artwork.price,
     currency: artwork.currency,
     status: artwork.status,
+    photos,
+    primaryPhotoId: artwork.primaryPhotoId,
     imageOriginal: primaryPhoto.urlOriginal,
     imagePreview: primaryPhoto.urlPreview,
     order: artwork.sortOrder,

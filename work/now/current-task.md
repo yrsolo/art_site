@@ -82,3 +82,12 @@ Static frontend split with backend-only container and bucket-backed content sour
   - connect all variant layouts to the live admin entrypoint;
   - ensure gallery/detail routes render live lot data and photos instead of template-only placeholders where possible;
   - add grouped lot views in admin for large imported collections.
+
+## Update 2026-03-21 Artwork detail pass
+
+- The next concrete step after text seeding and grouped admin lists is the public artwork detail contract.
+- Focus for this pass:
+  - carry `photos[]` and `primaryPhotoId` from published snapshot into `showcase` artwork types;
+  - let detail pages show real lot metadata such as series, status, and price where the variant composition allows it;
+  - use additional artwork photos on public detail screens instead of unrelated placeholder shots where possible;
+  - keep the variant-specific layouts intact while making the data source genuinely backend-driven.

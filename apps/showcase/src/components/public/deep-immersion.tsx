@@ -6,6 +6,7 @@ import type { Artwork } from "@/features/artworks/types";
 import { templateMedia } from "@/features/variants/template-media";
 import { getAdminLoginHref } from "@/shared/admin";
 import type { VariantContent, VariantManifest, VariantRouteKey } from "@/features/variants/types";
+import { artworkPriceLabel, statusLabel } from "@/shared/format";
 
 const deepImmersionNoise =
   "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")";
@@ -188,6 +189,8 @@ export function DeepImmersionGallery({ manifest, content, artworks }: DeepImmers
 }
 
 export function DeepImmersionDetail({ manifest, content, artwork }: DeepImmersionDetailProps) {
+  const detailShots = artwork.photos.slice(1, 4);
+
   return (
     <div className="min-h-screen bg-[#07090F] text-[#F1F4F9]" style={{ fontFamily: "Satoshi, sans-serif" }}>
       <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.02]" style={{ backgroundImage: deepImmersionNoise }} />
@@ -223,6 +226,7 @@ export function DeepImmersionDetail({ manifest, content, artwork }: DeepImmersio
                 {artwork.title}
               </h1>
               <p className="text-lg text-[#5A657A]">{artwork.year}</p>
+              {artwork.series ? <p className="mt-2 text-sm uppercase tracking-[0.16em] text-[#1378ec]">{artwork.series}</p> : null}
             </div>
             <div className="border-y border-[#12151E] py-6">
               <div className="grid grid-cols-2 gap-4">
@@ -234,9 +238,26 @@ export function DeepImmersionDetail({ manifest, content, artwork }: DeepImmersio
                   <span className="text-[13px] font-medium uppercase tracking-[0.05em] text-[#5A657A]">Размер</span>
                   <span>{artwork.size}</span>
                 </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-[13px] font-medium uppercase tracking-[0.05em] text-[#5A657A]">Статус</span>
+                  <span>{statusLabel(artwork.status)}</span>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-[13px] font-medium uppercase tracking-[0.05em] text-[#5A657A]">Цена</span>
+                  <span>{artworkPriceLabel(artwork)}</span>
+                </div>
               </div>
             </div>
             <p className="text-lg leading-relaxed text-[#F1F4F9]">{artwork.description}</p>
+            {detailShots.length > 0 ? (
+              <div className="grid grid-cols-3 gap-4">
+                {detailShots.map((photo) => (
+                  <div key={photo.id} className="relative aspect-square overflow-hidden border border-[#12151E]">
+                    <Image src={photo.urlPreview} alt={artwork.title} fill sizes="20vw" className="object-cover" />
+                  </div>
+                ))}
+              </div>
+            ) : null}
             <div className="pt-8">
               <Link
                 href={`/${manifest.id}/contacts`}

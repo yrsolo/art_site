@@ -4,6 +4,14 @@ export function artworkMeta(artwork: Artwork) {
   return `${artwork.year} / ${artwork.medium} / ${artwork.size}`;
 }
 
+export function artworkPriceLabel(artwork: Artwork) {
+  if (!artwork.price.trim()) {
+    return "По запросу";
+  }
+
+  return artwork.currency.trim() ? `${artwork.price} ${artwork.currency}` : artwork.price;
+}
+
 export function statusLabel(status: Artwork["status"]) {
   switch (status) {
     case "for_sale":

@@ -6,6 +6,7 @@ import type { Artwork } from "@/features/artworks/types";
 import type { VariantContent, VariantManifest, VariantRouteKey } from "@/features/variants/types";
 import { templateMedia } from "@/features/variants/template-media";
 import { getAdminLoginHref } from "@/shared/admin";
+import { artworkPriceLabel, statusLabel } from "@/shared/format";
 
 type MintRoseLayoutProps = {
   manifest: VariantManifest;
@@ -182,7 +183,8 @@ export function MintRoseGallery({ manifest, content, artworks }: MintRoseGallery
 }
 
 export function MintRoseDetail({ manifest, content, artwork, artworks }: MintRoseDetailProps) {
-  const detailShots = artworks.filter((item) => item.id !== artwork.id).slice(0, 2);
+  const detailShots = artwork.photos.slice(1, 3);
+  const relatedArtworks = artworks.filter((item) => item.id !== artwork.id).slice(0, 2);
 
   return (
     <MintRoseLayout manifest={manifest} content={content} currentRoute="detail">
@@ -206,10 +208,17 @@ export function MintRoseDetail({ manifest, content, artwork, artworks }: MintRos
           <h1 className="mb-6 text-4xl font-light tracking-tight text-slate-900 md:text-5xl lg:text-6xl" style={{ fontFamily: "Cormorant Garamond, serif" }}>
             {artwork.title}
           </h1>
+          {artwork.series ? (
+            <p className="mb-5 text-sm uppercase tracking-[0.24em] text-[#b48c8c]" style={{ fontFamily: "Outfit, sans-serif" }}>
+              Серия: {artwork.series}
+            </p>
+          ) : null}
           <div className="mb-10 flex flex-col gap-2 font-medium tracking-wide text-slate-500" style={{ fontFamily: "Outfit, sans-serif" }}>
             <p>{artwork.medium}</p>
             <p>{artwork.size}</p>
             <p>{artwork.year}</p>
+            <p>{statusLabel(artwork.status)}</p>
+            <p>{artworkPriceLabel(artwork)}</p>
           </div>
           <div className="prose prose-lg mb-12 max-w-none font-light leading-relaxed text-slate-700" style={{ fontFamily: "Outfit, sans-serif" }}>
             <p>{artwork.description}</p>
@@ -227,11 +236,11 @@ export function MintRoseDetail({ manifest, content, artwork, artworks }: MintRos
               Texture &amp; Detail
             </h3>
             <div className="grid grid-cols-2 items-start gap-6">
-              {detailShots[0] ? (
+              {detailShots[0] || relatedArtworks[0] ? (
                 <div className="mt-12">
                   <Image
-                    src={detailShots[0].imagePreview}
-                    alt={detailShots[0].title}
+                    src={detailShots[0]?.urlPreview ?? relatedArtworks[0]?.imagePreview ?? artwork.imagePreview}
+                    alt={artwork.title}
                     width={600}
                     height={800}
                     sizes="(max-width: 768px) 50vw, 20vw"
@@ -239,11 +248,11 @@ export function MintRoseDetail({ manifest, content, artwork, artworks }: MintRos
                   />
                 </div>
               ) : null}
-              {detailShots[1] ? (
+              {detailShots[1] || relatedArtworks[1] ? (
                 <div>
                   <Image
-                    src={detailShots[1].imagePreview}
-                    alt={detailShots[1].title}
+                    src={detailShots[1]?.urlPreview ?? relatedArtworks[1]?.imagePreview ?? artwork.imagePreview}
+                    alt={artwork.title}
                     width={600}
                     height={600}
                     sizes="(max-width: 768px) 50vw, 20vw"

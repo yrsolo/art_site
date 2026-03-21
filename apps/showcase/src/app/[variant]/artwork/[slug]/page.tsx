@@ -13,7 +13,7 @@ import { VariantShell } from "@/components/public/variant-shell";
 import { VariantSwitcher } from "@/components/public/variant-switcher";
 import { getPublicArtworkBySlug, listPublicArtworks } from "@/data/artworks";
 import { assertVariantSupportsRoute, getVariantOrThrow, listVariants } from "@/features/variants";
-import { artworkMeta, statusLabel } from "@/shared/format";
+import { artworkMeta, artworkPriceLabel, statusLabel } from "@/shared/format";
 
 export function generateStaticParams() {
   const artworks = listPublicArtworks();
@@ -38,6 +38,8 @@ export default async function VariantArtworkPage({ params }: { params: Promise<{
   if (manifest.id === "olive-cream") return <><OliveCreamDetail manifest={manifest} content={content} artwork={artwork} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="detail" slug={artwork.slug} /></>;
   if (manifest.id === "sage-sand") return <><SageSandDetail manifest={manifest} content={content} artwork={artwork} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="detail" slug={artwork.slug} /></>;
 
+  const detailShots = artwork.photos.slice(1, 4);
+
   return (
     <>
       <VariantShell manifest={manifest} content={content} currentRoute="detail">
@@ -51,6 +53,7 @@ export default async function VariantArtworkPage({ params }: { params: Promise<{
             <div className="space-y-3">
               <p className="text-xs uppercase tracking-[0.25em] opacity-70">Artwork detail</p>
               <h1 className="text-4xl font-semibold">{artwork.title}</h1>
+              {artwork.series ? <p className={`text-xs uppercase tracking-[0.25em] ${manifest.classes.subtle}`}>{artwork.series}</p> : null}
               <p className={manifest.classes.subtle}>{artworkMeta(artwork)}</p>
             </div>
             <p className="text-base leading-8">{artwork.description}</p>
@@ -64,12 +67,25 @@ export default async function VariantArtworkPage({ params }: { params: Promise<{
                 <span className={`max-w-[16rem] text-right ${manifest.classes.subtle}`}>{content.detail.note}</span>
               </div>
               <div className="flex items-center justify-between border-t border-black/10 pt-4">
+                <span className="opacity-70">Price</span>
+                <span className={manifest.classes.subtle}>{artworkPriceLabel(artwork)}</span>
+              </div>
+              <div className="flex items-center justify-between border-t border-black/10 pt-4">
                 <span className="opacity-70">Inquiry</span>
                 <Link href={`/${manifest.id}/contacts`} className={`px-4 py-3 text-sm font-medium ${manifest.classes.accent} ${manifest.classes.pill}`}>
                   {content.detail.inquiryLabel}
                 </Link>
               </div>
             </div>
+            {detailShots.length > 0 ? (
+              <div className="grid grid-cols-3 gap-4 border-t border-black/10 pt-4">
+                {detailShots.map((photo) => (
+                  <div key={photo.id} className={`overflow-hidden ${manifest.classes.pill} ${manifest.classes.card}`}>
+                    <Image src={photo.urlPreview} alt={artwork.title} width={420} height={520} className="aspect-[4/5] w-full object-cover" />
+                  </div>
+                ))}
+              </div>
+            ) : null}
           </div>
         </div>
       </VariantShell>

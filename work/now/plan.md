@@ -38,3 +38,10 @@
 4. Wire every variant layout to the live admin login and replace gallery/detail template media with real artwork photos where public routes are already backend-driven.
 5. Add grouped artwork list modes in admin (`all`, `year`, `series`, `status`) with collapse/expand behavior for large imported datasets.
 6. Rebuild, republish, redeploy, and verify `admin.art.solofarm.ru`, `api.art.solofarm.ru`, and `art.solofarm.ru` against the new content/data flow.
+
+## Update 2026-03-21 Artwork detail contract
+
+1. Extend `showcase` artwork mapping so published snapshot preserves `photos[]` and `primaryPhotoId` instead of collapsing everything to one image too early.
+2. Upgrade public detail pages to render real lot metadata (`series`, `status`, `price`) and additional detail photos where the variant composition supports it.
+3. Keep generic fallback detail aligned with the same contract so future variants do not silently regress to the old single-image shape.
+4. Rebuild and republish the static showcase after this pass, then verify several live detail routes against the published runtime snapshot.

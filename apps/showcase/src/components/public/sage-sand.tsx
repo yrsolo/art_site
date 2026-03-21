@@ -5,6 +5,7 @@ import type { Artwork } from "@/features/artworks/types";
 import { templateMedia } from "@/features/variants/template-media";
 import { getAdminLoginHref } from "@/shared/admin";
 import type { VariantContent, VariantManifest } from "@/features/variants/types";
+import { artworkPriceLabel, statusLabel } from "@/shared/format";
 
 type VariantProps = { manifest: VariantManifest; content: VariantContent };
 type GalleryProps = VariantProps & { artworks: Artwork[] };
@@ -155,6 +156,8 @@ export function SageSandAbout({ manifest, content }: VariantProps) {
 }
 
 export function SageSandDetail({ manifest, content, artwork }: DetailProps) {
+  const detailShots = artwork.photos.slice(1, 4);
+
   return (
     <SageLayout manifest={manifest} content={content} current="detail">
       <main className="mx-auto max-w-[1200px] px-6 py-16 md:px-12">
@@ -164,12 +167,24 @@ export function SageSandDetail({ manifest, content, artwork }: DetailProps) {
           </div>
           <div className="space-y-8 lg:pt-10">
             <h1 className="font-serif text-5xl italic" style={{ fontFamily: "Cormorant, serif" }}>{artwork.title}</h1>
+            {artwork.series ? <p className="text-sm uppercase tracking-[0.16em] text-[#7D8C74]">{artwork.series}</p> : null}
             <div className="space-y-2 text-[#A3A89F]">
               <p>{artwork.medium}</p>
               <p>{artwork.size}</p>
               <p>{artwork.year}</p>
+              <p>{statusLabel(artwork.status)}</p>
+              <p>{artworkPriceLabel(artwork)}</p>
             </div>
             <p className="text-lg leading-relaxed text-[#2B3327]/85">{artwork.description}</p>
+            {detailShots.length > 0 ? (
+              <div className="grid grid-cols-3 gap-4">
+                {detailShots.map((photo) => (
+                  <div key={photo.id} className="relative aspect-square overflow-hidden rounded-[24px] bg-[#F4F0E6] shadow-[0_20px_40px_rgba(43,51,39,0.05)]">
+                    <Image src={photo.urlPreview} alt={artwork.title} fill sizes="20vw" className="object-cover" />
+                  </div>
+                ))}
+              </div>
+            ) : null}
             <Link href={`/${manifest.id}/contacts`} className="inline-flex rounded-full bg-[#7D8C74] px-8 py-4 text-white transition hover:bg-[#D4A373]">
               {content.detail.inquiryLabel}
             </Link>

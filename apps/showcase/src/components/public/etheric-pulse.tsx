@@ -6,7 +6,7 @@ import type { Artwork } from "@/features/artworks/types";
 import { templateMedia } from "@/features/variants/template-media";
 import { getAdminLoginHref } from "@/shared/admin";
 import type { VariantContent, VariantManifest, VariantRouteKey } from "@/features/variants/types";
-import { statusLabel } from "@/shared/format";
+import { artworkPriceLabel, statusLabel } from "@/shared/format";
 
 type VariantProps = {
   manifest: VariantManifest;
@@ -333,6 +333,8 @@ export function EthericPulseAbout({ manifest, content }: VariantProps) {
 }
 
 export function EthericPulseDetail({ manifest, content, artwork }: DetailProps) {
+  const detailShots = artwork.photos.slice(1, 4);
+
   return (
     <EthericPulseLayout manifest={manifest} content={content} currentRoute="detail">
       <main className="mx-auto flex max-w-[1920px] flex-col gap-16 px-8 pb-16 pt-[120px] lg:flex-row lg:gap-24 lg:px-16">
@@ -347,6 +349,7 @@ export function EthericPulseDetail({ manifest, content, artwork }: DetailProps) 
             <div>
               <h1 className="font-[Manrope] text-5xl font-bold leading-tight">{artwork.title}</h1>
               <p className="mt-2 text-lg text-[#5A657A]">{artwork.year}</p>
+              {artwork.series ? <p className="mt-2 text-sm uppercase tracking-[0.18em] text-[#82d3dc]">{artwork.series}</p> : null}
             </div>
             <div className="grid grid-cols-2 gap-4 border-y border-[#12151e] py-6">
               <div>
@@ -357,8 +360,25 @@ export function EthericPulseDetail({ manifest, content, artwork }: DetailProps) 
                 <p className="text-[13px] uppercase tracking-[0.05em] text-[#5A657A]">Размер</p>
                 <p>{artwork.size}</p>
               </div>
+              <div>
+                <p className="text-[13px] uppercase tracking-[0.05em] text-[#5A657A]">Статус</p>
+                <p>{statusLabel(artwork.status)}</p>
+              </div>
+              <div>
+                <p className="text-[13px] uppercase tracking-[0.05em] text-[#5A657A]">Цена</p>
+                <p>{artworkPriceLabel(artwork)}</p>
+              </div>
             </div>
             <p className="text-lg leading-relaxed">{artwork.description}</p>
+            {detailShots.length > 0 ? (
+              <div className="grid grid-cols-3 gap-4">
+                {detailShots.map((photo) => (
+                  <div key={photo.id} className="relative aspect-square overflow-hidden rounded-[1rem] border border-[#12151e] bg-[#10131d]">
+                    <Image src={photo.urlPreview} alt={artwork.title} fill sizes="20vw" className="object-cover" />
+                  </div>
+                ))}
+              </div>
+            ) : null}
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="rounded-full bg-[#161926] px-5 py-3 text-center text-[#82d3dc]">{statusLabel(artwork.status)}</div>
               <Link href={`/${manifest.id}/contacts`} className="rounded-full bg-[#a894ff] px-5 py-3 text-center font-medium text-[#190055]">

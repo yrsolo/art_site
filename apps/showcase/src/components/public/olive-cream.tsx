@@ -5,6 +5,7 @@ import type { Artwork } from "@/features/artworks/types";
 import { templateMedia } from "@/features/variants/template-media";
 import { getAdminLoginHref } from "@/shared/admin";
 import type { VariantContent, VariantManifest } from "@/features/variants/types";
+import { artworkPriceLabel, statusLabel } from "@/shared/format";
 
 type VariantProps = { manifest: VariantManifest; content: VariantContent };
 type GalleryProps = VariantProps & { artworks: Artwork[] };
@@ -149,6 +150,8 @@ export function OliveCreamGallery({ manifest, content, artworks }: GalleryProps)
 }
 
 export function OliveCreamDetail({ manifest, content, artwork }: DetailProps) {
+  const detailShots = artwork.photos.slice(1, 4);
+
   return (
     <OliveLayout manifest={manifest} content={content} current="detail">
       <main className="flex min-h-screen flex-col pt-4 lg:flex-row">
@@ -164,10 +167,30 @@ export function OliveCreamDetail({ manifest, content, artwork }: DetailProps) {
               <div className="mt-6 border-l-2 border-[#5ea50d] pl-4 py-1 text-base italic text-[#9CA38F]">
                 {artwork.medium}, {artwork.size}, {artwork.year}
               </div>
+              {artwork.series ? <p className="mt-4 text-sm uppercase tracking-[0.18em] text-[#5ea50d]">{artwork.series}</p> : null}
             </div>
             <div className="flex-grow space-y-6 text-lg leading-relaxed text-[#2C2E27]/90">
               <p>{artwork.description}</p>
               <p className="italic text-[#9CA38F]">{content.detail.note}</p>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="rounded-2xl bg-[#E8E3D9] px-4 py-3">
+                  <div className="mb-1 text-[11px] uppercase tracking-[0.18em] text-[#9CA38F]">Статус</div>
+                  <div>{statusLabel(artwork.status)}</div>
+                </div>
+                <div className="rounded-2xl bg-[#E8E3D9] px-4 py-3">
+                  <div className="mb-1 text-[11px] uppercase tracking-[0.18em] text-[#9CA38F]">Цена</div>
+                  <div>{artworkPriceLabel(artwork)}</div>
+                </div>
+              </div>
+              {detailShots.length > 0 ? (
+                <div className="grid grid-cols-3 gap-4">
+                  {detailShots.map((photo) => (
+                    <div key={photo.id} className="relative aspect-square overflow-hidden rounded-[1.5rem]">
+                      <Image src={photo.urlPreview} alt={artwork.title} fill sizes="20vw" className="object-cover" />
+                    </div>
+                  ))}
+                </div>
+              ) : null}
             </div>
             <Link href={`/${manifest.id}/contacts`} className="mt-16 block rounded-full bg-[#5ea50d] px-8 py-5 text-center text-lg font-semibold text-[#F2EFE9] shadow-[0_20px_40px_-10px_rgba(90,107,71,0.08)] transition hover:bg-[#7D8F66]">
               {content.detail.inquiryLabel}
