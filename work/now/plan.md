@@ -95,3 +95,14 @@
 3. The next implementation focus can move away from certificate waiting and back to product/runtime work:
    - finish live backend rollout for the new `site-assets` admin routes;
    - start the next editor/domain pass on top of the now-complete public routing architecture.
+
+## Update 2026-03-22 Backend rollout recovery
+
+1. The `site-assets` backend routes are now confirmed present on the production API runtime.
+2. Keep the new prebuilt-image deploy path available for future backend rollouts:
+   - local `npm run build --workspace web`
+   - minimal runtime image from prebuilt standalone output
+   - `deploy-yc-web.ps1 -SkipBuild`
+3. Next focus can return to product implementation instead of container plumbing:
+   - richer `site-assets` UX
+   - publication/editor passes on top of the now-stable runtime/public architecture.

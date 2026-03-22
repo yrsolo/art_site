@@ -55,12 +55,15 @@ Live entrypoint:
 2. Package and deploy it as Serverless Container
 3. Attach environment/secrets for Object Storage access and session signing
 4. Expose it through API Gateway as `api.art.solofarm.ru`
+5. If local Docker buildx is unstable, the repo deploy script now supports rolling out a prebuilt image tag without rebuilding:
+   - `powershell -ExecutionPolicy Bypass -File scripts/deploy-yc-web.ps1 -Tag <tag> -SkipBuild`
 
 ## Current Live State
 
 - `art.solofarm.ru` -> working public API Gateway with rewrite/fallback to the showcase bucket
 - `admin.art.solofarm.ru` -> working static admin bucket with HTTPS
 - `api.art.solofarm.ru` -> working API Gateway domain backed by Serverless Container
+- `api.art.solofarm.ru` has a verified rollout path for prebuilt images when in-Docker `next build` is unstable on the workstation host
 
 ## Operational Note
 

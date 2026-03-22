@@ -4,6 +4,7 @@ param(
   [string]$ContainerName = "art-site-api",
   [string]$GatewayName = "art-site-api",
   [string]$Tag = "latest",
+  [switch]$SkipBuild,
   [string]$ServiceAccountId = "aje1kqd422vq2vefkbbl",
   [string]$SiteUrl = "",
   [string]$AdminBaseUrl = "",
@@ -114,10 +115,12 @@ try {
 
   $imageRef = "cr.yandex/$RegistryId/$ImageName`:$Tag"
 
-  yc container registry configure-docker | Out-Null
+  if (-not $SkipBuild) {
+    yc container registry configure-docker | Out-Null
 
-  docker build -t $imageRef .
-  docker push $imageRef
+    docker build -t $imageRef .
+    docker push $imageRef
+  }
 
   $container = Ensure-Container -Name $ContainerName
 

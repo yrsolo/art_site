@@ -675,3 +675,30 @@
 ### Still unresolved
 
 - The public domain cutover is complete, but the new `site-assets` backend routes are still not confirmed live on `api.art.solofarm.ru`; that remains a separate container rollout issue, not a gateway/certificate issue.
+
+## 2026-03-22 - Backend rollout recovered for site-assets
+
+- Confirmed that the old runtime problem was image-related rather than route/gateway-related:
+  - existing `latest` container image returned `404` for `/api/admin/site-assets/versions`
+  - locally built prebuilt runtime image returned `401`, which proved the route existed in the new code
+- Built and pushed a dedicated prebuilt backend image:
+  - `cr.yandex/crp5tssh5qkdk7mgcilj/art-site/api:site-assets-prebuilt`
+- Extended deploy script:
+  - `scripts/deploy-yc-web.ps1` now accepts `-SkipBuild`
+- Rolled out the new revision with:
+  - `powershell -ExecutionPolicy Bypass -File scripts/deploy-yc-web.ps1 -Tag site-assets-prebuilt -SkipBuild`
+- Verified production API after rollout:
+  - `curl -i https://api.art.solofarm.ru/api/health` -> `200`
+  - `curl -i https://api.art.solofarm.ru/api/admin/site-assets/versions?...` -> `401 Unauthorized`
+  - this confirms the route is now present on production and protected by auth instead of missing
+- Verified active container revision:
+  - revision `bba0n15gdj49a5d49e72`
+  - image `cr.yandex/crp5tssh5qkdk7mgcilj/art-site/api:site-assets-prebuilt`
+
+### Still unresolved
+
+- Full authenticated end-to-end smoke for `/api/admin/site-assets/versions` from the CLI is still awkward because PowerShell web tooling intermittently throws a local `NullReferenceException` when reusing the session object, even though login itself succeeds and the auth cookie is issued.
+- The reliable infrastructure conclusion is still clear:
+  - route exists in production
+  - auth cookie is issued
+  - missing-route problem is resolved

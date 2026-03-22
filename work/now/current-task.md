@@ -178,3 +178,15 @@ Static frontend split with backend-only container and bucket-backed content sour
 - The custom certificate for `art.solofarm.ru` is now issued and attached to the public API Gateway.
 - `art.solofarm.ru` now resolves to the public gateway rewrite layer instead of the raw bucket website endpoint.
 - Deep links on the production domain now return `200` through the shell-routing architecture, so the public site is finally running in the intended `static shell + live data + pretty URLs` mode.
+
+## Update 2026-03-22 Backend deploy path unstuck
+
+- The new `site-assets` routes are now present on the production API runtime.
+- Root cause of the earlier rollout issue:
+  - the workstation Docker environment was unstable when running `next build` inside `docker build`;
+  - serverless revisions kept rolling forward on old tags/images.
+- A fallback deployment path now exists:
+  - build `apps/web` locally;
+  - package a minimal prebuilt runtime image from `.next/standalone`;
+  - deploy with `scripts/deploy-yc-web.ps1 -Tag <tag> -SkipBuild`.
+- This keeps the backend rollout unblocked even while the local Docker buildx path remains unreliable.
