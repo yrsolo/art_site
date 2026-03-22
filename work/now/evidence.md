@@ -702,3 +702,47 @@
   - route exists in production
   - auth cookie is issued
   - missing-route problem is resolved
+
+## 2026-03-22 - Artwork photo upload repaired
+
+- Reproduced the live bug against production API before the fix:
+  - `POST /api/admin/artworks/{id}/photos` returned `500 Internal Server Error` for both `png` and `svg`
+- Added upload-specific hardening in code:
+  - structured JSON `serverError(...)` response helper in `apps/web/src/server/http.ts`
+  - guarded upload route with explicit `try/catch` in `apps/web/src/app/api/admin/artworks/[id]/photos/route.ts`
+  - raster-only v1 validation in `apps/web/src/server/media-service.ts`
+  - removed per-object `public-read` ACL from media writes in `apps/web/src/server/object-storage.ts` / `media-service.ts`
+  - split `uploadPending` from generic `pending` in `apps/admin/src/app/artworks/page.tsx`
+- Verified local quality gates:
+  - `npm run build --workspace web`
+  - `npm run build --workspace admin`
+  - `npm run lint --workspace web`
+  - `npm run lint --workspace admin`
+  - `bash scripts/docs-check.sh`
+- Published admin:
+  - `powershell -ExecutionPolicy Bypass -File scripts/publish-admin.ps1`
+- Rolled backend twice while diagnosing:
+  - first prebuilt revision proved the new code path was live, but upload still failed
+  - container logs revealed the real runtime blocker:
+    - `Error: Failed to load external module ... sharp ... linuxmusl-x64 runtime`
+- To keep the upload flow operational even on the current prebuilt deploy path, media preview generation now degrades gracefully:
+  - if `sharp` is unavailable, upload still succeeds
+  - `urlPreview` falls back to `urlOriginal`
+- Built and pushed the repaired prebuilt runtime image:
+  - `cr.yandex/crp5tssh5qkdk7mgcilj/art-site/api:upload-fix-20260322`
+- Deployed it with:
+  - `powershell -ExecutionPolicy Bypass -File scripts/deploy-yc-web.ps1 -Tag upload-fix-20260322 -SkipBuild`
+- Live verification after rollout:
+  - `curl.exe -s -c tmp/art-upload-cookies.txt -H "Content-Type: application/json" --data-binary "@tmp/login.json" https://api.art.solofarm.ru/api/auth/login` -> `{"ok":true,...}`
+  - `curl.exe -s -b tmp/art-upload-cookies.txt https://api.art.solofarm.ru/api/auth/session` -> `{"authenticated":true,...}`
+  - `curl.exe -i -b tmp/art-upload-cookies.txt -F "file=@...screen.png;type=image/png" https://api.art.solofarm.ru/api/admin/artworks/c4c1abf0-56cd-4b59-b673-331681b55c87/photos` -> `201 Created`
+  - response artwork now contains the newly added photo entry
+  - `curl.exe -i -b tmp/art-upload-cookies.txt -F "file=@...placeholder-hidden.svg;type=image/svg+xml" .../photos` -> `400 Bad Request`
+  - response body: `{"error":"Поддерживаются только JPEG, PNG и WEBP."}`
+
+### Still unresolved
+
+- The current prebuilt runtime path still does not provide working native `sharp` binaries, so uploaded photos may use `urlOriginal` as preview when preview generation cannot run.
+- A fully native preview pipeline still needs one of:
+  - a stable Linux Docker image build path for `apps/web`; or
+  - a non-native preview generator that is safe for the prebuilt deployment path.

@@ -1,12 +1,32 @@
 import path from "node:path";
 import { mkdir, unlink, writeFile } from "node:fs/promises";
 
-import sharp from "sharp";
-
 import type { ArtworkPhoto } from "@/features/artworks/types";
 import { appConfig } from "@/server/config";
 import { deleteObject, putObjectBuffer } from "@/server/object-storage";
 import { newId, nowIso } from "@/server/utils";
+
+const supportedUploadMimeTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
+
+function resolveSupportedMimeType(file: File) {
+  const mimeType = (file.type || "").toLowerCase();
+  if (supportedUploadMimeTypes.has(mimeType)) {
+    return mimeType;
+  }
+
+  const extension = path.extname(file.name).toLowerCase();
+  if (extension === ".jpg" || extension === ".jpeg") {
+    return "image/jpeg";
+  }
+  if (extension === ".png") {
+    return "image/png";
+  }
+  if (extension === ".webp") {
+    return "image/webp";
+  }
+
+  return null;
+}
 
 function sanitizeFilename(filename: string) {
   const extension = path.extname(filename) || ".jpg";
@@ -30,7 +50,26 @@ async function writeLocalMedia(filename: string, buffer: Buffer) {
   return `/uploads/${filename}`;
 }
 
+async function createPreviewBuffer(originalBuffer: Buffer) {
+  try {
+    const sharpModule = await import("sharp");
+    const sharpFactory = sharpModule.default;
+    return await sharpFactory(originalBuffer).resize({ width: 1200, withoutEnlargement: true }).webp({ quality: 82 }).toBuffer();
+  } catch (error) {
+    console.warn("Artwork preview generation skipped", {
+      message: error instanceof Error ? error.message : "Unknown sharp error",
+    });
+    return null;
+  }
+}
+
 export async function uploadArtworkImage(file: File, artworkId: string) {
+  const mimeType = resolveSupportedMimeType(file);
+
+  if (!mimeType) {
+    throw new Error("Поддерживаются только JPEG, PNG и WEBP.");
+  }
+
   const id = newId();
   const extension = path.extname(file.name) || ".jpg";
   const safeFilename = sanitizeFilename(file.name);
@@ -38,19 +77,27 @@ export async function uploadArtworkImage(file: File, artworkId: string) {
   const originalKey = `${appConfig.mediaPrefix}/${baseKey}${extension}`;
   const previewKey = `${appConfig.mediaPrefix}/${baseKey}-preview.webp`;
   const originalBuffer = Buffer.from(await file.arrayBuffer());
-  const previewBuffer = await sharp(originalBuffer).resize({ width: 1200, withoutEnlargement: true }).webp({ quality: 82 }).toBuffer();
+  const previewBuffer = await createPreviewBuffer(originalBuffer);
 
   let urlOriginal = "";
   let urlPreview = "";
 
   if (appConfig.storageMode === "s3") {
-    await putObjectBuffer(originalKey, originalBuffer, file.type || "application/octet-stream", "public-read");
-    await putObjectBuffer(previewKey, previewBuffer, "image/webp", "public-read");
+    await putObjectBuffer(originalKey, originalBuffer, mimeType);
     urlOriginal = publicObjectUrl(originalKey);
-    urlPreview = publicObjectUrl(previewKey);
+    if (previewBuffer) {
+      await putObjectBuffer(previewKey, previewBuffer, "image/webp");
+      urlPreview = publicObjectUrl(previewKey);
+    } else {
+      urlPreview = urlOriginal;
+    }
   } else {
     urlOriginal = await writeLocalMedia(path.basename(originalKey), originalBuffer);
-    urlPreview = await writeLocalMedia(path.basename(previewKey), previewBuffer);
+    if (previewBuffer) {
+      urlPreview = await writeLocalMedia(path.basename(previewKey), previewBuffer);
+    } else {
+      urlPreview = urlOriginal;
+    }
   }
 
   const photo: ArtworkPhoto = {
@@ -85,19 +132,27 @@ export async function importRemoteArtworkImage(sourceUrl: string, artworkId: str
   const originalKey = `${appConfig.mediaPrefix}/${baseKey}${extension}`;
   const previewKey = `${appConfig.mediaPrefix}/${baseKey}-preview.webp`;
   const originalBuffer = Buffer.from(await response.arrayBuffer());
-  const previewBuffer = await sharp(originalBuffer).resize({ width: 1200, withoutEnlargement: true }).webp({ quality: 82 }).toBuffer();
+  const previewBuffer = await createPreviewBuffer(originalBuffer);
 
   let urlOriginal = "";
   let urlPreview = "";
 
   if (appConfig.storageMode === "s3") {
-    await putObjectBuffer(originalKey, originalBuffer, contentType, "public-read");
-    await putObjectBuffer(previewKey, previewBuffer, "image/webp", "public-read");
+    await putObjectBuffer(originalKey, originalBuffer, contentType);
     urlOriginal = publicObjectUrl(originalKey);
-    urlPreview = publicObjectUrl(previewKey);
+    if (previewBuffer) {
+      await putObjectBuffer(previewKey, previewBuffer, "image/webp");
+      urlPreview = publicObjectUrl(previewKey);
+    } else {
+      urlPreview = urlOriginal;
+    }
   } else {
     urlOriginal = await writeLocalMedia(path.basename(originalKey), originalBuffer);
-    urlPreview = await writeLocalMedia(path.basename(previewKey), previewBuffer);
+    if (previewBuffer) {
+      urlPreview = await writeLocalMedia(path.basename(previewKey), previewBuffer);
+    } else {
+      urlPreview = urlOriginal;
+    }
   }
 
   return {

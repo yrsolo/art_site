@@ -190,3 +190,15 @@ Static frontend split with backend-only container and bucket-backed content sour
   - package a minimal prebuilt runtime image from `.next/standalone`;
   - deploy with `scripts/deploy-yc-web.ps1 -Tag <tag> -SkipBuild`.
 - This keeps the backend rollout unblocked even while the local Docker buildx path remains unreliable.
+
+## Update 2026-03-22 Artwork photo upload repair
+
+- Artwork photo upload is now the primary blocking bug in the editorial flow:
+  - the admin UI submits `multipart/form-data` correctly;
+  - production API receives the request;
+  - current upload fails with `500 Internal Server Error`.
+- This repair pass focuses on:
+  - making the upload route return structured JSON errors instead of an opaque `500`;
+  - separating upload pending state from the generic artwork save pending state in the drawer UI;
+  - limiting v1 uploads to raster artwork formats (`jpeg/png/webp`);
+  - removing per-object `public-read` ACL from media writes so bucket/prefix policy remains the visibility source of truth.

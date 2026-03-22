@@ -57,6 +57,7 @@ Live entrypoint:
 4. Expose it through API Gateway as `api.art.solofarm.ru`
 5. If local Docker buildx is unstable, the repo deploy script now supports rolling out a prebuilt image tag without rebuilding:
    - `powershell -ExecutionPolicy Bypass -File scripts/deploy-yc-web.ps1 -Tag <tag> -SkipBuild`
+   - the helper image recipe for `.next/standalone` lives in `scripts/prebuilt-web-runtime.Dockerfile`
 
 ## Current Live State
 

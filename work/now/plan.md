@@ -106,3 +106,11 @@
 3. Next focus can return to product implementation instead of container plumbing:
    - richer `site-assets` UX
    - publication/editor passes on top of the now-stable runtime/public architecture.
+
+## Update 2026-03-22 Artwork photo upload repair
+
+1. Instrument the artwork photo upload route so failures come back as structured JSON with enough context to locate the failing step.
+2. Remove the media upload dependency on per-object `public-read` ACL and let Object Storage policy handle public visibility.
+3. Restrict supported upload types for v1 to `image/jpeg`, `image/png`, and `image/webp`, with `400` responses for unsupported files instead of raw `500`s.
+4. Split upload pending UI from generic artwork save pending so the drawer no longer looks like a stuck save when only photo upload is in progress.
+5. Redeploy admin + backend, then re-run live upload smoke with a real PNG/JPG against `api.art.solofarm.ru`.

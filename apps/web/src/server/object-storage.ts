@@ -68,7 +68,7 @@ export async function putObjectBuffer(
   key: string,
   body: Buffer,
   contentType: string,
-  acl: "private" | "public-read" = "private",
+  acl?: "private" | "public-read",
 ) {
   await getS3Client().send(
     new PutObjectCommand({
@@ -76,7 +76,7 @@ export async function putObjectBuffer(
       Key: key,
       Body: body,
       ContentType: contentType,
-      ACL: acl,
+      ...(acl ? { ACL: acl } : {}),
     }),
   );
 }

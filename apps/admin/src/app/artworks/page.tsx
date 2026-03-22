@@ -88,6 +88,7 @@ export default function ArtworksPage() {
   const [artwork, setArtwork] = useState<Artwork>(createEmptyArtwork());
   const [editing, setEditing] = useState(true);
   const [pending, setPending] = useState(false);
+  const [uploadPending, setUploadPending] = useState(false);
   const [message, setMessage] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [groupMode, setGroupMode] = useState<GroupMode>("all");
@@ -269,7 +270,8 @@ export default function ArtworksPage() {
       return;
     }
 
-    setPending(true);
+    setUploadPending(true);
+    setMessage("");
 
     try {
       const formData = new FormData();
@@ -277,10 +279,11 @@ export default function ArtworksPage() {
       const response = await apiFormFetch<{ artwork: Artwork }>(`/api/admin/artworks/${artwork.id}/photos`, formData);
       setArtwork(response.artwork);
       await loadList(artwork.id);
+      setMessage("Фото загружено.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Не удалось загрузить фото.");
     } finally {
-      setPending(false);
+      setUploadPending(false);
       event.target.value = "";
     }
   }
@@ -576,9 +579,18 @@ export default function ArtworksPage() {
                     <h2>Фотографии</h2>
                     <p className="subtle">Можно загружать несколько фото, удалять их и выбирать основное превью.</p>
                   </div>
-                  <label className="button-secondary" style={{ cursor: artwork.id ? "pointer" : "not-allowed", opacity: artwork.id ? 1 : 0.5 }}>
-                    Загрузить фото
-                    <input type="file" accept="image/*" onChange={uploadPhoto} disabled={!artwork.id} hidden />
+                  <label
+                    className="button-secondary"
+                    style={{ cursor: artwork.id && !uploadPending ? "pointer" : "not-allowed", opacity: artwork.id && !uploadPending ? 1 : 0.5 }}
+                  >
+                    {uploadPending ? "Загружаем фото…" : "Загрузить фото"}
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      onChange={uploadPhoto}
+                      disabled={!artwork.id || uploadPending}
+                      hidden
+                    />
                   </label>
                 </div>
 

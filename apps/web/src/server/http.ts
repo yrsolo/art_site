@@ -19,3 +19,7 @@ export function unauthorized(message = "Unauthorized") {
 export function notFound(message = "Not found") {
   return NextResponse.json({ error: message }, { status: 404 });
 }
+
+export function serverError(message = "Internal Server Error") {
+  return NextResponse.json({ error: message }, { status: 500 });
+}
