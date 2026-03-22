@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/public/showcase-link";
 
 import { listVariants } from "@/features/variants";
 import type { VariantRouteKey } from "@/features/variants/types";

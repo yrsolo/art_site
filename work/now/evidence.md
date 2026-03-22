@@ -299,8 +299,48 @@
 
 ### Remaining gap
 
-- Pretty URL runtime rewrite/fallback is still not implemented.
-- Because of that, artwork detail routes are still physically exported for existing slugs, even though the data model has shifted to runtime public snapshot loading.
+- Public runtime data is already decoupled from showcase republish, but the bucket-hosted site still needed one more pass to stop exporting route-per-lot pages entirely.
+
+## 2026-03-22 - Runtime shell routing instead of per-lot export
+
+- Replaced route-per-file showcase export with a runtime shell router:
+  - new shell link: `apps/showcase/src/components/public/showcase-link.tsx`
+  - new runtime router: `apps/showcase/src/components/public/runtime-path-router.tsx`
+  - new catalog surface: `apps/showcase/src/components/public/variant-catalog-page.tsx`
+- Root and not-found app routes now both render the runtime shell:
+  - `apps/showcase/src/app/page.tsx`
+  - `apps/showcase/src/app/not-found.tsx`
+- Removed physical app routes for:
+  - `apps/showcase/src/app/[variant]/page.tsx`
+  - `apps/showcase/src/app/[variant]/gallery/page.tsx`
+  - `apps/showcase/src/app/[variant]/about/page.tsx`
+  - `apps/showcase/src/app/[variant]/contacts/page.tsx`
+  - `apps/showcase/src/app/[variant]/artwork/[slug]/page.tsx`
+- Showcase build now exports only:
+  - `/`
+  - `/_not-found`
+- Runtime shell still resolves working deep links like:
+  - `/cold-mist/`
+  - `/cold-mist/artwork/cold-mist-mist-01/`
+- Public bucket cleanup effect:
+  - `aws s3 ls s3://art.solofarm.ru/cold-mist/ --recursive` -> `0`
+  - old physical route prefixes are no longer present in the bucket
+  - total public bucket object count after republish: `46`
+
+### Validation
+
+- `npm run build:showcase`
+- `powershell -ExecutionPolicy Bypass -File scripts/publish-showcase.ps1`
+- `curl -I http://art.solofarm.ru/cold-mist/` -> `200`
+- `curl -I http://art.solofarm.ru/cold-mist/artwork/cold-mist-mist-01/` -> `200`
+- Playwright live snapshots confirm visible content on:
+  - `http://art.solofarm.ru/cold-mist/`
+  - `http://art.solofarm.ru/cold-mist/artwork/cold-mist-mist-01/`
+
+### Remaining gap
+
+- The shell routing pass removed the need for route-per-lot files, but the current website hosting stack still emits one noisy `404` request in the browser console.
+- That is now an infra hardening issue, not a blocker for working static-shell navigation.
 
 ## 2026-03-21 - Public artwork detail contract pass
 

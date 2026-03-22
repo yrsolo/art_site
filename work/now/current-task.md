@@ -144,6 +144,14 @@ Static frontend split with backend-only container and bucket-backed content sour
   - public bucket object `s3://art.solofarm.ru/data/public-site.json`.
 - Public bucket CORS was enabled so the static showcase can read the published JSON from the public storage URL without going through the private API runtime.
 - `site-assets` has been added as a first-class domain contract in the backend/public snapshot, even though its editor UI is still a later campaign.
-- Remaining boundary of this pass:
-  - pretty URL rewrite/fallback for runtime-routed artwork pages is still not implemented;
-  - because of that, artwork slugs are still physically exported for now even though their data source has moved toward runtime snapshot loading.
+
+## Update 2026-03-22 Runtime shell routing
+
+- `apps/showcase` now ships as a shell-based static app:
+  - only `/` and `_not-found` are physically exported;
+  - variant and artwork routes are resolved at runtime from `window.location.pathname`.
+- Internal showcase navigation no longer depends on `next/link`; a dedicated shell link component updates history and lets the runtime router redraw the correct screen.
+- Old physical route objects such as `cold-mist/...` and `*/artwork/*` are no longer required in the public bucket.
+- Remaining boundary:
+  - the current website-hosting setup still produces one noisy `404` request in the browser console;
+  - a cleaner infra-level rewrite/fallback layer is still a future hardening step, but it is no longer required for the shell to function.

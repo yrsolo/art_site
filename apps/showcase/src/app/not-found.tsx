@@ -1,5 +1,5 @@
 import { RuntimePathRouter } from "@/components/public/runtime-path-router";
 
-export default function HomePage() {
+export default function NotFoundPage() {
   return <RuntimePathRouter />;
 }

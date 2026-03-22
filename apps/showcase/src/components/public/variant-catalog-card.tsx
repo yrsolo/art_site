@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/public/showcase-link";
 
 import type { VariantManifest } from "@/features/variants/types";
 

@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { notFound } from "next/navigation";
+import Link from "@/components/public/showcase-link";
 
 import { DeepImmersionAbout, DeepImmersionContacts, DeepImmersionDetail, DeepImmersionGallery, DeepImmersionHome } from "@/components/public/deep-immersion";
 import { ColdMistAbout, ColdMistContacts, ColdMistDetail, ColdMistGallery, ColdMistHome } from "@/components/public/cold-mist";
@@ -14,7 +13,7 @@ import { VariantArtworkCard } from "@/components/public/variant-artwork-card";
 import { VariantShell } from "@/components/public/variant-shell";
 import { VariantSwitcher } from "@/components/public/variant-switcher";
 import { useDisplayArtworks, usePublicArtworkBySlug, usePublicSnapshot, useVariantContent, useVariantSiteAssets } from "@/components/public/public-site-provider";
-import { getVariantManifest, variantManifests } from "@/features/variants/manifests";
+import { getVariantManifest } from "@/features/variants/manifests";
 import type { VariantRouteKey } from "@/features/variants/types";
 import { artworkMeta, artworkPriceLabel, statusLabel } from "@/shared/format";
 
@@ -35,8 +34,6 @@ export function VariantRouteClient({ variantId, route, slug }: VariantRouteClien
   if (!manifest || !content) {
     return null;
   }
-
-  assertVariantSupportsRoute(route, manifest.supportedRoutes);
 
   if (route === "home") {
     const featured = artworks.slice(0, 3);
@@ -283,14 +280,4 @@ export function VariantRouteClient({ variantId, route, slug }: VariantRouteClien
       <VariantSwitcher currentVariantId={manifest.id} currentRoute="detail" slug={artwork.slug} />
     </>
   );
-}
-
-export function listStaticVariants() {
-  return variantManifests.map((variant) => ({ variant: variant.id }));
-}
-
-function assertVariantSupportsRoute(route: VariantRouteKey, supportedRoutes: VariantRouteKey[]) {
-  if (!supportedRoutes.includes(route)) {
-    notFound();
-  }
 }

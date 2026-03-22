@@ -75,5 +75,6 @@
 
 1. Keep the runtime public snapshot on a public storage object with CORS enabled so content updates do not depend on static shell republish.
 2. Protect runtime-managed public data objects from `publish-showcase --delete`, especially the `data/` prefix in the public bucket.
-3. Move the remaining public routing gap into a dedicated rewrite/fallback campaign instead of continuing to grow pre-generated detail pages indefinitely.
+3. Replace pre-generated variant/detail pages with a shell router that resolves `variant + slug` from `window.location.pathname`.
 4. Keep `site-assets` in the publication contract now, then add editor/application use-cases for `home.heroImage` and `about.portraitImage` in a later campaign.
+5. After shell routing, harden the remaining infra-level fallback/rewrite behavior to remove the residual noisy `404` request from the browser runtime.

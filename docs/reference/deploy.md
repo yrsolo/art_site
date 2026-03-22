@@ -31,6 +31,8 @@ Important:
 - these are intentionally different roles and should not be confused during publish
 - the static showcase shell now reads live data from the public storage URL for `data/public-site.json`; any generated snapshot bundled into the app is only a fallback layer
 - `publish-showcase` must not delete the runtime-managed `data/` prefix in the public bucket
+- the showcase now ships as a small runtime shell (`/` + `404.html`) instead of pre-exporting one physical page per `variant + artwork slug`
+- deep links are resolved by the shell at runtime from `window.location.pathname`
 
 ## Static Admin Flow
 
@@ -78,3 +80,7 @@ If the showcase reads the snapshot from `https://storage.yandexcloud.net/art.sol
 
 Local development can additionally allow:
 - `http://localhost:3000`
+
+### Current Limitation
+
+The shell-routing pass removes the need to publish thousands of route files, but the Object Storage website endpoint still behaves as a static host, not a true rewrite engine. The current shell works for direct links, yet a small noisy `404` request from the Next runtime may still appear in the browser console. A future infra cleanup can replace this with a cleaner rewrite/fallback layer.

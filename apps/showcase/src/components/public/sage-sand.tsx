@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/public/showcase-link";
 
 import type { Artwork } from "@/features/artworks/types";
 import { SageSandGalleryClient } from "@/components/public/variant-gallery-clients";
