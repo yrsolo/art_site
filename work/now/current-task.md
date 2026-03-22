@@ -163,3 +163,12 @@ Static frontend split with backend-only container and bucket-backed content sour
 - This keeps the public site static while removing the need to publish a physical page per `variant + artwork slug`.
 - The gateway itself is already live and validated on its default `apigw.yandexcloud.net` domain.
 - Remaining external tail: the managed certificate for the custom domain `art.solofarm.ru` is still in `VALIDATING`, so the final DNS cutover to the public gateway is waiting on certificate issuance.
+
+## Update 2026-03-22 Site-assets editor foundation
+
+- The next future-proof domain layer after runtime public snapshot is now being implemented as editable `site-assets`.
+- This pass adds:
+  - backend admin routes for listing, loading, saving, cloning, and publishing slot media versions;
+  - a static admin page for page-media slots;
+  - first real showcase wiring for published `home.heroImage` and `about.portraitImage` values.
+- The goal is not a final media CMS yet; the goal is to make hero/portrait media a clean domain with publishable contracts now, so later UX improvements do not require another storage/model rewrite.

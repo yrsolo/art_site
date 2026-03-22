@@ -1,9 +1,12 @@
 import type { ArtworkInput, ArtworkStatus } from "@/features/artworks/types";
 import type { ContentPageKey, ContentVersionStatus } from "@/features/content/types";
+import type { SiteAssetSlotKey, SiteAssetVersionStatus } from "@/features/site-assets/types";
 
 const validArtworkStatuses = new Set<ArtworkStatus>(["for_sale", "sold", "off_market", "in_progress"]);
 const validContentPageKeys = new Set<ContentPageKey>(["home", "gallery", "artwork", "about", "contacts"]);
 const validContentStatuses = new Set<ContentVersionStatus>(["draft", "published", "archived"]);
+const validSiteAssetSlotKeys = new Set<SiteAssetSlotKey>(["home.heroImage", "about.portraitImage"]);
+const validSiteAssetStatuses = new Set<SiteAssetVersionStatus>(["draft", "published", "archived"]);
 
 export function parseArtworkInput(body: Record<string, unknown>): ArtworkInput {
   const status = String(body.status ?? "for_sale") as ArtworkStatus;
@@ -44,6 +47,26 @@ export function parseContentStatus(value: unknown) {
 
   if (!validContentStatuses.has(status)) {
     throw new Error("Invalid content version status.");
+  }
+
+  return status;
+}
+
+export function parseSiteAssetSlotKey(value: unknown) {
+  const slotKey = String(value ?? "") as SiteAssetSlotKey;
+
+  if (!validSiteAssetSlotKeys.has(slotKey)) {
+    throw new Error("Invalid site asset slot key.");
+  }
+
+  return slotKey;
+}
+
+export function parseSiteAssetStatus(value: unknown) {
+  const status = String(value ?? "draft") as SiteAssetVersionStatus;
+
+  if (!validSiteAssetStatuses.has(status)) {
+    throw new Error("Invalid site asset version status.");
   }
 
   return status;

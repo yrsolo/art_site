@@ -8,7 +8,7 @@ import type { Artwork } from "@/features/artworks/types";
 import { DeepImmersionGalleryClient } from "@/components/public/variant-gallery-clients";
 import { templateMedia } from "@/features/variants/template-media";
 import { getAdminLoginHref } from "@/shared/admin";
-import type { VariantContent, VariantManifest, VariantRouteKey } from "@/features/variants/types";
+import type { VariantContent, VariantManifest, VariantRouteKey, VariantSiteAssets } from "@/features/variants/types";
 import { artworkPriceLabel, statusLabel } from "@/shared/format";
 
 const deepImmersionNoise =
@@ -24,6 +24,7 @@ type DeepImmersionLayoutProps = {
 type DeepImmersionPageProps = {
   manifest: VariantManifest;
   content: VariantContent;
+  siteAssets?: VariantSiteAssets;
 };
 
 type DeepImmersionGalleryProps = DeepImmersionPageProps & {
@@ -92,7 +93,9 @@ function DeepImmersionLayout({ manifest, content, currentRoute, children }: Deep
   );
 }
 
-export function DeepImmersionHome({ manifest, content }: DeepImmersionPageProps) {
+export function DeepImmersionHome({ manifest, content, siteAssets }: DeepImmersionPageProps) {
+  const heroImage = siteAssets?.home.heroImage;
+
   return (
     <DeepImmersionLayout manifest={manifest} content={content} currentRoute="home">
       <section className="relative mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-[1920px] flex-col lg:flex-row">
@@ -119,8 +122,8 @@ export function DeepImmersionHome({ manifest, content }: DeepImmersionPageProps)
           <div className="relative mr-0 w-[84%] max-w-[600px] overflow-hidden shadow-2xl lg:mr-[-5%]">
             <div className="relative h-[32rem] w-full md:h-[40rem] lg:h-[800px]">
               <Image
-                src={templateMedia.deepImmersion.hero}
-                alt="Abstract dark blue and textured painting"
+                src={heroImage?.url ?? templateMedia.deepImmersion.hero}
+                alt={heroImage?.alt || "Abstract dark blue and textured painting"}
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 60vw"
@@ -229,7 +232,9 @@ export function DeepImmersionDetail({ manifest, content, artwork }: DeepImmersio
   );
 }
 
-export function DeepImmersionAbout({ manifest, content }: DeepImmersionPageProps) {
+export function DeepImmersionAbout({ manifest, content, siteAssets }: DeepImmersionPageProps) {
+  const portraitImage = siteAssets?.about.portraitImage;
+
   return (
     <DeepImmersionLayout manifest={manifest} content={content} currentRoute="about">
       <section className="flex flex-col items-center px-4 py-16 md:px-8">
@@ -239,8 +244,8 @@ export function DeepImmersionAbout({ manifest, content }: DeepImmersionPageProps
               <div className="pointer-events-none absolute -inset-10 -z-10 rounded-full bg-[#8C6A4F]/20 blur-[80px] transition-colors duration-700 group-hover:bg-[#8C6A4F]/30" />
               <div className="relative h-[500px] w-full overflow-hidden">
                 <Image
-                  src={templateMedia.deepImmersion.aboutPortrait}
-                  alt="Moody black and white portrait of the artist"
+                  src={portraitImage?.url ?? templateMedia.deepImmersion.aboutPortrait}
+                  alt={portraitImage?.alt || "Moody black and white portrait of the artist"}
                   fill
                   sizes="(max-width: 768px) 100vw, 400px"
                   className="object-cover grayscale contrast-125"

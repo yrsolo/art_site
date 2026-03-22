@@ -610,3 +610,50 @@
 
 - Only the content prefix was cleaned. If additional historical storage bloat appears later, it should be audited separately instead of assumed to be safe for bulk deletion.
 - The local audit artifacts live in `work/archive/` and are intentionally not treated as application runtime state.
+
+## 2026-03-22 - Site-assets editor foundation
+
+- Added backend site-assets editor routes:
+  - `GET /api/admin/site-assets/versions`
+  - `POST /api/admin/site-assets/versions`
+  - `GET /api/admin/site-assets/versions/[id]`
+  - `PATCH /api/admin/site-assets/versions/[id]`
+  - `POST /api/admin/site-assets/versions/[id]/clone`
+  - `POST /api/admin/site-assets/versions/[id]/publish`
+- Added static admin page `/site-assets` with:
+  - variant picker
+  - slot picker
+  - version list
+  - save
+  - save as copy
+  - publish
+  - payload editing for `assetId`, `url`, `alt`, `caption`, `focalPoint`, `decorative`
+  - preview area
+- Updated admin shell navigation so the new editor is reachable from the main sidebar.
+- Showcase runtime now passes published `variantSiteAssets` into selected variant components:
+  - home hero images:
+    - `deep-immersion`
+    - `cold-mist`
+    - `copper-glow`
+    - `etheric-pulse`
+    - `mint-rose`
+    - `olive-cream`
+    - `sage-sand`
+  - about portrait images:
+    - `deep-immersion`
+    - `etheric-pulse`
+    - `sage-sand`
+- Each slot-aware surface still keeps a template-media fallback, so the visual result stays stable until an editor publishes replacement media.
+
+### Validation
+
+- `npm run build --workspace web`
+- `npm run build --workspace admin`
+- `npm run build:showcase`
+
+### Still unresolved
+
+- There is not yet a richer media picker / upload UX for page-media slots; the current editor intentionally starts from slot payload + URL editing.
+- Only the first two planned slots are implemented in the domain/editor flow:
+  - `home.heroImage`
+  - `about.portraitImage`

@@ -8,7 +8,7 @@ import { ColdMistGalleryClient } from "@/components/public/cold-mist-gallery-cli
 import type { Artwork } from "@/features/artworks/types";
 import { templateMedia } from "@/features/variants/template-media";
 import { getAdminLoginHref } from "@/shared/admin";
-import type { VariantContent, VariantManifest, VariantRouteKey } from "@/features/variants/types";
+import type { VariantContent, VariantManifest, VariantRouteKey, VariantSiteAssets } from "@/features/variants/types";
 import { artworkPriceLabel, statusLabel } from "@/shared/format";
 
 type ColdMistLayoutProps = {
@@ -21,6 +21,7 @@ type ColdMistLayoutProps = {
 type ColdMistPageProps = {
   manifest: VariantManifest;
   content: VariantContent;
+  siteAssets?: VariantSiteAssets;
 };
 
 type ColdMistGalleryProps = ColdMistPageProps & {
@@ -114,8 +115,9 @@ function ColdMistLayout({ manifest, content, currentRoute, children }: ColdMistL
   );
 }
 
-export function ColdMistHome({ manifest, content }: ColdMistPageProps) {
+export function ColdMistHome({ manifest, content, siteAssets }: ColdMistPageProps) {
   const titleLines = coldMistHeroTitle();
+  const heroImage = siteAssets?.home.heroImage;
 
   return (
     <ColdMistLayout manifest={manifest} content={content} currentRoute="home">
@@ -141,8 +143,8 @@ export function ColdMistHome({ manifest, content }: ColdMistPageProps) {
           <div className="absolute inset-0 -z-10 bg-[#bfc7cf]/5 blur-3xl transition-all duration-700 group-hover:bg-[#bfc7cf]/10" />
           <div className="relative aspect-[21/9] w-full overflow-hidden bg-[#121a25]">
             <Image
-              src={templateMedia.coldMist.hero}
-              alt="Abstract misty gray texture"
+              src={heroImage?.url ?? templateMedia.coldMist.hero}
+              alt={heroImage?.alt || "Abstract misty gray texture"}
               fill
               priority
               sizes="100vw"

@@ -60,6 +60,8 @@ export const variantIds = [
 
 export const pageKeys = ["home", "gallery", "artwork", "about", "contacts"] as const;
 export type PageKey = (typeof pageKeys)[number];
+export const siteAssetSlotKeys = ["home.heroImage", "about.portraitImage"] as const;
+export type SiteAssetSlotKey = (typeof siteAssetSlotKeys)[number];
 
 export type ContentVersion = {
   id: string;
@@ -84,4 +86,37 @@ export type SessionState = {
   authenticated: boolean;
   username?: string;
   passwordIsDefault?: boolean;
+};
+
+export type SiteAssetPayload = {
+  assetId: string;
+  url: string;
+  alt: string;
+  caption: string;
+  focalPoint: {
+    x: number;
+    y: number;
+  } | null;
+  decorative: boolean;
+  variantOverrides?: Record<string, string>;
+};
+
+export type SiteAssetVersion = {
+  id: string;
+  variantId: string;
+  pageKey: "home" | "about";
+  slotKey: SiteAssetSlotKey;
+  versionName: string;
+  status: "draft" | "published" | "archived";
+  payload: SiteAssetPayload;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type SiteAssetVersionRecord = {
+  id: string;
+  versionName: string;
+  status: "draft" | "published" | "archived";
+  updatedAt: string;
+  isPublishedActive?: boolean;
 };

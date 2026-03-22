@@ -8,12 +8,13 @@ import type { Artwork } from "@/features/artworks/types";
 import { EthericPulseGalleryClient } from "@/components/public/variant-gallery-clients";
 import { templateMedia } from "@/features/variants/template-media";
 import { getAdminLoginHref } from "@/shared/admin";
-import type { VariantContent, VariantManifest, VariantRouteKey } from "@/features/variants/types";
+import type { VariantContent, VariantManifest, VariantRouteKey, VariantSiteAssets } from "@/features/variants/types";
 import { artworkPriceLabel, statusLabel } from "@/shared/format";
 
 type VariantProps = {
   manifest: VariantManifest;
   content: VariantContent;
+  siteAssets?: VariantSiteAssets;
 };
 
 type GalleryProps = VariantProps & { artworks: Artwork[] };
@@ -117,12 +118,14 @@ function EthericLegacyFooter() {
   );
 }
 
-export function EthericPulseHome({ manifest, content }: VariantProps) {
+export function EthericPulseHome({ manifest, content, siteAssets }: VariantProps) {
+  const heroImage = siteAssets?.home.heroImage;
+
   return (
     <EthericPulseLayout manifest={manifest} content={content} currentRoute="home">
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-4">
         <Image
-          src={templateMedia.ethericPulse.hero}
+          src={heroImage?.url ?? templateMedia.ethericPulse.hero}
           alt={content.home.title}
           fill
           priority
@@ -206,7 +209,9 @@ export function EthericPulseGallery({ manifest, content, artworks }: GalleryProp
   );
 }
 
-export function EthericPulseAbout({ manifest, content }: VariantProps) {
+export function EthericPulseAbout({ manifest, content, siteAssets }: VariantProps) {
+  const portraitImage = siteAssets?.about.portraitImage;
+
   return (
     <EthericPulseLayout manifest={manifest} content={content} currentRoute="about">
       <main className="relative mx-auto max-w-screen-2xl overflow-hidden px-6 pb-24 pt-8 md:px-12 lg:px-24">
@@ -214,7 +219,13 @@ export function EthericPulseAbout({ manifest, content }: VariantProps) {
           <div className="group relative">
             <div className="absolute -inset-4 rounded-[2rem] bg-[#a894ff]/10 blur-2xl transition duration-700 group-hover:bg-[#a894ff]/20" />
             <div className="relative overflow-hidden rounded-[2rem] bg-[#161926]">
-              <Image src={templateMedia.ethericPulse.portrait} alt="Etheric Pulse portrait" width={1200} height={1500} className="aspect-[4/5] w-full object-cover opacity-90 transition duration-1000 group-hover:scale-105" />
+              <Image
+                src={portraitImage?.url ?? templateMedia.ethericPulse.portrait}
+                alt={portraitImage?.alt || "Etheric Pulse portrait"}
+                width={1200}
+                height={1500}
+                className="aspect-[4/5] w-full object-cover opacity-90 transition duration-1000 group-hover:scale-105"
+              />
             </div>
             <div className="absolute -bottom-10 -right-10 hidden max-w-xs rounded-[1.75rem] border border-white/5 bg-[rgba(22,25,38,0.6)] p-8 shadow-2xl backdrop-blur-xl lg:block">
               <p className="font-[Manrope] text-lg italic leading-relaxed text-[#82d3dc]">

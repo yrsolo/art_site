@@ -79,3 +79,11 @@
 4. Keep `site-assets` in the publication contract now, then add editor/application use-cases for `home.heroImage` and `about.portraitImage` in a later campaign.
 5. Deploy the public API Gateway rewrite/fallback layer for `art.solofarm.ru` so deep links return `200` without raw bucket website semantics.
 6. After the gateway rollout, harden the remaining residual noisy `404` request from the browser runtime if it still appears.
+
+## Update 2026-03-22 Site-assets implementation
+
+1. Finalize backend editor routes for `site-assets` so slot media follows the same save / clone / publish workflow as texts.
+2. Add a dedicated static admin page for page-media slots.
+3. Thread published `variantSiteAssets` through the runtime shell and into selected home/about variant components.
+4. Replace selected hardcoded home/about images with slot-aware values plus safe template fallbacks.
+5. Rebuild, redeploy, and verify the new domain layer without waiting for the public certificate cutover.

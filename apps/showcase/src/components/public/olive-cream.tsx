@@ -7,10 +7,10 @@ import type { Artwork } from "@/features/artworks/types";
 import { OliveCreamGalleryClient } from "@/components/public/variant-gallery-clients";
 import { templateMedia } from "@/features/variants/template-media";
 import { getAdminLoginHref } from "@/shared/admin";
-import type { VariantContent, VariantManifest } from "@/features/variants/types";
+import type { VariantContent, VariantManifest, VariantSiteAssets } from "@/features/variants/types";
 import { artworkPriceLabel, statusLabel } from "@/shared/format";
 
-type VariantProps = { manifest: VariantManifest; content: VariantContent };
+type VariantProps = { manifest: VariantManifest; content: VariantContent; siteAssets?: VariantSiteAssets };
 type GalleryProps = VariantProps & { artworks: Artwork[] };
 type DetailProps = VariantProps & { artwork: Artwork };
 
@@ -58,7 +58,9 @@ function OliveLayout({ manifest, content, current, children }: VariantProps & { 
   );
 }
 
-export function OliveCreamHome({ manifest, content }: VariantProps) {
+export function OliveCreamHome({ manifest, content, siteAssets }: VariantProps) {
+  const heroImage = siteAssets?.home.heroImage;
+
   return (
     <OliveLayout manifest={manifest} content={content} current="home">
       <main className="mx-auto max-w-[1400px] px-6 pb-24 md:px-12 lg:px-24">
@@ -83,7 +85,13 @@ export function OliveCreamHome({ manifest, content }: VariantProps) {
           <div className="relative flex flex-1 justify-center lg:justify-end">
             <div className="absolute inset-0 scale-110 rounded-[40%_60%_70%_30%/40%_50%_60%_50%] bg-[#E8E3D9] opacity-60 blur-xl" />
             <div className="relative aspect-[4/5] w-full max-w-[500px]">
-              <Image src={templateMedia.oliveCream.hero} alt={content.home.title} fill className="rounded-[60%_40%_30%_70%/60%_30%_70%_40%] object-cover shadow-[0_20px_40px_-10px_rgba(90,107,71,0.08)]" sizes="(max-width: 1024px) 100vw, 40vw" />
+              <Image
+                src={heroImage?.url ?? templateMedia.oliveCream.hero}
+                alt={heroImage?.alt || content.home.title}
+                fill
+                className="rounded-[60%_40%_30%_70%/60%_30%_70%_40%] object-cover shadow-[0_20px_40px_-10px_rgba(90,107,71,0.08)]"
+                sizes="(max-width: 1024px) 100vw, 40vw"
+              />
               <div className="absolute -bottom-6 -left-6 z-20 flex items-center gap-4 rounded-full border border-[#E8E3D9] bg-[#F2EFE9] p-4 shadow-[0_20px_40px_-10px_rgba(90,107,71,0.08)]">
                 <div className="h-12 w-12 overflow-hidden rounded-full">
                   <Image src={templateMedia.oliveCream.badge} alt="Artist badge" width={80} height={80} className="h-full w-full object-cover grayscale" />

@@ -6,7 +6,7 @@ import Link from "@/components/public/showcase-link";
 
 import type { Artwork } from "@/features/artworks/types";
 import { MintRoseGalleryClient } from "@/components/public/variant-gallery-clients";
-import type { VariantContent, VariantManifest, VariantRouteKey } from "@/features/variants/types";
+import type { VariantContent, VariantManifest, VariantRouteKey, VariantSiteAssets } from "@/features/variants/types";
 import { templateMedia } from "@/features/variants/template-media";
 import { getAdminLoginHref } from "@/shared/admin";
 import { artworkPriceLabel, statusLabel } from "@/shared/format";
@@ -21,6 +21,7 @@ type MintRoseLayoutProps = {
 type MintRosePageProps = {
   manifest: VariantManifest;
   content: VariantContent;
+  siteAssets?: VariantSiteAssets;
 };
 
 type MintRoseGalleryProps = MintRosePageProps & {
@@ -99,7 +100,9 @@ function MintRoseLayout({ manifest, content, currentRoute, children }: MintRoseL
   );
 }
 
-export function MintRoseHome({ manifest, content }: MintRosePageProps) {
+export function MintRoseHome({ manifest, content, siteAssets }: MintRosePageProps) {
+  const heroImage = siteAssets?.home.heroImage;
+
   return (
     <MintRoseLayout manifest={manifest} content={content} currentRoute="home">
       <section className="mx-auto max-w-[1200px] px-4 pb-20 md:px-10 lg:px-16">
@@ -130,8 +133,8 @@ export function MintRoseHome({ manifest, content }: MintRosePageProps) {
               <div className="absolute inset-0 translate-x-4 translate-y-4 animate-pulse rounded-[40%_60%_70%_30%/40%_50%_60%_50%] bg-[#13ecb6]/30 blur-2xl opacity-60" />
               <div className="relative z-10 h-full w-full overflow-hidden rounded-[40%_60%_70%_30%/40%_50%_60%_50%] border-4 border-white/40 bg-[rgba(255,245,245,0.6)] shadow-[0_20px_40px_rgba(74,64,58,0.15)] backdrop-blur-xl">
                 <Image
-                  src={templateMedia.mintRose.hero}
-                  alt="Abstract fluid art painting in mint and rose colors"
+                  src={heroImage?.url ?? templateMedia.mintRose.hero}
+                  alt={heroImage?.alt || "Abstract fluid art painting in mint and rose colors"}
                   fill
                   priority
                   sizes="(max-width: 1024px) 100vw, 50vw"

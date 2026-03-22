@@ -7,10 +7,10 @@ import type { Artwork } from "@/features/artworks/types";
 import { SageSandGalleryClient } from "@/components/public/variant-gallery-clients";
 import { templateMedia } from "@/features/variants/template-media";
 import { getAdminLoginHref } from "@/shared/admin";
-import type { VariantContent, VariantManifest } from "@/features/variants/types";
+import type { VariantContent, VariantManifest, VariantSiteAssets } from "@/features/variants/types";
 import { artworkPriceLabel, statusLabel } from "@/shared/format";
 
-type VariantProps = { manifest: VariantManifest; content: VariantContent };
+type VariantProps = { manifest: VariantManifest; content: VariantContent; siteAssets?: VariantSiteAssets };
 type GalleryProps = VariantProps & { artworks: Artwork[] };
 type DetailProps = VariantProps & { artwork: Artwork };
 
@@ -53,7 +53,9 @@ function SageLayout({ manifest, content, current, children }: VariantProps & { c
   );
 }
 
-export function SageSandHome({ manifest, content }: VariantProps) {
+export function SageSandHome({ manifest, content, siteAssets }: VariantProps) {
+  const heroImage = siteAssets?.home.heroImage;
+
   return (
     <SageLayout manifest={manifest} content={content} current="home">
       <main className="mx-auto max-w-[1200px] px-8 pb-24">
@@ -69,7 +71,13 @@ export function SageSandHome({ manifest, content }: VariantProps) {
           </div>
           <div className="relative aspect-[4/5] w-full max-w-lg">
             <div className="absolute inset-0 translate-x-4 translate-y-4 rounded-[40%_60%_70%_30%/40%_50%_60%_50%] bg-[#7D8C74]/10" />
-            <Image src={templateMedia.sageSand.hero} alt={content.home.title} fill className="rounded-[40%_60%_70%_30%/40%_50%_60%_50%] object-cover shadow-[0_20px_40px_rgba(43,51,39,0.05)]" sizes="(max-width: 1024px) 100vw, 40vw" />
+            <Image
+              src={heroImage?.url ?? templateMedia.sageSand.hero}
+              alt={heroImage?.alt || content.home.title}
+              fill
+              className="rounded-[40%_60%_70%_30%/40%_50%_60%_50%] object-cover shadow-[0_20px_40px_rgba(43,51,39,0.05)]"
+              sizes="(max-width: 1024px) 100vw, 40vw"
+            />
           </div>
         </section>
 
@@ -103,7 +111,9 @@ export function SageSandGallery({ manifest, content, artworks }: GalleryProps) {
   );
 }
 
-export function SageSandAbout({ manifest, content }: VariantProps) {
+export function SageSandAbout({ manifest, content, siteAssets }: VariantProps) {
+  const portraitImage = siteAssets?.about.portraitImage;
+
   return (
     <SageLayout manifest={manifest} content={content} current="about">
       <main className="mx-auto flex max-w-[680px] flex-col items-center gap-16 px-6 py-20">
@@ -111,7 +121,13 @@ export function SageSandAbout({ manifest, content }: VariantProps) {
           <h1 className="font-serif text-5xl italic text-[#2B3327] md:text-6xl" style={{ fontFamily: "Cormorant, serif" }}>About the Artist</h1>
           <div className="relative h-[300px] w-[300px]">
             <div className="absolute inset-0 scale-105 rounded-[40%_60%_70%_30%/40%_50%_60%_50%] bg-[#7D8C74]/10 transition duration-700" />
-            <Image src={templateMedia.sageSand.aboutPortrait} alt="Artist portrait" fill className="rounded-[40%_60%_70%_30%/40%_50%_60%_50%] object-cover sepia-[.3] brightness-95 shadow-[0_20px_40px_rgba(43,51,39,0.05)]" sizes="300px" />
+            <Image
+              src={portraitImage?.url ?? templateMedia.sageSand.aboutPortrait}
+              alt={portraitImage?.alt || "Artist portrait"}
+              fill
+              className="rounded-[40%_60%_70%_30%/40%_50%_60%_50%] object-cover sepia-[.3] brightness-95 shadow-[0_20px_40px_rgba(43,51,39,0.05)]"
+              sizes="300px"
+            />
           </div>
         </section>
         <section className="w-full space-y-6 text-[20px] leading-[1.8] text-[#2B3327]">

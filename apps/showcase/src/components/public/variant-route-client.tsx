@@ -26,7 +26,7 @@ type VariantRouteClientProps = {
 export function VariantRouteClient({ variantId, route, slug }: VariantRouteClientProps) {
   const manifest = getVariantManifest(variantId);
   const content = useVariantContent(variantId);
-  const _siteAssets = useVariantSiteAssets(variantId);
+  const siteAssets = useVariantSiteAssets(variantId);
   const artworks = useDisplayArtworks();
   const artwork = slug ? usePublicArtworkBySlug(slug) : null;
   const { loading } = usePublicSnapshot();
@@ -38,13 +38,13 @@ export function VariantRouteClient({ variantId, route, slug }: VariantRouteClien
   if (route === "home") {
     const featured = artworks.slice(0, 3);
 
-    if (manifest.id === "deep-immersion") return <><DeepImmersionHome manifest={manifest} content={content} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="home" /></>;
-    if (manifest.id === "cold-mist") return <><ColdMistHome manifest={manifest} content={content} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="home" /></>;
-    if (manifest.id === "copper-glow") return <><CopperGlowHome manifest={manifest} content={content} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="home" /></>;
-    if (manifest.id === "etheric-pulse") return <><EthericPulseHome manifest={manifest} content={content} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="home" /></>;
-    if (manifest.id === "mint-rose") return <><MintRoseHome manifest={manifest} content={content} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="home" /></>;
-    if (manifest.id === "olive-cream") return <><OliveCreamHome manifest={manifest} content={content} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="home" /></>;
-    if (manifest.id === "sage-sand") return <><SageSandHome manifest={manifest} content={content} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="home" /></>;
+    if (manifest.id === "deep-immersion") return <><DeepImmersionHome manifest={manifest} content={content} siteAssets={siteAssets} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="home" /></>;
+    if (manifest.id === "cold-mist") return <><ColdMistHome manifest={manifest} content={content} siteAssets={siteAssets} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="home" /></>;
+    if (manifest.id === "copper-glow") return <><CopperGlowHome manifest={manifest} content={content} siteAssets={siteAssets} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="home" /></>;
+    if (manifest.id === "etheric-pulse") return <><EthericPulseHome manifest={manifest} content={content} siteAssets={siteAssets} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="home" /></>;
+    if (manifest.id === "mint-rose") return <><MintRoseHome manifest={manifest} content={content} siteAssets={siteAssets} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="home" /></>;
+    if (manifest.id === "olive-cream") return <><OliveCreamHome manifest={manifest} content={content} siteAssets={siteAssets} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="home" /></>;
+    if (manifest.id === "sage-sand") return <><SageSandHome manifest={manifest} content={content} siteAssets={siteAssets} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="home" /></>;
 
     return (
       <>
@@ -118,11 +118,11 @@ export function VariantRouteClient({ variantId, route, slug }: VariantRouteClien
   }
 
   if (route === "about") {
-    if (manifest.id === "deep-immersion") return <><DeepImmersionAbout manifest={manifest} content={content} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="about" /></>;
+    if (manifest.id === "deep-immersion") return <><DeepImmersionAbout manifest={manifest} content={content} siteAssets={siteAssets} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="about" /></>;
     if (manifest.id === "cold-mist") return <><ColdMistAbout manifest={manifest} content={content} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="about" /></>;
     if (manifest.id === "copper-glow") return <><CopperGlowAbout manifest={manifest} content={content} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="about" /></>;
-    if (manifest.id === "etheric-pulse") return <><EthericPulseAbout manifest={manifest} content={content} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="about" /></>;
-    if (manifest.id === "sage-sand") return <><SageSandAbout manifest={manifest} content={content} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="about" /></>;
+    if (manifest.id === "etheric-pulse") return <><EthericPulseAbout manifest={manifest} content={content} siteAssets={siteAssets} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="about" /></>;
+    if (manifest.id === "sage-sand") return <><SageSandAbout manifest={manifest} content={content} siteAssets={siteAssets} /><VariantSwitcher currentVariantId={manifest.id} currentRoute="about" /></>;
 
     return (
       <>

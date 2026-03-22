@@ -93,6 +93,19 @@ async function createVersionRecord(
   return version;
 }
 
+function nextClonedVersionName(versionName: string) {
+  const trimmed = versionName.trim();
+  const match = trimmed.match(/^(.*?)(?:\s+(\d+))?$/);
+
+  if (!match) {
+    return `${trimmed} 2`;
+  }
+
+  const base = (match[1] || trimmed).trim();
+  const number = match[2] ? Number(match[2]) : 1;
+  return `${base} ${number + 1}`;
+}
+
 function buildSeedVersionName(slotKey: SiteAssetSlotKey) {
   if (slotKey === "home.heroImage") {
     return "Текущий hero image";
@@ -158,6 +171,101 @@ export async function ensureSeedSiteAssetVersion(variantId: string, slotKey: Sit
 export async function getSiteAssetVersion(variantId: string, slotKey: SiteAssetSlotKey, versionId: string) {
   await ensureSeedSiteAssetVersion(variantId, slotKey);
   return readJsonFile<SiteAssetVersion | null>(siteAssetVersionKey(variantId, slotKey, versionId), null);
+}
+
+export async function listSiteAssetVersions(variantId: string, slotKey: SiteAssetSlotKey) {
+  await ensureSeedSiteAssetVersion(variantId, slotKey);
+  const index = await readIndex(variantId, slotKey);
+  const publication = await getSiteAssetPublication(variantId);
+  return index.items.map((item) => ({
+    ...item,
+    isPublishedActive: publication.activeVersions[slotKey] === item.id,
+  }));
+}
+
+export async function createSiteAssetVersion(
+  variantId: string,
+  slotKey: SiteAssetSlotKey,
+  versionName: string,
+  payload: SiteAssetPayload,
+) {
+  return createVersionRecord(variantId, slotKey, versionName, payload, "draft");
+}
+
+export async function cloneSiteAssetVersion(variantId: string, slotKey: SiteAssetSlotKey, versionId: string) {
+  const version = await getSiteAssetVersion(variantId, slotKey, versionId);
+
+  if (!version) {
+    throw new Error("Site asset version not found.");
+  }
+
+  return createSiteAssetVersion(variantId, slotKey, nextClonedVersionName(version.versionName), version.payload);
+}
+
+export async function updateSiteAssetVersion(
+  variantId: string,
+  slotKey: SiteAssetSlotKey,
+  versionId: string,
+  updates: Pick<SiteAssetVersion, "versionName" | "payload" | "status">,
+) {
+  const existing = await getSiteAssetVersion(variantId, slotKey, versionId);
+
+  if (!existing) {
+    throw new Error("Site asset version not found.");
+  }
+
+  const nextVersion: SiteAssetVersion = {
+    ...existing,
+    ...updates,
+    updatedAt: nowIso(),
+  };
+
+  await writeJsonFile(siteAssetVersionKey(variantId, slotKey, versionId), nextVersion);
+  const items = await listSiteAssetVersions(variantId, slotKey);
+  await writeIndex(
+    variantId,
+    slotKey,
+    items.map((item) =>
+      item.id === versionId
+        ? {
+            id: versionId,
+            versionName: nextVersion.versionName,
+            status: nextVersion.status,
+            updatedAt: nextVersion.updatedAt,
+            isPublishedActive: item.isPublishedActive ?? false,
+          }
+        : item,
+    ),
+  );
+
+  return nextVersion;
+}
+
+export async function publishSiteAssetVersion(variantId: string, slotKey: SiteAssetSlotKey, versionId: string) {
+  const version = await getSiteAssetVersion(variantId, slotKey, versionId);
+
+  if (!version) {
+    throw new Error("Site asset version not found.");
+  }
+
+  const publishedVersion = await updateSiteAssetVersion(variantId, slotKey, versionId, {
+    versionName: version.versionName,
+    payload: version.payload,
+    status: "published",
+  });
+
+  const publication = await getSiteAssetPublication(variantId);
+  const nextPublication: SiteAssetPublication = {
+    ...publication,
+    activeVersions: {
+      ...publication.activeVersions,
+      [slotKey]: publishedVersion.id,
+    },
+    updatedAt: nowIso(),
+  };
+
+  await writeJsonFile(publicationKey(variantId), nextPublication);
+  return nextPublication;
 }
 
 async function getPublishedSlotAsset(variantId: string, slotKey: SiteAssetSlotKey, fallback: SiteAssetPayload | null) {

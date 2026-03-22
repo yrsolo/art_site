@@ -6,7 +6,7 @@ import Link from "@/components/public/showcase-link";
 
 import type { Artwork } from "@/features/artworks/types";
 import { CopperGlowGalleryClient } from "@/components/public/variant-gallery-clients";
-import type { VariantContent, VariantManifest, VariantRouteKey } from "@/features/variants/types";
+import type { VariantContent, VariantManifest, VariantRouteKey, VariantSiteAssets } from "@/features/variants/types";
 import { templateMedia } from "@/features/variants/template-media";
 import { getAdminLoginHref } from "@/shared/admin";
 import { artworkPriceLabel, statusLabel } from "@/shared/format";
@@ -21,6 +21,7 @@ type CopperGlowLayoutProps = {
 type CopperGlowPageProps = {
   manifest: VariantManifest;
   content: VariantContent;
+  siteAssets?: VariantSiteAssets;
 };
 
 type CopperGlowGalleryProps = CopperGlowPageProps & {
@@ -110,8 +111,9 @@ function CopperGlowLayout({ manifest, content, currentRoute, children }: CopperG
   );
 }
 
-export function CopperGlowHome({ manifest, content }: CopperGlowPageProps) {
+export function CopperGlowHome({ manifest, content, siteAssets }: CopperGlowPageProps) {
   const titleLines = copperHeroTitle();
+  const heroImage = siteAssets?.home.heroImage;
 
   return (
     <CopperGlowLayout manifest={manifest} content={content} currentRoute="home">
@@ -139,8 +141,8 @@ export function CopperGlowHome({ manifest, content }: CopperGlowPageProps) {
         <div className="relative mt-12 flex h-[32rem] w-full items-center justify-center md:mt-0 md:h-[44rem] md:w-[58%]">
           <div className="relative h-full w-full max-w-[720px] overflow-hidden bg-[#191b22] shadow-2xl">
               <Image
-                src={templateMedia.copperGlow.hero}
-                alt="Abstract copper and charcoal textured art piece"
+                src={heroImage?.url ?? templateMedia.copperGlow.hero}
+                alt={heroImage?.alt || "Abstract copper and charcoal textured art piece"}
                 fill
                 priority
                 sizes="(max-width: 768px) 100vw, 60vw"

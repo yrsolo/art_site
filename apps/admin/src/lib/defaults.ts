@@ -1,4 +1,4 @@
-import type { Artwork, ContentVersion, PageKey } from "@/lib/types";
+import type { Artwork, ContentVersion, PageKey, SiteAssetSlotKey, SiteAssetVersion } from "@/lib/types";
 
 export function createEmptyArtwork(): Artwork {
   const now = new Date().toISOString();
@@ -34,6 +34,29 @@ export function createEmptyContentVersion(variantId: string, pageKey: PageKey): 
     versionName: "Новая версия",
     status: "draft",
     payload: {},
+    createdAt: now,
+    updatedAt: now,
+  };
+}
+
+export function createEmptySiteAssetVersion(variantId: string, slotKey: SiteAssetSlotKey): SiteAssetVersion {
+  const now = new Date().toISOString();
+
+  return {
+    id: "",
+    variantId,
+    pageKey: slotKey.startsWith("home.") ? "home" : "about",
+    slotKey,
+    versionName: "Новая версия",
+    status: "draft",
+    payload: {
+      assetId: "",
+      url: "",
+      alt: "",
+      caption: "",
+      focalPoint: null,
+      decorative: false,
+    },
     createdAt: now,
     updatedAt: now,
   };
