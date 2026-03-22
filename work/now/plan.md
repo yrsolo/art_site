@@ -87,3 +87,11 @@
 3. Thread published `variantSiteAssets` through the runtime shell and into selected home/about variant components.
 4. Replace selected hardcoded home/about images with slot-aware values plus safe template fallbacks.
 5. Rebuild, redeploy, and verify the new domain layer without waiting for the public certificate cutover.
+
+## Update 2026-03-22 Public cutover completed
+
+1. The public certificate is now issued and attached to API Gateway `art-site-public`.
+2. `art.solofarm.ru` is now cut over to the rewrite gateway instead of the raw bucket website endpoint.
+3. The next implementation focus can move away from certificate waiting and back to product/runtime work:
+   - finish live backend rollout for the new `site-assets` admin routes;
+   - start the next editor/domain pass on top of the now-complete public routing architecture.

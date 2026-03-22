@@ -58,7 +58,7 @@ Live entrypoint:
 
 ## Current Live State
 
-- `art.solofarm.ru` -> working static showcase bucket
+- `art.solofarm.ru` -> working public API Gateway with rewrite/fallback to the showcase bucket
 - `admin.art.solofarm.ru` -> working static admin bucket with HTTPS
 - `api.art.solofarm.ru` -> working API Gateway domain backed by Serverless Container
 
@@ -87,3 +87,10 @@ Local development can additionally allow:
 ### Current Limitation
 
 The shell-routing pass plus the public rewrite gateway remove the need to publish thousands of route files and restore clean deep-link routing. A small noisy `404` request from the Next runtime may still appear in the browser console and can be cleaned up later without changing the routing architecture.
+
+### 2026-03-22 Public Cutover
+
+- Managed certificate `art-site-public` is now `ISSUED`.
+- `art.solofarm.ru` is attached to API Gateway `art-site-public`.
+- DNS for `art.solofarm.ru` now resolves to the gateway domain instead of the raw website endpoint.
+- Deep links such as `https://art.solofarm.ru/cold-mist/artwork/cold-mist-mist-01/` now return `200` through the rewrite layer.

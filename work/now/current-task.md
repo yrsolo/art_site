@@ -172,3 +172,9 @@ Static frontend split with backend-only container and bucket-backed content sour
   - a static admin page for page-media slots;
   - first real showcase wiring for published `home.heroImage` and `about.portraitImage` values.
 - The goal is not a final media CMS yet; the goal is to make hero/portrait media a clean domain with publishable contracts now, so later UX improvements do not require another storage/model rewrite.
+
+## Update 2026-03-22 Public gateway cutover complete
+
+- The custom certificate for `art.solofarm.ru` is now issued and attached to the public API Gateway.
+- `art.solofarm.ru` now resolves to the public gateway rewrite layer instead of the raw bucket website endpoint.
+- Deep links on the production domain now return `200` through the shell-routing architecture, so the public site is finally running in the intended `static shell + live data + pretty URLs` mode.

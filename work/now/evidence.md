@@ -657,3 +657,21 @@
 - Only the first two planned slots are implemented in the domain/editor flow:
   - `home.heroImage`
   - `about.portraitImage`
+
+## 2026-03-22 - Public gateway cutover on custom domain
+
+- Verified the managed certificate:
+  - `yc certificate-manager certificate get --name art-site-public --format json`
+  - status: `ISSUED`
+- Executed the final cutover:
+  - `powershell -ExecutionPolicy Bypass -File scripts/deploy-yc-showcase-gateway.ps1 -CertificateWaitSeconds 10`
+- Verified DNS now resolves the production domain to the gateway:
+  - `nslookup art.solofarm.ru`
+  - alias target: `d5d14jfg1u93gjd6nf2s.trruwy79.apigw.yandexcloud.net`
+- Verified production responses through the custom domain:
+  - `curl -I https://art.solofarm.ru/` -> `200`
+  - `curl -I https://art.solofarm.ru/cold-mist/artwork/cold-mist-mist-01/` -> `200`
+
+### Still unresolved
+
+- The public domain cutover is complete, but the new `site-assets` backend routes are still not confirmed live on `api.art.solofarm.ru`; that remains a separate container rollout issue, not a gateway/certificate issue.
