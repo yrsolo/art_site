@@ -77,4 +77,5 @@
 2. Protect runtime-managed public data objects from `publish-showcase --delete`, especially the `data/` prefix in the public bucket.
 3. Replace pre-generated variant/detail pages with a shell router that resolves `variant + slug` from `window.location.pathname`.
 4. Keep `site-assets` in the publication contract now, then add editor/application use-cases for `home.heroImage` and `about.portraitImage` in a later campaign.
-5. After shell routing, harden the remaining infra-level fallback/rewrite behavior to remove the residual noisy `404` request from the browser runtime.
+5. Deploy the public API Gateway rewrite/fallback layer for `art.solofarm.ru` so deep links return `200` without raw bucket website semantics.
+6. After the gateway rollout, harden the remaining residual noisy `404` request from the browser runtime if it still appears.

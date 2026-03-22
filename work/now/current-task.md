@@ -155,3 +155,11 @@ Static frontend split with backend-only container and bucket-backed content sour
 - Remaining boundary:
   - the current website-hosting setup still produces one noisy `404` request in the browser console;
   - a cleaner infra-level rewrite/fallback layer is still a future hardening step, but it is no longer required for the shell to function.
+
+## Update 2026-03-22 Public rewrite gateway
+
+- Added a dedicated deploy script for `art.solofarm.ru` that creates or updates a public API Gateway in front of the showcase bucket.
+- The gateway uses `object_storage` integration and rewrites unknown app paths back to `index.html` with `200`.
+- This keeps the public site static while removing the need to publish a physical page per `variant + artwork slug`.
+- The gateway itself is already live and validated on its default `apigw.yandexcloud.net` domain.
+- Remaining external tail: the managed certificate for the custom domain `art.solofarm.ru` is still in `VALIDATING`, so the final DNS cutover to the public gateway is waiting on certificate issuance.

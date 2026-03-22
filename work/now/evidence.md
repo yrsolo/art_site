@@ -318,6 +318,17 @@
   - `apps/showcase/src/app/[variant]/artwork/[slug]/page.tsx`
 - Showcase build now exports only:
   - `/`
+
+## 2026-03-22 - Public rewrite gateway prepared
+
+- Added `scripts/deploy-yc-showcase-gateway.ps1` to create/update a public API Gateway in front of the showcase bucket.
+- The gateway spec uses `x-yc-apigateway-integration:object_storage` and rewrites unknown app paths back to `index.html` with `200`.
+- This deploy step is now codified in the repo instead of being a future manual console-only operation.
+- Live gateway validation on the default domain:
+  - `https://d5d14jfg1u93gjd6nf2s.trruwy79.apigw.yandexcloud.net/cold-mist/artwork/cold-mist-mist-01/` -> `200`
+  - `HEAD https://d5d14jfg1u93gjd6nf2s.trruwy79.apigw.yandexcloud.net/cold-mist/artwork/cold-mist-mist-01/` -> `200`
+  - `HEAD https://d5d14jfg1u93gjd6nf2s.trruwy79.apigw.yandexcloud.net/_next/static/chunks/0gm.f4vqkef3q.css` -> `200`
+- Managed certificate `art-site-public` for `art.solofarm.ru` has been requested, DNS challenge record created, but the certificate is still `VALIDATING`, so custom-domain cutover is not complete yet.
   - `/_not-found`
 - Runtime shell still resolves working deep links like:
   - `/cold-mist/`

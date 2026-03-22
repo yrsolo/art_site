@@ -11,7 +11,7 @@ Deploy теперь разбит на три независимых контур
 ## Current Cloud Findings
 
 - Public DNS zone `solofarm.ru.` already exists in Yandex Cloud.
-- `art.solofarm.ru` can be served through Object Storage website hosting.
+- `art.solofarm.ru` uses API Gateway as a rewrite/fallback layer in front of the public Object Storage bucket.
 - Existing bucket `art-site` can be used as data/media bucket or as shared operational bucket.
 - `admin.art.solofarm.ru` remains the clean target for static admin publication, but for v1 the same storage account may still be used with a dedicated bucket.
 
@@ -23,7 +23,9 @@ Deploy теперь разбит на три независимых контур
    - `index.html`
    - `404.html`
 3. Sync `apps/showcase/out` to bucket `art.solofarm.ru`
-4. Point DNS record `art.solofarm.ru` to `art.solofarm.ru.website.yandexcloud.net.`
+4. Deploy the public gateway:
+   - `powershell -ExecutionPolicy Bypass -File scripts/deploy-yc-showcase-gateway.ps1`
+5. Point DNS record `art.solofarm.ru` to the public API Gateway domain instead of the raw bucket website endpoint
 
 Important:
 - the public site bucket is `art.solofarm.ru`
@@ -33,6 +35,7 @@ Important:
 - `publish-showcase` must not delete the runtime-managed `data/` prefix in the public bucket
 - the showcase now ships as a small runtime shell (`/` + `404.html`) instead of pre-exporting one physical page per `variant + artwork slug`
 - deep links are resolved by the shell at runtime from `window.location.pathname`
+- API Gateway rewrites unknown app paths back to `index.html` with `200`, so pretty URLs work without physical per-slug files
 
 ## Static Admin Flow
 
@@ -83,4 +86,4 @@ Local development can additionally allow:
 
 ### Current Limitation
 
-The shell-routing pass removes the need to publish thousands of route files, but the Object Storage website endpoint still behaves as a static host, not a true rewrite engine. The current shell works for direct links, yet a small noisy `404` request from the Next runtime may still appear in the browser console. A future infra cleanup can replace this with a cleaner rewrite/fallback layer.
+The shell-routing pass plus the public rewrite gateway remove the need to publish thousands of route files and restore clean deep-link routing. A small noisy `404` request from the Next runtime may still appear in the browser console and can be cleaned up later without changing the routing architecture.
