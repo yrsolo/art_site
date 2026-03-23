@@ -14,6 +14,7 @@
 - [Ideal Principles](architecture/ideal-principles.md)
 - [System Overview](architecture/system-overview.md)
 - [Frontend](architecture/frontend.md)
+- [Frontend Variants](architecture/frontend-variants.md)
 - [Backend](architecture/backend.md)
 - [Data Model](architecture/data-model.md)
 - [Integrations](architecture/integrations.md)
@@ -31,6 +32,10 @@
 - [Commands](reference/commands.md)
 - [Deploy](reference/deploy.md)
 - [Content And Design Sources](reference/content-sources.md)
+
+## Каталог Эскизов
+
+- [Sketch Catalog](catalog/sketch-catalog.md)
 
 ## Временный Рабочий Слой
 

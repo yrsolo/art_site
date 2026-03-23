@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 
-import { getArtworkRepository } from "@/server/repository";
+import { listPublicArtworks } from "@/server/artwork-repository";
 
 export async function GET() {
-  const artworks = await getArtworkRepository().listPublic();
+  const artworks = await listPublicArtworks();
   return NextResponse.json({ artworks });
 }

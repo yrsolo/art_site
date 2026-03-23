@@ -1,17 +1,14 @@
 import { NextResponse } from "next/server";
 
-import { getArtworkRepository } from "@/server/repository";
+import { getArtworkBySlug } from "@/server/artwork-repository";
+import { notFound } from "@/server/http";
 
-type ArtworkPublicRouteProps = {
-  params: Promise<{ slug: string }>;
-};
+export async function GET(_: Request, context: { params: Promise<{ slug: string }> }) {
+  const { slug } = await context.params;
+  const artwork = await getArtworkBySlug(slug);
 
-export async function GET(_request: Request, { params }: ArtworkPublicRouteProps) {
-  const { slug } = await params;
-  const artwork = await getArtworkRepository().getBySlug(slug);
-
-  if (!artwork || artwork.status === "hidden") {
-    return NextResponse.json({ error: "Not found." }, { status: 404 });
+  if (!artwork || artwork.isArchived || !artwork.showInGallery) {
+    return notFound("Artwork not found.");
   }
 
   return NextResponse.json({ artwork });

@@ -1,32 +1,15 @@
+import "@/app/globals.css";
+
 import type { Metadata } from "next";
-import { Cormorant_Garamond, IBM_Plex_Sans } from "next/font/google";
-
-import "./globals.css";
-
-const displayFont = Cormorant_Garamond({
-  variable: "--font-display",
-  subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const bodyFont = IBM_Plex_Sans({
-  variable: "--font-body",
-  subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600"],
-});
 
 export const metadata: Metadata = {
-  title: "Solo Farm Art",
-  description: "Portfolio MVP for an artist with public gallery pages and a local admin panel.",
+  title: "ART_SITE API",
+  description: "Backend-only runtime for admin auth, content storage, uploads, and snapshot export.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ru" className={`${displayFont.variable} ${bodyFont.variable}`}>
+    <html lang="ru">
       <body>{children}</body>
     </html>
   );

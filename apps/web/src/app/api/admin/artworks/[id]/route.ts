@@ -1,36 +1,55 @@
 import { NextResponse } from "next/server";
 
-import { parseArtworkInput } from "@/features/artworks/form-data";
-import { getSession } from "@/server/auth";
-import { getArtworkRepository } from "@/server/repository";
+import { deleteArtwork, getArtworkById, updateArtwork } from "@/server/artwork-repository";
+import { exportPublicSiteSnapshot } from "@/server/export-service";
+import { badRequest, notFound, unauthorized } from "@/server/http";
+import { parseArtworkInput } from "@/server/parsers";
+import { requireSession } from "@/server/session";
 
-type ArtworkRouteProps = {
-  params: Promise<{ id: string }>;
-};
-
-export async function PATCH(request: Request, { params }: ArtworkRouteProps) {
-  if (!(await getSession())) {
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+export async function GET(_: Request, context: { params: Promise<{ id: string }> }) {
+  try {
+    await requireSession();
+  } catch {
+    return unauthorized();
   }
 
-  const { id } = await params;
-  const body = await request.json();
-  const formData = new FormData();
-
-  Object.entries(body as Record<string, string>).forEach(([key, value]) => {
-    formData.set(key, value);
-  });
-
-  const artwork = await getArtworkRepository().update(id, parseArtworkInput(formData));
-  return NextResponse.json({ artwork });
+  const { id } = await context.params;
+  const artwork = await getArtworkById(id);
+  return artwork ? NextResponse.json({ artwork }) : notFound("Artwork not found.");
 }
 
-export async function DELETE(_request: Request, { params }: ArtworkRouteProps) {
-  if (!(await getSession())) {
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
+  try {
+    await requireSession();
+  } catch {
+    return unauthorized();
   }
 
-  const { id } = await params;
-  await getArtworkRepository().delete(id);
-  return NextResponse.json({ ok: true });
+  const { id } = await context.params;
+
+  try {
+    const artwork = await updateArtwork(id, parseArtworkInput((await request.json()) as Record<string, unknown>));
+    await exportPublicSiteSnapshot();
+    return NextResponse.json({ artwork });
+  } catch (error) {
+    return badRequest(error instanceof Error ? error.message : "Failed to update artwork.");
+  }
+}
+
+export async function DELETE(_: Request, context: { params: Promise<{ id: string }> }) {
+  try {
+    await requireSession();
+  } catch {
+    return unauthorized();
+  }
+
+  const { id } = await context.params;
+
+  try {
+    const artwork = await deleteArtwork(id);
+    await exportPublicSiteSnapshot();
+    return NextResponse.json({ artwork });
+  } catch (error) {
+    return badRequest(error instanceof Error ? error.message : "Failed to delete artwork.");
+  }
 }

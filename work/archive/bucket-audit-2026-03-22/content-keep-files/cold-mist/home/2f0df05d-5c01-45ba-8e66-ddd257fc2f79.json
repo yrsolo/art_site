@@ -1,0 +1,16 @@
+{
+  "id": "2f0df05d-5c01-45ba-8e66-ddd257fc2f79",
+  "variantId": "cold-mist",
+  "pageKey": "home",
+  "versionName": "Текущий home",
+  "status": "published",
+  "payload": {
+    "eyebrow": "Тёмная атмосфера / холодный туман",
+    "title": "Форма. Цвет. Пустота.",
+    "description": "Исследование границ эфемерного восприятия через генеративную абстракцию.",
+    "primaryCta": "Смотреть коллекцию",
+    "secondaryCta": "Читать заметки художника"
+  },
+  "createdAt": "2026-03-21T18:51:27.268Z",
+  "updatedAt": "2026-03-21T18:51:27.268Z"
+}

@@ -1,30 +1,34 @@
 import { NextResponse } from "next/server";
 
-import { parseArtworkInput } from "@/features/artworks/form-data";
-import { getSession } from "@/server/auth";
-import { getArtworkRepository } from "@/server/repository";
+import { createArtwork, listArtworkSummaries } from "@/server/artwork-repository";
+import { exportPublicSiteSnapshot } from "@/server/export-service";
+import { badRequest, created, unauthorized } from "@/server/http";
+import { parseArtworkInput } from "@/server/parsers";
+import { requireSession } from "@/server/session";
 
 export async function GET() {
-  if (!(await getSession())) {
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+  try {
+    await requireSession();
+  } catch {
+    return unauthorized();
   }
 
-  const artworks = await getArtworkRepository().listAll();
+  const artworks = await listArtworkSummaries();
   return NextResponse.json({ artworks });
 }
 
 export async function POST(request: Request) {
-  if (!(await getSession())) {
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+  try {
+    await requireSession();
+  } catch {
+    return unauthorized();
   }
 
-  const body = await request.json();
-  const formData = new FormData();
-
-  Object.entries(body as Record<string, string>).forEach(([key, value]) => {
-    formData.set(key, value);
-  });
-
-  const artwork = await getArtworkRepository().create(parseArtworkInput(formData));
-  return NextResponse.json({ artwork }, { status: 201 });
+  try {
+    const artwork = await createArtwork(parseArtworkInput((await request.json()) as Record<string, unknown>));
+    await exportPublicSiteSnapshot();
+    return created({ artwork });
+  } catch (error) {
+    return badRequest(error instanceof Error ? error.message : "Failed to create artwork.");
+  }
 }

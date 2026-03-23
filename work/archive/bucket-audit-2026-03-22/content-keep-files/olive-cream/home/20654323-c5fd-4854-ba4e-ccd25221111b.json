@@ -1,0 +1,16 @@
+{
+  "id": "20654323-c5fd-4854-ba4e-ccd25221111b",
+  "variantId": "olive-cream",
+  "pageKey": "home",
+  "versionName": "Текущий home 2",
+  "status": "draft",
+  "payload": {
+    "eyebrow": "Органический поток / olive cream",
+    "title": "Дышащий каталог абстрактных работ, собранный из земли и бумаги.",
+    "description": "Этот вариант плотнее, чем Mint Rose.",
+    "primaryCta": "Войти в коллекцию",
+    "secondaryCta": "Смотреть историю работы"
+  },
+  "createdAt": "2026-03-21T19:11:26.762Z",
+  "updatedAt": "2026-03-21T19:11:26.762Z"
+}

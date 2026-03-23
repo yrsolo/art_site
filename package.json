@@ -2,12 +2,21 @@
   "name": "art-site",
   "private": true,
   "workspaces": [
-    "apps/web"
+    "apps/admin",
+    "apps/web",
+    "apps/showcase"
   ],
   "scripts": {
     "dev": "npm run dev --workspace web",
     "build": "npm run build --workspace web",
     "lint": "npm run lint --workspace web",
-    "start": "npm run start --workspace web"
+    "start": "npm run start --workspace web",
+    "dev:admin": "npm run dev --workspace admin",
+    "build:admin": "npm run build --workspace admin",
+    "start:admin": "npm run start --workspace admin",
+    "dev:showcase": "npm run dev --workspace showcase",
+    "build:showcase": "npm run build --workspace showcase",
+    "start:showcase": "npm run start --workspace showcase",
+    "lint:all": "npm run lint --workspace web && npm run lint --workspace admin"
   }
 }

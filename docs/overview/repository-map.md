@@ -9,17 +9,20 @@
 - `docs/` — постоянная документация
 - `work/` — текущий tracking и временные материалы
 - `agent/` — операционный контракт и служебные инструкции
-- `apps/` — будущий продуктовый код
+- `apps/` — продуктовый код
 - `scripts/` — утилиты проверки и обслуживания
 
 ## Продуктовый Код
 
-- `apps/web/` — основной Next.js app для сайта и админки
+- `apps/showcase/` — статическая публичная витрина с route-per-variant страницами
+- `apps/admin/` — статический админский frontend для лотов, текстов и настроек
+- `apps/web/` — backend-only Next.js runtime для auth, API, uploads и export snapshot
 
 ## Документация
 
 - `docs/overview/` — что это за проект и как в него зайти
 - `docs/architecture/` — договорённости о системе
+- `docs/catalog/` — официальный каталог frontend-вариантов
 - `docs/process/` — как вести работу
 - `docs/reference/` — env, команды, деплой и источники контента
 

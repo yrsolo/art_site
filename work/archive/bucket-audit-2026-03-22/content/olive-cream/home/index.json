@@ -1,0 +1,21 @@
+{
+  "variantId": "olive-cream",
+  "pageKey": "home",
+  "updatedAt": "2026-03-21T19:11:26.796Z",
+  "items": [
+    {
+      "id": "20654323-c5fd-4854-ba4e-ccd25221111b",
+      "versionName": "Текущий home 2",
+      "status": "draft",
+      "updatedAt": "2026-03-21T19:11:26.762Z",
+      "isPublishedActive": false
+    },
+    {
+      "id": "060a34dd-d862-4745-a062-91242a7326e8",
+      "versionName": "Текущий home",
+      "status": "published",
+      "updatedAt": "2026-03-21T19:11:21.305Z",
+      "isPublishedActive": false
+    }
+  ]
+}
