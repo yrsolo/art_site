@@ -5,6 +5,7 @@ import type {
   PagePublication,
   PublicVariantContent,
 } from "@/features/content/types";
+import { contentPageKeys } from "@/features/content/types";
 import { appConfig } from "@/server/config";
 import { readJsonFile, writeJsonFile } from "@/server/json-store";
 import { variantContent as seedVariantContent } from "@/server/seed-variant-content";
@@ -269,6 +270,51 @@ export async function publishContentVersion(variantId: string, pageKey: ContentP
 
   await writeJsonFile(publicationKey(variantId), nextPublication);
   return nextPublication;
+}
+
+export async function publishContentPreset(
+  variantId: string,
+  versionName: string,
+  pages: Partial<Record<ContentPageKey, { id?: string; payload: ContentVersion["payload"] }>>,
+) {
+  const trimmedVersionName = versionName.trim() || "Черновик";
+  const activeVersions: Partial<Record<ContentPageKey, string>> = {};
+  const versions: Partial<Record<ContentPageKey, ContentVersion>> = {};
+
+  for (const pageKey of contentPageKeys) {
+    const page = pages[pageKey];
+
+    if (!page) {
+      throw new Error(`Missing content page payload: ${pageKey}.`);
+    }
+
+    const version = page.id
+      ? await updateContentVersion(variantId, pageKey, page.id, {
+          versionName: trimmedVersionName,
+          payload: page.payload as never,
+          status: "published",
+        })
+      : await createVersionRecord(variantId, pageKey, trimmedVersionName, page.payload as never, "published");
+
+    activeVersions[pageKey] = version.id;
+    versions[pageKey] = version;
+  }
+
+  const publication = await getPublication(variantId);
+  const nextPublication: PagePublication = {
+    ...publication,
+    activeVersions: {
+      ...publication.activeVersions,
+      ...activeVersions,
+    },
+    updatedAt: nowIso(),
+  };
+
+  await writeJsonFile(publicationKey(variantId), nextPublication);
+  return {
+    publication: nextPublication,
+    versions,
+  };
 }
 
 export async function getPublishedVariantContent(variantId: string, defaults: PublicVariantContent): Promise<PublicVariantContent> {

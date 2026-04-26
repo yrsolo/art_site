@@ -212,3 +212,11 @@ Static frontend split with backend-only container and bucket-backed content sour
   - make `Сохранить`, `Сохранить как копию`, and `Опубликовать` operate on the whole variant preset;
   - add a sidebar tree under preset selection with collapsible pages and text-field anchors;
   - keep per-variant/per-page schemas flexible so different sketches can continue to have different text structures.
+
+## Update 2026-04-26 Aggregate content publish
+
+- Follow-up focus: remove the temporary client-side loop that published variant-wide presets through five independent page publish calls.
+- Target shape:
+  - one admin API request publishes the whole variant preset;
+  - backend saves/creates the page versions, updates publication state, and exports the public snapshot once;
+  - the existing page-scoped content storage remains intact.

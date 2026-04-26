@@ -27,6 +27,13 @@ type PresetOption = {
   versionName: string | null;
   isPublishedActive?: boolean;
 };
+type PresetPublishResponse = {
+  versions: Partial<Record<PageKey, ContentVersion>>;
+  export: {
+    revision: string;
+    publishedAt: string;
+  };
+};
 
 function createEmptyPageVersions(variantId: string): PageVersions {
   const versions = {} as PageVersions;
@@ -280,25 +287,35 @@ export default function ContentPage() {
 
     try {
       const nextName = presetName.trim() || defaultPresetName;
-      const savedEntries = await Promise.all(pageKeys.map(async (pageKey) => [pageKey, await savePageVersion(pageKey, pageVersions[pageKey], nextName)] as const));
-      const savedVersions = {} as PageVersions;
-      savedEntries.forEach(([pageKey, version]) => {
-        savedVersions[pageKey] = version;
+      const response = await apiFetch<PresetPublishResponse>("/api/admin/content/presets/publish", {
+        method: "POST",
+        body: JSON.stringify({
+          variantId,
+          versionName: nextName,
+          pages: Object.fromEntries(
+            pageKeys.map((pageKey) => [
+              pageKey,
+              {
+                id: pageVersions[pageKey].id,
+                payload: pageVersions[pageKey].payload,
+              },
+            ]),
+          ),
+        }),
       });
 
-      await Promise.all(
-        pageKeys.map((pageKey) =>
-          apiFetch(`/api/admin/content/versions/${savedVersions[pageKey].id}/publish`, {
-            method: "POST",
-            body: JSON.stringify({ variantId, pageKey }),
-          }),
-        ),
-      );
+      const savedVersions = { ...pageVersions };
+      pageKeys.forEach((pageKey) => {
+        const version = response.versions[pageKey];
+        if (version) {
+          savedVersions[pageKey] = version;
+        }
+      });
 
       setPageVersions(savedVersions);
       setPresetName(nextName);
       await refreshLists(nextName);
-      setMessage("Пресет опубликован, public snapshot обновлён.");
+      setMessage(`Пресет опубликован, public snapshot обновлён: ${response.export.revision}.`);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Не удалось опубликовать пресет.");
     } finally {

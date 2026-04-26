@@ -774,3 +774,37 @@
 
 - Publishing a variant-wide text preset currently calls the existing per-page publish API for each page, so the public snapshot may be rebuilt multiple times in one publish action.
 - If this starts feeling slow in daily use, the next clean improvement is a backend aggregate route such as `POST /api/admin/content/presets/publish` that saves/publishes all pages and exports the snapshot once.
+
+## 2026-04-26 - Aggregate content preset publication
+
+- Added a dedicated backend route:
+  - `POST /api/admin/content/presets/publish`
+- Added repository-level aggregate publication:
+  - saves or creates all page versions for one variant preset;
+  - marks the selected page versions as published;
+  - writes one combined publication state for the variant.
+- Switched the admin `Тексты` page to call the aggregate route instead of looping over five per-page publish calls.
+- Public snapshot export now runs once per variant preset publish action.
+- The old page-level publish route remains available for narrower future flows, but it is no longer used by the variant-wide editor.
+
+### Validation
+
+- `npm run build --workspace web`
+- `npm run build --workspace admin`
+- `npm run lint --workspace web`
+- `npm run lint --workspace admin`
+- `bash scripts/docs-check.sh`
+- `powershell -ExecutionPolicy Bypass -File scripts/publish-admin.ps1`
+- built and pushed backend image:
+  - `cr.yandex/crp5tssh5qkdk7mgcilj/art-site/api:aggregate-content-publish-20260426`
+- deployed backend with:
+  - `powershell -ExecutionPolicy Bypass -File scripts/deploy-yc-web.ps1 -Tag aggregate-content-publish-20260426 -SkipBuild`
+- live checks:
+  - `curl.exe -i https://api.art.solofarm.ru/api/health` -> `200`
+  - unauthenticated `POST https://api.art.solofarm.ru/api/admin/content/presets/publish` -> `401`, confirming the route is live and protected
+  - `curl.exe -I https://admin.art.solofarm.ru/content/` -> `200`
+
+### Still unresolved
+
+- I did not run an authenticated publish mutation from the CLI to avoid changing live text content just for a smoke test.
+- The next manual smoke is safe to do in the admin UI: open `Тексты`, press `Опубликовать`, and confirm that the success message includes one snapshot revision.

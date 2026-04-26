@@ -122,3 +122,11 @@
 3. Make save, save-as-copy, and publish operate across every page in the variant while still using the existing page-scoped backend APIs.
 4. Add a sidebar tree under the preset list with collapsible page branches and text-field leaves that scroll to the corresponding editor field.
 5. Keep the existing `contentSchema` as the per-page/per-variant extensibility point for future sketch-specific text structures.
+
+## Update 2026-04-26 Aggregate preset publication
+
+1. Add a backend aggregate content-preset publication endpoint that accepts all page payloads for one variant.
+2. Move the multi-page save/publish transaction into the repository/application layer so publication state is updated once.
+3. Export the public snapshot once per variant preset publish, not once per page.
+4. Switch the admin variant-wide content editor to call the aggregate endpoint instead of looping over per-page publish routes.
+5. Validate web/admin builds and redeploy both changed runtimes.
