@@ -202,3 +202,13 @@ Static frontend split with backend-only container and bucket-backed content sour
   - separating upload pending state from the generic artwork save pending state in the drawer UI;
   - limiting v1 uploads to raster artwork formats (`jpeg/png/webp`);
   - removing per-object `public-read` ACL from media writes so bucket/prefix policy remains the visibility source of truth.
+
+## Update 2026-04-26 Variant-wide content presets
+
+- The current editor pass changes the admin `Тексты` surface from page-by-page editing to variant-wide editing.
+- Backend content storage remains page-scoped (`variantId + pageKey`) for compatibility and clean publication, but the admin UI now treats a preset as one named set of versions across all pages of a variant.
+- Focus for this pass:
+  - show all page text fields for the selected variant on one editor page;
+  - make `Сохранить`, `Сохранить как копию`, and `Опубликовать` operate on the whole variant preset;
+  - add a sidebar tree under preset selection with collapsible pages and text-field anchors;
+  - keep per-variant/per-page schemas flexible so different sketches can continue to have different text structures.

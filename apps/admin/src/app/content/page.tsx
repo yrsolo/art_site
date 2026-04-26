@@ -1,302 +1,455 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { AppShell } from "@/components/app-shell";
 import { apiFetch } from "@/lib/api";
-import { contentSchema } from "@/lib/content-schema";
+import { contentSchema, type ContentFieldDefinition } from "@/lib/content-schema";
 import { createEmptyContentVersion } from "@/lib/defaults";
 import { pageKeys, type ContentVersion, type ContentVersionRecord, type PageKey, variantIds } from "@/lib/types";
 
-function payloadToForm(payload: Record<string, unknown>) {
-  return { ...payload };
+const pageLabels: Record<PageKey, string> = {
+  home: "Главная",
+  gallery: "Галерея",
+  artwork: "Страница картины",
+  about: "Биография",
+  contacts: "Контакты",
+};
+
+const publishedPresetId = "__published__";
+const defaultPresetName = "Новый пресет";
+
+type PageVersions = Record<PageKey, ContentVersion>;
+type VersionLists = Record<PageKey, ContentVersionRecord[]>;
+type PresetOption = {
+  id: string;
+  label: string;
+  versionName: string | null;
+  isPublishedActive?: boolean;
+};
+
+function createEmptyPageVersions(variantId: string): PageVersions {
+  const versions = {} as PageVersions;
+  pageKeys.forEach((pageKey) => {
+    versions[pageKey] = createEmptyContentVersion(variantId, pageKey);
+  });
+  return versions;
+}
+
+function createEmptyVersionLists(): VersionLists {
+  const lists = {} as VersionLists;
+  pageKeys.forEach((pageKey) => {
+    lists[pageKey] = [];
+  });
+  return lists;
+}
+
+function fieldDomId(pageKey: PageKey, fieldKey: string) {
+  return `content-field-${pageKey}-${fieldKey}`;
+}
+
+function nextPresetName(name: string) {
+  const trimmed = name.trim() || defaultPresetName;
+  const match = trimmed.match(/^(.*?)(?:\s+(\d+))?$/);
+  const base = (match?.[1] || trimmed).trim();
+  const number = match?.[2] ? Number(match[2]) : 1;
+  return `${base} ${number + 1}`;
+}
+
+function pickRecordForPreset(records: ContentVersionRecord[], presetName: string | null) {
+  if (presetName) {
+    return records.find((item) => item.versionName === presetName) ?? records.find((item) => item.isPublishedActive) ?? records[0];
+  }
+
+  return records.find((item) => item.isPublishedActive) ?? records[0];
+}
+
+function getCommonPresetName(versions: PageVersions) {
+  const names = pageKeys.map((pageKey) => versions[pageKey].versionName.trim()).filter(Boolean);
+  const firstName = names[0];
+  return firstName && names.every((name) => name === firstName) ? firstName : "";
 }
 
 export default function ContentPage() {
   const [variantId, setVariantId] = useState<(typeof variantIds)[number]>("cold-mist");
-  const [pageKey, setPageKey] = useState<PageKey>("home");
-  const [versions, setVersions] = useState<ContentVersionRecord[]>([]);
-  const [version, setVersion] = useState<ContentVersion>(createEmptyContentVersion("cold-mist", "home"));
+  const [versionLists, setVersionLists] = useState<VersionLists>(createEmptyVersionLists());
+  const [pageVersions, setPageVersions] = useState<PageVersions>(createEmptyPageVersions("cold-mist"));
+  const [presetName, setPresetName] = useState("Текущие тексты сайта");
+  const [activePresetId, setActivePresetId] = useState(publishedPresetId);
+  const [collapsedPages, setCollapsedPages] = useState<Partial<Record<PageKey, boolean>>>({});
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState(false);
 
-  async function fetchVersion(versionId: string, nextVariantId = variantId, nextPageKey = pageKey) {
+  const presetOptions = useMemo<PresetOption[]>(() => {
+    const names = new Set<string>();
+    pageKeys.forEach((pageKey) => {
+      versionLists[pageKey].forEach((item) => {
+        if (item.versionName.trim()) {
+          names.add(item.versionName);
+        }
+      });
+    });
+
+    return [
+      {
+        id: publishedPresetId,
+        label: "Опубликованный набор",
+        versionName: null,
+        isPublishedActive: true,
+      },
+      ...Array.from(names)
+        .sort((left, right) => left.localeCompare(right, "ru"))
+        .map((name) => ({
+          id: name,
+          label: name,
+          versionName: name,
+          isPublishedActive: pageKeys.every((pageKey) =>
+            versionLists[pageKey].some((item) => item.versionName === name && item.isPublishedActive),
+          ),
+        })),
+    ];
+  }, [versionLists]);
+
+  async function fetchVersion(versionId: string, nextVariantId: string, pageKey: PageKey) {
     const response = await apiFetch<{ version: ContentVersion }>(
-      `/api/admin/content/versions/${versionId}?variantId=${nextVariantId}&pageKey=${nextPageKey}`,
+      `/api/admin/content/versions/${versionId}?variantId=${nextVariantId}&pageKey=${pageKey}`,
     );
     return response.version;
   }
 
-  async function loadVersions(nextVariantId = variantId, nextPageKey = pageKey, preferredVersionId?: string | null) {
-    const response = await apiFetch<{ versions: ContentVersionRecord[] }>(
-      `/api/admin/content/versions?variantId=${nextVariantId}&pageKey=${nextPageKey}`,
-    );
-    setVersions(response.versions);
+  async function loadVariant(nextVariantId = variantId, presetVersionName: string | null = null) {
+    setPending(true);
+    setMessage("");
 
-    const nextSelectedRecord =
-      (preferredVersionId ? response.versions.find((item) => item.id === preferredVersionId) : undefined) ??
-      (version.id ? response.versions.find((item) => item.id === version.id) : undefined) ??
-      response.versions.find((item) => item.isPublishedActive) ??
-      response.versions[0];
+    try {
+      const listEntries = await Promise.all(
+        pageKeys.map(async (pageKey) => {
+          const response = await apiFetch<{ versions: ContentVersionRecord[] }>(
+            `/api/admin/content/versions?variantId=${nextVariantId}&pageKey=${pageKey}`,
+          );
+          return [pageKey, response.versions] as const;
+        }),
+      );
+      const nextLists = {} as VersionLists;
+      listEntries.forEach(([pageKey, versions]) => {
+        nextLists[pageKey] = versions;
+      });
 
-    if (nextSelectedRecord) {
-      setVersion(await fetchVersion(nextSelectedRecord.id, nextVariantId, nextPageKey));
-      return;
+      const versionEntries = await Promise.all(
+        pageKeys.map(async (pageKey) => {
+          const record = pickRecordForPreset(nextLists[pageKey], presetVersionName);
+          const nextVersion = record ? await fetchVersion(record.id, nextVariantId, pageKey) : createEmptyContentVersion(nextVariantId, pageKey);
+          return [pageKey, nextVersion] as const;
+        }),
+      );
+      const nextPageVersions = {} as PageVersions;
+      versionEntries.forEach(([pageKey, version]) => {
+        nextPageVersions[pageKey] = version;
+      });
+
+      setVersionLists(nextLists);
+      setPageVersions(nextPageVersions);
+      setActivePresetId(presetVersionName ?? publishedPresetId);
+      setPresetName((presetVersionName ?? getCommonPresetName(nextPageVersions)) || "Текущие тексты сайта");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Не удалось загрузить тексты варианта.");
+    } finally {
+      setPending(false);
     }
-
-    setVersion(createEmptyContentVersion(nextVariantId, nextPageKey));
-  }
-
-  async function loadVersion(versionId: string, nextVariantId = variantId, nextPageKey = pageKey) {
-    setVersion(await fetchVersion(versionId, nextVariantId, nextPageKey));
   }
 
   useEffect(() => {
-    void loadVersions().catch((error) => {
-      setMessage(error instanceof Error ? error.message : "Не удалось загрузить версии.");
-    });
+    void loadVariant(variantId, null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageKey, variantId]);
+  }, [variantId]);
 
-  function updatePayload(key: string, value: string | string[]) {
-    setVersion((current) => ({
+  function updatePayload(pageKey: PageKey, key: string, value: string | string[]) {
+    setPageVersions((current) => ({
       ...current,
-      payload: {
-        ...current.payload,
-        [key]: value,
+      [pageKey]: {
+        ...current[pageKey],
+        payload: {
+          ...current[pageKey].payload,
+          [key]: value,
+        },
       },
     }));
   }
 
-  async function createVersion() {
+  async function savePageVersion(pageKey: PageKey, version: ContentVersion, nextName: string) {
+    const body = JSON.stringify({
+      variantId,
+      pageKey,
+      versionName: nextName,
+      payload: version.payload,
+      status: version.status,
+    });
+
+    if (version.id) {
+      const response = await apiFetch<{ version: ContentVersion }>(`/api/admin/content/versions/${version.id}`, {
+        method: "PATCH",
+        body,
+      });
+      return response.version;
+    }
+
+    const response = await apiFetch<{ version: ContentVersion }>("/api/admin/content/versions", {
+      method: "POST",
+      body,
+    });
+    return response.version;
+  }
+
+  async function refreshLists(nextPresetName: string) {
+    const listEntries = await Promise.all(
+      pageKeys.map(async (pageKey) => {
+        const response = await apiFetch<{ versions: ContentVersionRecord[] }>(
+          `/api/admin/content/versions?variantId=${variantId}&pageKey=${pageKey}`,
+        );
+        return [pageKey, response.versions] as const;
+      }),
+    );
+    const nextLists = {} as VersionLists;
+    listEntries.forEach(([pageKey, versions]) => {
+      nextLists[pageKey] = versions;
+    });
+    setVersionLists(nextLists);
+    setActivePresetId(nextPresetName);
+  }
+
+  async function savePreset() {
+    const nextName = presetName.trim() || defaultPresetName;
     setPending(true);
     setMessage("");
 
     try {
-      const response = await apiFetch<{ version: ContentVersion }>("/api/admin/content/versions", {
-        method: "POST",
-        body: JSON.stringify({
-          variantId,
-          pageKey,
-          versionName: "Новая версия",
-          payload: version.payload,
+      const entries = await Promise.all(pageKeys.map(async (pageKey) => [pageKey, await savePageVersion(pageKey, pageVersions[pageKey], nextName)] as const));
+      const nextVersions = {} as PageVersions;
+      entries.forEach(([pageKey, version]) => {
+        nextVersions[pageKey] = version;
+      });
+      setPageVersions(nextVersions);
+      setPresetName(nextName);
+      await refreshLists(nextName);
+      setMessage("Пресет сохранён для всех страниц варианта.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Не удалось сохранить пресет.");
+    } finally {
+      setPending(false);
+    }
+  }
+
+  async function savePresetCopy() {
+    const nextName = nextPresetName(presetName);
+    setPending(true);
+    setMessage("");
+
+    try {
+      const entries = await Promise.all(
+        pageKeys.map(async (pageKey) => {
+          const response = await apiFetch<{ version: ContentVersion }>("/api/admin/content/versions", {
+            method: "POST",
+            body: JSON.stringify({
+              variantId,
+              pageKey,
+              versionName: nextName,
+              payload: pageVersions[pageKey].payload,
+            }),
+          });
+          return [pageKey, response.version] as const;
         }),
+      );
+      const nextVersions = {} as PageVersions;
+      entries.forEach(([pageKey, version]) => {
+        nextVersions[pageKey] = version;
       });
-
-      await loadVersions(variantId, pageKey, response.version.id);
-      setMessage("Создана новая версия.");
+      setPageVersions(nextVersions);
+      setPresetName(nextName);
+      await refreshLists(nextName);
+      setMessage("Создана копия пресета для всех страниц.");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Не удалось создать версию.");
+      setMessage(error instanceof Error ? error.message : "Не удалось создать копию пресета.");
     } finally {
       setPending(false);
     }
   }
 
-  async function saveVersion() {
+  async function publishPreset() {
     setPending(true);
     setMessage("");
 
     try {
-      const path = version.id ? `/api/admin/content/versions/${version.id}` : "/api/admin/content/versions";
-      const method = version.id ? "PATCH" : "POST";
-      const response = await apiFetch<{ version: ContentVersion }>(path, {
-        method,
-        body: JSON.stringify({
-          variantId,
-          pageKey,
-          versionName: version.versionName,
-          payload: version.payload,
-          status: version.status,
-        }),
+      const nextName = presetName.trim() || defaultPresetName;
+      const savedEntries = await Promise.all(pageKeys.map(async (pageKey) => [pageKey, await savePageVersion(pageKey, pageVersions[pageKey], nextName)] as const));
+      const savedVersions = {} as PageVersions;
+      savedEntries.forEach(([pageKey, version]) => {
+        savedVersions[pageKey] = version;
       });
 
-      await loadVersions(variantId, pageKey, response.version.id);
-      setMessage("Версия сохранена.");
+      await Promise.all(
+        pageKeys.map((pageKey) =>
+          apiFetch(`/api/admin/content/versions/${savedVersions[pageKey].id}/publish`, {
+            method: "POST",
+            body: JSON.stringify({ variantId, pageKey }),
+          }),
+        ),
+      );
+
+      setPageVersions(savedVersions);
+      setPresetName(nextName);
+      await refreshLists(nextName);
+      setMessage("Пресет опубликован, public snapshot обновлён.");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Не удалось сохранить версию.");
+      setMessage(error instanceof Error ? error.message : "Не удалось опубликовать пресет.");
     } finally {
       setPending(false);
     }
   }
 
-  async function cloneVersion() {
-    if (!version.id) {
-      return;
-    }
-
-    setPending(true);
-    setMessage("");
-
-    try {
-      const response = await apiFetch<{ version: ContentVersion }>(`/api/admin/content/versions/${version.id}/clone`, {
-        method: "POST",
-        body: JSON.stringify({ variantId, pageKey }),
-      });
-
-      await loadVersions(variantId, pageKey, response.version.id);
-      setMessage("Создана копия версии.");
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Не удалось создать копию версии.");
-    } finally {
-      setPending(false);
-    }
+  function scrollToField(pageKey: PageKey, field: ContentFieldDefinition) {
+    setCollapsedPages((current) => ({ ...current, [pageKey]: false }));
+    window.setTimeout(() => {
+      document.getElementById(fieldDomId(pageKey, field.key))?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 0);
   }
 
-  async function publishVersion() {
-    if (!version.id) {
-      return;
+  function renderField(pageKey: PageKey, field: ContentFieldDefinition) {
+    const payload = pageVersions[pageKey].payload;
+    const value = payload[field.key];
+
+    if (field.type === "string-array") {
+      return (
+        <label key={field.key} id={fieldDomId(pageKey, field.key)} className="field content-field-anchor">
+          <span>{field.label}</span>
+          <textarea
+            value={Array.isArray(value) ? value.join("\n") : ""}
+            onChange={(event) => updatePayload(pageKey, field.key, event.target.value.split("\n").filter(Boolean))}
+          />
+        </label>
+      );
     }
 
-    setPending(true);
-    setMessage("");
-
-    try {
-      await apiFetch(`/api/admin/content/versions/${version.id}/publish`, {
-        method: "POST",
-        body: JSON.stringify({ variantId, pageKey }),
-      });
-      await loadVersions(variantId, pageKey, version.id);
-      setMessage("Версия опубликована и snapshot обновлён.");
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Не удалось опубликовать версию.");
-    } finally {
-      setPending(false);
+    if (field.type === "textarea") {
+      return (
+        <label key={field.key} id={fieldDomId(pageKey, field.key)} className="field content-field-anchor">
+          <span>{field.label}</span>
+          <textarea value={typeof value === "string" ? value : ""} onChange={(event) => updatePayload(pageKey, field.key, event.target.value)} />
+        </label>
+      );
     }
+
+    return (
+      <label key={field.key} id={fieldDomId(pageKey, field.key)} className="field content-field-anchor">
+        <span>{field.label}</span>
+        <input value={typeof value === "string" ? value : ""} onChange={(event) => updatePayload(pageKey, field.key, event.target.value)} />
+      </label>
+    );
   }
 
   return (
     <AppShell>
-      <div className="page-grid">
-        <section className="table-card">
-          <div className="field-grid two">
-            <label className="field">
-              <span>Вариант</span>
-              <select value={variantId} onChange={(event) => setVariantId(event.target.value as (typeof variantIds)[number])}>
-                {variantIds.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
-            </label>
+      <div className="content-editor-layout">
+        <aside className="table-card content-editor-sidebar">
+          <label className="field">
+            <span>Вариант</span>
+            <select value={variantId} onChange={(event) => setVariantId(event.target.value as (typeof variantIds)[number])}>
+              {variantIds.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </label>
 
-            <label className="field">
-              <span>Страница</span>
-              <select value={pageKey} onChange={(event) => setPageKey(event.target.value as PageKey)}>
-                {pageKeys.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
+          <div className="stack">
+            <div>
+              <p className="admin-kicker">Пресеты</p>
+              <div className="content-preset-list">
+                {presetOptions.map((item) => (
+                  <button
+                    key={item.id}
+                    className={`button-secondary${activePresetId === item.id ? " active-chip" : ""}`}
+                    type="button"
+                    onClick={() => void loadVariant(variantId, item.versionName)}
+                    disabled={pending}
+                  >
+                    {item.label}
+                    {item.isPublishedActive ? " · active" : ""}
+                  </button>
                 ))}
-              </select>
-            </label>
-          </div>
-        </section>
-
-        <div className="artwork-page-grid">
-          <section className="table-card">
-            <div className="actions" style={{ justifyContent: "space-between" }}>
-              <div>
-                <p className="admin-kicker">Версии</p>
-                <h2>
-                  {variantId} / {pageKey}
-                </h2>
               </div>
-              <button className="button-secondary" type="button" onClick={createVersion} disabled={pending}>
-                Создать версию
+            </div>
+
+            <div>
+              <p className="admin-kicker">Структура</p>
+              <div className="content-tree">
+                {pageKeys.map((pageKey) => (
+                  <div key={pageKey} className="content-tree-page">
+                    <button
+                      className="content-tree-page-button"
+                      type="button"
+                      onClick={() => setCollapsedPages((current) => ({ ...current, [pageKey]: !current[pageKey] }))}
+                    >
+                      <span>{pageLabels[pageKey]}</span>
+                      <span>{collapsedPages[pageKey] ? "+" : "−"}</span>
+                    </button>
+                    {!collapsedPages[pageKey] ? (
+                      <div className="content-tree-fields">
+                        {contentSchema[pageKey].map((field) => (
+                          <button key={field.key} type="button" onClick={() => scrollToField(pageKey, field)}>
+                            {field.label}
+                          </button>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <section className="detail-card content-editor-main">
+          <div className="actions" style={{ justifyContent: "space-between" }}>
+            <div>
+              <p className="admin-kicker">Редактор текстов</p>
+              <h2>{variantId}</h2>
+            </div>
+            <div className="actions">
+              <button className="button-secondary" type="button" onClick={savePreset} disabled={pending}>
+                Сохранить
+              </button>
+              <button className="button-secondary" type="button" onClick={savePresetCopy} disabled={pending}>
+                Сохранить как копию
+              </button>
+              <button className="button" type="button" onClick={publishPreset} disabled={pending}>
+                Опубликовать
               </button>
             </div>
+          </div>
 
-            <div className="table-grid">
-              {versions.map((item) => (
-                <button
-                  key={item.id}
-                  className={`button-secondary${item.id === version.id ? " active-chip" : ""}`}
-                  type="button"
-                  onClick={() =>
-                    void loadVersion(item.id).catch((error) =>
-                      setMessage(error instanceof Error ? error.message : "Не удалось загрузить версию."),
-                    )
-                  }
-                >
-                  {item.versionName} · {item.status}
-                  {item.isPublishedActive ? " · active" : ""}
-                </button>
-              ))}
-            </div>
-          </section>
+          {message ? <p className="subtle">{message}</p> : null}
 
-          <section className="detail-card">
-            <div className="actions" style={{ justifyContent: "space-between" }}>
-              <div>
-                <p className="admin-kicker">Редактор</p>
-                <h2>{version.versionName}</h2>
-              </div>
-              <div className="actions">
-                <button className="button-secondary" type="button" onClick={saveVersion} disabled={pending}>
-                  Сохранить
-                </button>
-                <button className="button-secondary" type="button" onClick={cloneVersion} disabled={!version.id || pending}>
-                  Сохранить как копию
-                </button>
-                <button className="button" type="button" onClick={publishVersion} disabled={!version.id || pending}>
-                  Опубликовать
-                </button>
-              </div>
-            </div>
+          <label className="field content-preset-name">
+            <span>Название пресета</span>
+            <input value={presetName} onChange={(event) => setPresetName(event.target.value)} />
+          </label>
 
-            {message ? <p className="subtle">{message}</p> : null}
-
-            <div className="stack">
-              <label className="field">
-                <span>Имя версии</span>
-                <input
-                  value={version.versionName}
-                  onChange={(event) => setVersion((current) => ({ ...current, versionName: event.target.value }))}
-                />
-              </label>
-
-              {contentSchema[pageKey].map((field) => {
-                const payload = payloadToForm(version.payload);
-                const value = payload[field.key];
-
-                if (field.type === "string-array") {
-                  return (
-                    <label key={field.key} className="field">
-                      <span>{field.label}</span>
-                      <textarea
-                        value={Array.isArray(value) ? value.join("\n") : ""}
-                        onChange={(event) => updatePayload(field.key, event.target.value.split("\n").filter(Boolean))}
-                      />
-                    </label>
-                  );
-                }
-
-                if (field.type === "textarea") {
-                  return (
-                    <label key={field.key} className="field">
-                      <span>{field.label}</span>
-                      <textarea
-                        value={typeof value === "string" ? value : ""}
-                        onChange={(event) => updatePayload(field.key, event.target.value)}
-                      />
-                    </label>
-                  );
-                }
-
-                return (
-                  <label key={field.key} className="field">
-                    <span>{field.label}</span>
-                    <input
-                      value={typeof value === "string" ? value : ""}
-                      onChange={(event) => updatePayload(field.key, event.target.value)}
-                    />
-                  </label>
-                );
-              })}
-            </div>
-          </section>
-        </div>
+          <div className="content-page-stack">
+            {pageKeys.map((pageKey) => (
+              <section key={pageKey} className="content-page-section">
+                <div className="content-page-heading">
+                  <div>
+                    <p className="admin-kicker">{pageKey}</p>
+                    <h2>{pageLabels[pageKey]}</h2>
+                  </div>
+                  <span className="subtle">{pageVersions[pageKey].status}</span>
+                </div>
+                <div className="stack">{contentSchema[pageKey].map((field) => renderField(pageKey, field))}</div>
+              </section>
+            ))}
+          </div>
+        </section>
       </div>
     </AppShell>
   );

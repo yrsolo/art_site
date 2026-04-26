@@ -324,6 +324,109 @@ textarea {
   gap: 10px;
 }
 
+.content-editor-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+  align-items: start;
+  gap: 20px;
+}
+
+.content-editor-sidebar {
+  position: sticky;
+  top: 18px;
+  max-height: calc(100vh - 36px);
+  overflow: auto;
+}
+
+.content-preset-list {
+  display: grid;
+  gap: 8px;
+}
+
+.content-preset-list .button-secondary {
+  width: 100%;
+  text-align: left;
+}
+
+.content-tree {
+  display: grid;
+  gap: 10px;
+}
+
+.content-tree-page {
+  border: 1px solid rgba(31, 28, 24, 0.08);
+  background: #fff;
+}
+
+.content-tree-page-button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 0;
+  background: transparent;
+  padding: 12px 14px;
+  color: #1f1c18;
+  text-align: left;
+  cursor: pointer;
+}
+
+.content-tree-fields {
+  display: grid;
+  gap: 2px;
+  border-top: 1px solid rgba(31, 28, 24, 0.08);
+  padding: 8px;
+}
+
+.content-tree-fields button {
+  border: 0;
+  background: transparent;
+  padding: 8px 10px;
+  color: rgba(31, 28, 24, 0.64);
+  text-align: left;
+  cursor: pointer;
+}
+
+.content-tree-fields button:hover,
+.content-tree-fields button:focus-visible {
+  background: #fcfaf6;
+  color: #1f1c18;
+}
+
+.content-editor-main {
+  min-width: 0;
+}
+
+.content-preset-name {
+  margin-top: 20px;
+}
+
+.content-page-stack {
+  display: grid;
+  gap: 26px;
+  margin-top: 24px;
+}
+
+.content-page-section {
+  display: grid;
+  gap: 18px;
+  border-top: 1px solid rgba(31, 28, 24, 0.1);
+  padding-top: 24px;
+  scroll-margin-top: 24px;
+}
+
+.content-page-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.content-field-anchor {
+  scroll-margin-top: 28px;
+}
+
 .order-grid {
   display: grid;
   gap: 12px;
@@ -399,8 +502,14 @@ textarea {
 
 @media (max-width: 1100px) {
   .admin-layout,
-  .artwork-page-grid {
+  .artwork-page-grid,
+  .content-editor-layout {
     grid-template-columns: 1fr;
+  }
+
+  .content-editor-sidebar {
+    position: static;
+    max-height: none;
   }
 
   .table-row {

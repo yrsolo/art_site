@@ -746,3 +746,31 @@
 - A fully native preview pipeline still needs one of:
   - a stable Linux Docker image build path for `apps/web`; or
   - a non-native preview generator that is safe for the prebuilt deployment path.
+
+## 2026-04-26 - Variant-wide content preset editor
+
+- Reworked the admin `Тексты` page so all editable texts for one selected variant are shown on one screen instead of switching page-by-page.
+- Presets are now presented as variant-wide sets:
+  - the UI derives preset names from existing page-level content versions;
+  - selecting a preset loads the matching version for every page in the variant;
+  - `Сохранить`, `Сохранить как копию`, and `Опубликовать` apply to all pages in the selected variant.
+- Added a left sidebar structure tree below preset selection:
+  - pages are collapsible;
+  - field leaves scroll directly to the corresponding text field;
+  - page sections remain visually separated in the main editor.
+- Kept the backend/storage contract unchanged for this pass:
+  - content is still stored as `variantId + pageKey` versions;
+  - the new variant-wide preset behavior is an admin UX layer over the existing API.
+
+### Validation
+
+- `npm run build --workspace admin`
+- `npm run lint --workspace admin`
+- `bash scripts/docs-check.sh`
+- `powershell -ExecutionPolicy Bypass -File scripts/publish-admin.ps1`
+- `curl.exe -I https://admin.art.solofarm.ru/content/` -> `200`
+
+### Still unresolved
+
+- Publishing a variant-wide text preset currently calls the existing per-page publish API for each page, so the public snapshot may be rebuilt multiple times in one publish action.
+- If this starts feeling slow in daily use, the next clean improvement is a backend aggregate route such as `POST /api/admin/content/presets/publish` that saves/publishes all pages and exports the snapshot once.

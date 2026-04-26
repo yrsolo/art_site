@@ -114,3 +114,11 @@
 3. Restrict supported upload types for v1 to `image/jpeg`, `image/png`, and `image/webp`, with `400` responses for unsupported files instead of raw `500`s.
 4. Split upload pending UI from generic artwork save pending so the drawer no longer looks like a stuck save when only photo upload is in progress.
 5. Redeploy admin + backend, then re-run live upload smoke with a real PNG/JPG against `api.art.solofarm.ru`.
+
+## Update 2026-04-26 Variant-wide content editor
+
+1. Replace the page-by-page content editor in `apps/admin` with one variant-wide text editor.
+2. Derive common presets from the page-level content version names and load matching versions for all pages of the selected variant.
+3. Make save, save-as-copy, and publish operate across every page in the variant while still using the existing page-scoped backend APIs.
+4. Add a sidebar tree under the preset list with collapsible page branches and text-field leaves that scroll to the corresponding editor field.
+5. Keep the existing `contentSchema` as the per-page/per-variant extensibility point for future sketch-specific text structures.
