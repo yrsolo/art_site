@@ -26,6 +26,7 @@ type PresetOption = {
   label: string;
   versionName: string | null;
   isPublishedActive?: boolean;
+  isDeleteBlocked?: boolean;
 };
 type PresetPublishResponse = {
   versions: Partial<Record<PageKey, ContentVersion>>;
@@ -92,14 +93,11 @@ export default function ContentPage() {
   const [pending, setPending] = useState(false);
 
   const presetOptions = useMemo<PresetOption[]>(() => {
-    const names = new Set<string>();
-    pageKeys.forEach((pageKey) => {
-      versionLists[pageKey].forEach((item) => {
-        if (item.versionName.trim()) {
-          names.add(item.versionName);
-        }
-      });
-    });
+    const firstPageKey = pageKeys[0];
+    const firstPageNames = new Set(versionLists[firstPageKey].map((item) => item.versionName.trim()).filter(Boolean));
+    const variantWideNames = Array.from(firstPageNames).filter((name) =>
+      pageKeys.every((pageKey) => versionLists[pageKey].some((item) => item.versionName === name)),
+    );
 
     return [
       {
@@ -107,14 +105,18 @@ export default function ContentPage() {
         label: "Опубликованный набор",
         versionName: null,
         isPublishedActive: true,
+        isDeleteBlocked: true,
       },
-      ...Array.from(names)
+      ...variantWideNames
         .sort((left, right) => left.localeCompare(right, "ru"))
         .map((name) => ({
           id: name,
           label: name,
           versionName: name,
           isPublishedActive: pageKeys.every((pageKey) =>
+            versionLists[pageKey].some((item) => item.versionName === name && item.isPublishedActive),
+          ),
+          isDeleteBlocked: pageKeys.some((pageKey) =>
             versionLists[pageKey].some((item) => item.versionName === name && item.isPublishedActive),
           ),
         })),
@@ -447,8 +449,8 @@ export default function ContentPage() {
                         className="content-preset-delete"
                         type="button"
                         onClick={() => void deletePreset(item)}
-                        disabled={pending || item.isPublishedActive}
-                        title={item.isPublishedActive ? "Опубликованный пресет удалить нельзя" : "Удалить пресет"}
+                        disabled={pending || item.isDeleteBlocked}
+                        title={item.isDeleteBlocked ? "Опубликованный пресет удалить нельзя" : "Удалить пресет"}
                       >
                         ×
                       </button>

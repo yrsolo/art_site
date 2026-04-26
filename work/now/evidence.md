@@ -846,3 +846,33 @@
 
 - I did not run an authenticated delete mutation from the CLI to avoid deleting live editor presets as a smoke test.
 - Manual smoke path: create a copy preset in `Тексты`, delete that copy, and confirm the preset list reloads without touching the active published preset.
+
+## 2026-04-26 - Preset deletion fix
+
+- Root cause of the first deletion UX bug:
+  - the preset list was built from any content version name found on any page;
+  - old seeded page-specific names such as `Текущий home` could appear as if they were variant-wide presets;
+  - deleting those names correctly failed server-side when they were active for one page, but the UI made that look like a broken delete action.
+- Fixed the admin preset list so it only shows real variant-wide presets:
+  - a named preset must exist on every page of the selected variant;
+  - the special `Опубликованный набор` remains as the way to load the currently published mixed set;
+  - delete is blocked for any preset that is active on at least one page.
+- Hardened backend deletion:
+  - deletion now returns an explicit `Content preset not found.` error if no matching versions were removed.
+
+### Validation
+
+- `npm run build --workspace admin`
+- `npm run build --workspace web`
+- `npm run lint --workspace admin`
+- `npm run lint --workspace web`
+- `bash scripts/docs-check.sh`
+- `powershell -ExecutionPolicy Bypass -File scripts/publish-admin.ps1`
+- built and pushed backend image:
+  - `cr.yandex/crp5tssh5qkdk7mgcilj/art-site/api:content-preset-delete-fix-20260426`
+- deployed backend with:
+  - `powershell -ExecutionPolicy Bypass -File scripts/deploy-yc-web.ps1 -Tag content-preset-delete-fix-20260426 -SkipBuild`
+- live checks:
+  - `curl.exe -I https://admin.art.solofarm.ru/content/` -> `200`
+  - `curl.exe -i https://api.art.solofarm.ru/api/health` -> `200`
+  - unauthenticated `POST https://api.art.solofarm.ru/api/admin/content/presets/delete` -> `401`

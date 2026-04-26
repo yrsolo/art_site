@@ -364,6 +364,10 @@ export async function deleteContentPreset(variantId: string, versionName: string
     deletedByPage[pageKey] = pageMatches.length;
   }
 
+  if (deletedCount === 0) {
+    throw new Error("Content preset not found.");
+  }
+
   return {
     deletedCount,
     deletedByPage,
