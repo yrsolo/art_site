@@ -220,3 +220,10 @@ Static frontend split with backend-only container and bucket-backed content sour
   - one admin API request publishes the whole variant preset;
   - backend saves/creates the page versions, updates publication state, and exports the public snapshot once;
   - the existing page-scoped content storage remains intact.
+
+## Update 2026-04-26 Content tree and preset deletion
+
+- Follow-up editor UX pass:
+  - make the content structure tree look closer to a standard Figma-style sidebar tree;
+  - add safe preset deletion for variant-wide text presets;
+  - keep deletion server-side so page-level version files and indices stay consistent.

@@ -808,3 +808,41 @@
 
 - I did not run an authenticated publish mutation from the CLI to avoid changing live text content just for a smoke test.
 - The next manual smoke is safe to do in the admin UI: open `Тексты`, press `Опубликовать`, and confirm that the success message includes one snapshot revision.
+
+## 2026-04-26 - Content tree polish and preset deletion
+
+- Reworked the `Тексты` sidebar tree into a more standard Figma-like tree:
+  - compact page rows with chevrons;
+  - nested text-field rows;
+  - hover state and active selected field state;
+  - field rows still scroll to the corresponding editor block.
+- Added preset deletion to the admin UI:
+  - non-published named presets show a delete action;
+  - deletion asks for confirmation;
+  - after deletion, the editor reloads the published set.
+- Added backend deletion support:
+  - `POST /api/admin/content/presets/delete`;
+  - deletes matching page-level content-version JSON files and cleans page indices;
+  - refuses to delete a preset if any matching version is currently published active.
+
+### Validation
+
+- `npm run build --workspace web`
+- `npm run build --workspace admin`
+- `npm run lint --workspace web`
+- `npm run lint --workspace admin`
+- `bash scripts/docs-check.sh`
+- `powershell -ExecutionPolicy Bypass -File scripts/publish-admin.ps1`
+- built and pushed backend image:
+  - `cr.yandex/crp5tssh5qkdk7mgcilj/art-site/api:content-tree-delete-20260426`
+- deployed backend with:
+  - `powershell -ExecutionPolicy Bypass -File scripts/deploy-yc-web.ps1 -Tag content-tree-delete-20260426 -SkipBuild`
+- live checks:
+  - `curl.exe -i https://api.art.solofarm.ru/api/health` -> `200`
+  - unauthenticated `POST https://api.art.solofarm.ru/api/admin/content/presets/delete` -> `401`, confirming the route is live and protected
+  - `curl.exe -I https://admin.art.solofarm.ru/content/` -> `200`
+
+### Still unresolved
+
+- I did not run an authenticated delete mutation from the CLI to avoid deleting live editor presets as a smoke test.
+- Manual smoke path: create a copy preset in `Тексты`, delete that copy, and confirm the preset list reloads without touching the active published preset.

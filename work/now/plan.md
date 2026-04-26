@@ -130,3 +130,11 @@
 3. Export the public snapshot once per variant preset publish, not once per page.
 4. Switch the admin variant-wide content editor to call the aggregate endpoint instead of looping over per-page publish routes.
 5. Validate web/admin builds and redeploy both changed runtimes.
+
+## Update 2026-04-26 Content tree and preset deletion
+
+1. Rework the `Тексты` sidebar tree into a compact standard tree pattern with chevrons, page rows, field rows, hover state, and selected field state.
+2. Add backend preset deletion that removes all non-active page versions with the selected preset name across the current variant.
+3. Protect active published presets from deletion.
+4. Add delete controls to non-published presets in the admin sidebar with confirmation and deterministic reload to the published set after deletion.
+5. Validate, publish admin, deploy backend, and record live route checks.

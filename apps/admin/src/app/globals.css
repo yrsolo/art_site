@@ -340,58 +340,157 @@ textarea {
 
 .content-preset-list {
   display: grid;
-  gap: 8px;
+  gap: 4px;
 }
 
-.content-preset-list .button-secondary {
+.content-preset-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 32px;
+  align-items: center;
   width: 100%;
+  border-radius: 6px;
+}
+
+.content-preset-row.active {
+  background: #1f1c18;
+  color: #fff;
+}
+
+.content-preset-button,
+.content-preset-delete {
+  min-height: 32px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.content-preset-button {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 10px;
   text-align: left;
+}
+
+.content-preset-button span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.content-preset-button small {
+  color: currentColor;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  opacity: 0.68;
+  text-transform: uppercase;
+}
+
+.content-preset-delete {
+  border-radius: 6px;
+  color: rgba(31, 28, 24, 0.45);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.content-preset-row.active .content-preset-delete {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.content-preset-row:not(.active):hover,
+.content-preset-row:not(.active):focus-within {
+  background: #fcfaf6;
+}
+
+.content-preset-delete:hover:not(:disabled),
+.content-preset-delete:focus-visible:not(:disabled) {
+  background: #fff4f1;
+  color: #8f2b10;
+}
+
+.content-preset-delete:disabled {
+  cursor: not-allowed;
+  opacity: 0.36;
 }
 
 .content-tree {
   display: grid;
-  gap: 10px;
+  gap: 1px;
+  border: 1px solid rgba(31, 28, 24, 0.08);
+  background: #fff;
+  padding: 6px;
 }
 
 .content-tree-page {
-  border: 1px solid rgba(31, 28, 24, 0.08);
-  background: #fff;
+  display: grid;
+  gap: 1px;
 }
 
-.content-tree-page-button {
+.content-tree-node {
   display: flex;
   width: 100%;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 6px;
   border: 0;
+  border-radius: 5px;
   background: transparent;
-  padding: 12px 14px;
   color: #1f1c18;
   text-align: left;
   cursor: pointer;
+}
+
+.content-tree-node:hover,
+.content-tree-node:focus-visible,
+.content-tree-node.active {
+  background: #f4efe7;
+}
+
+.content-tree-page-button {
+  padding: 6px 8px;
+  font-weight: 600;
 }
 
 .content-tree-fields {
   display: grid;
-  gap: 2px;
-  border-top: 1px solid rgba(31, 28, 24, 0.08);
-  padding: 8px;
+  gap: 1px;
+  padding-bottom: 2px;
 }
 
-.content-tree-fields button {
-  border: 0;
-  background: transparent;
-  padding: 8px 10px;
+.content-tree-field {
+  padding: 5px 8px;
   color: rgba(31, 28, 24, 0.64);
-  text-align: left;
-  cursor: pointer;
+  font-size: 13px;
 }
 
-.content-tree-fields button:hover,
-.content-tree-fields button:focus-visible {
-  background: #fcfaf6;
+.content-tree-field.active {
   color: #1f1c18;
+}
+
+.content-tree-chevron,
+.content-tree-icon,
+.content-tree-spacer {
+  flex: 0 0 14px;
+  width: 14px;
+  color: rgba(31, 28, 24, 0.42);
+  font-size: 11px;
+  text-align: center;
+}
+
+.content-tree-icon {
+  border: 1px solid rgba(31, 28, 24, 0.14);
+  border-radius: 2px;
+  font-size: 9px;
+  line-height: 12px;
+}
+
+.content-tree-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .content-editor-main {
@@ -425,6 +524,12 @@ textarea {
 
 .content-field-anchor {
   scroll-margin-top: 28px;
+}
+
+.active-content-field {
+  border-radius: 8px;
+  outline: 2px solid rgba(31, 28, 24, 0.12);
+  outline-offset: 8px;
 }
 
 .order-grid {

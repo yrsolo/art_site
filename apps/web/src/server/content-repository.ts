@@ -7,7 +7,7 @@ import type {
 } from "@/features/content/types";
 import { contentPageKeys } from "@/features/content/types";
 import { appConfig } from "@/server/config";
-import { readJsonFile, writeJsonFile } from "@/server/json-store";
+import { deleteJsonFile, readJsonFile, writeJsonFile } from "@/server/json-store";
 import { variantContent as seedVariantContent } from "@/server/seed-variant-content";
 import { newId, nowIso } from "@/server/utils";
 
@@ -314,6 +314,59 @@ export async function publishContentPreset(
   return {
     publication: nextPublication,
     versions,
+  };
+}
+
+export async function deleteContentPreset(variantId: string, versionName: string) {
+  const trimmedVersionName = versionName.trim();
+
+  if (!trimmedVersionName) {
+    throw new Error("Content preset name is required.");
+  }
+
+  const publication = await getPublication(variantId);
+  const matches: Partial<Record<ContentPageKey, ContentVersionRecord[]>> = {};
+
+  for (const pageKey of contentPageKeys) {
+    await ensureSeedContentVersion(variantId, pageKey);
+    const index = await readIndex(variantId, pageKey);
+    const pageMatches = index.items.filter((item) => item.versionName === trimmedVersionName);
+
+    if (pageMatches.some((item) => publication.activeVersions[pageKey] === item.id)) {
+      throw new Error("Cannot delete the active published content preset.");
+    }
+
+    matches[pageKey] = pageMatches;
+  }
+
+  let deletedCount = 0;
+  const deletedByPage: Partial<Record<ContentPageKey, number>> = {};
+
+  for (const pageKey of contentPageKeys) {
+    const pageMatches = matches[pageKey] ?? [];
+
+    if (pageMatches.length === 0) {
+      deletedByPage[pageKey] = 0;
+      continue;
+    }
+
+    const index = await readIndex(variantId, pageKey);
+    const idsToDelete = new Set(pageMatches.map((item) => item.id));
+
+    await Promise.all(pageMatches.map((item) => deleteJsonFile(contentVersionKey(variantId, pageKey, item.id))));
+    await writeIndex(
+      variantId,
+      pageKey,
+      index.items.filter((item) => !idsToDelete.has(item.id)),
+    );
+
+    deletedCount += pageMatches.length;
+    deletedByPage[pageKey] = pageMatches.length;
+  }
+
+  return {
+    deletedCount,
+    deletedByPage,
   };
 }
 

@@ -34,6 +34,9 @@ type PresetPublishResponse = {
     publishedAt: string;
   };
 };
+type PresetDeleteResponse = {
+  deletedCount: number;
+};
 
 function createEmptyPageVersions(variantId: string): PageVersions {
   const versions = {} as PageVersions;
@@ -84,6 +87,7 @@ export default function ContentPage() {
   const [presetName, setPresetName] = useState("Текущие тексты сайта");
   const [activePresetId, setActivePresetId] = useState(publishedPresetId);
   const [collapsedPages, setCollapsedPages] = useState<Partial<Record<PageKey, boolean>>>({});
+  const [activeFieldId, setActiveFieldId] = useState("");
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState(false);
 
@@ -323,10 +327,43 @@ export default function ContentPage() {
     }
   }
 
+  async function deletePreset(item: PresetOption) {
+    if (!item.versionName) {
+      return;
+    }
+
+    const shouldDelete = window.confirm(`Удалить пресет «${item.label}» для всех страниц варианта?`);
+
+    if (!shouldDelete) {
+      return;
+    }
+
+    setPending(true);
+    setMessage("");
+
+    try {
+      const response = await apiFetch<PresetDeleteResponse>("/api/admin/content/presets/delete", {
+        method: "POST",
+        body: JSON.stringify({
+          variantId,
+          versionName: item.versionName,
+        }),
+      });
+
+      await loadVariant(variantId, null);
+      setMessage(`Пресет удалён. Удалено версий: ${response.deletedCount}.`);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Не удалось удалить пресет.");
+      setPending(false);
+    }
+  }
+
   function scrollToField(pageKey: PageKey, field: ContentFieldDefinition) {
+    const nextFieldId = fieldDomId(pageKey, field.key);
+    setActiveFieldId(nextFieldId);
     setCollapsedPages((current) => ({ ...current, [pageKey]: false }));
     window.setTimeout(() => {
-      document.getElementById(fieldDomId(pageKey, field.key))?.scrollIntoView({ behavior: "smooth", block: "center" });
+      document.getElementById(nextFieldId)?.scrollIntoView({ behavior: "smooth", block: "center" });
     }, 0);
   }
 
@@ -336,7 +373,11 @@ export default function ContentPage() {
 
     if (field.type === "string-array") {
       return (
-        <label key={field.key} id={fieldDomId(pageKey, field.key)} className="field content-field-anchor">
+        <label
+          key={field.key}
+          id={fieldDomId(pageKey, field.key)}
+          className={`field content-field-anchor${activeFieldId === fieldDomId(pageKey, field.key) ? " active-content-field" : ""}`}
+        >
           <span>{field.label}</span>
           <textarea
             value={Array.isArray(value) ? value.join("\n") : ""}
@@ -348,7 +389,11 @@ export default function ContentPage() {
 
     if (field.type === "textarea") {
       return (
-        <label key={field.key} id={fieldDomId(pageKey, field.key)} className="field content-field-anchor">
+        <label
+          key={field.key}
+          id={fieldDomId(pageKey, field.key)}
+          className={`field content-field-anchor${activeFieldId === fieldDomId(pageKey, field.key) ? " active-content-field" : ""}`}
+        >
           <span>{field.label}</span>
           <textarea value={typeof value === "string" ? value : ""} onChange={(event) => updatePayload(pageKey, field.key, event.target.value)} />
         </label>
@@ -356,7 +401,11 @@ export default function ContentPage() {
     }
 
     return (
-      <label key={field.key} id={fieldDomId(pageKey, field.key)} className="field content-field-anchor">
+      <label
+        key={field.key}
+        id={fieldDomId(pageKey, field.key)}
+        className={`field content-field-anchor${activeFieldId === fieldDomId(pageKey, field.key) ? " active-content-field" : ""}`}
+      >
         <span>{field.label}</span>
         <input value={typeof value === "string" ? value : ""} onChange={(event) => updatePayload(pageKey, field.key, event.target.value)} />
       </label>
@@ -383,16 +432,28 @@ export default function ContentPage() {
               <p className="admin-kicker">Пресеты</p>
               <div className="content-preset-list">
                 {presetOptions.map((item) => (
-                  <button
-                    key={item.id}
-                    className={`button-secondary${activePresetId === item.id ? " active-chip" : ""}`}
-                    type="button"
-                    onClick={() => void loadVariant(variantId, item.versionName)}
-                    disabled={pending}
-                  >
-                    {item.label}
-                    {item.isPublishedActive ? " · active" : ""}
-                  </button>
+                  <div key={item.id} className={`content-preset-row${activePresetId === item.id ? " active" : ""}`}>
+                    <button
+                      className="content-preset-button"
+                      type="button"
+                      onClick={() => void loadVariant(variantId, item.versionName)}
+                      disabled={pending}
+                    >
+                      <span>{item.label}</span>
+                      {item.isPublishedActive ? <small>active</small> : null}
+                    </button>
+                    {item.versionName ? (
+                      <button
+                        className="content-preset-delete"
+                        type="button"
+                        onClick={() => void deletePreset(item)}
+                        disabled={pending || item.isPublishedActive}
+                        title={item.isPublishedActive ? "Опубликованный пресет удалить нельзя" : "Удалить пресет"}
+                      >
+                        ×
+                      </button>
+                    ) : null}
+                  </div>
                 ))}
               </div>
             </div>
@@ -403,18 +464,26 @@ export default function ContentPage() {
                 {pageKeys.map((pageKey) => (
                   <div key={pageKey} className="content-tree-page">
                     <button
-                      className="content-tree-page-button"
+                      className="content-tree-node content-tree-page-button"
                       type="button"
                       onClick={() => setCollapsedPages((current) => ({ ...current, [pageKey]: !current[pageKey] }))}
                     >
-                      <span>{pageLabels[pageKey]}</span>
-                      <span>{collapsedPages[pageKey] ? "+" : "−"}</span>
+                      <span className="content-tree-chevron">{collapsedPages[pageKey] ? "▸" : "▾"}</span>
+                      <span className="content-tree-icon">□</span>
+                      <span className="content-tree-label">{pageLabels[pageKey]}</span>
                     </button>
                     {!collapsedPages[pageKey] ? (
                       <div className="content-tree-fields">
                         {contentSchema[pageKey].map((field) => (
-                          <button key={field.key} type="button" onClick={() => scrollToField(pageKey, field)}>
-                            {field.label}
+                          <button
+                            key={field.key}
+                            className={`content-tree-node content-tree-field${activeFieldId === fieldDomId(pageKey, field.key) ? " active" : ""}`}
+                            type="button"
+                            onClick={() => scrollToField(pageKey, field)}
+                          >
+                            <span className="content-tree-spacer" />
+                            <span className="content-tree-icon">T</span>
+                            <span className="content-tree-label">{field.label}</span>
                           </button>
                         ))}
                       </div>
